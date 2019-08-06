@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": false,
+    "inlineSources": true,
+    "lib": [
+      "dom",
+      "es2015",
+      "es7",
+      "esnext",
+      "esnext.asynciterable"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es5",
+    "types": [
+      "jest"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

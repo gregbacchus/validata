@@ -1,0 +1,11 @@
+/.git
+/.idea
+*.suo
+/node_modules
+/coverage
+/_*
+/certs
+/sandbox
+*.log
+.npmrc
+!/dist

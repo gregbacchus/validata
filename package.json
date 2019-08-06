@@ -1,0 +1,23 @@
+{
+  "name": "validata",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "npx tslint --project tsconfig.json",
+    "test": "npx jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^24.0.15",
+    "@types/validator": "^10.11.1",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.2",
+    "validator": "^11.0.0"
+  },
+  "dependencies": {}
+}
