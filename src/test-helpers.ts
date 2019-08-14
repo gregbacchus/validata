@@ -1,12 +1,14 @@
 import { ContractProperty, isIssue, Path } from './types';
 
+export interface TestIssue {
+  path?: Path[];
+  reason: string;
+}
+
 export interface TestDefinition<T> {
   input: any;
   expect?: T;
-  issues?: Array<{
-    path?: Path[];
-    reason: string;
-  }>;
+  issues?: TestIssue[];
 }
 
 export function runTests<T>(fut: ContractProperty<T>, ...tests: Array<TestDefinition<T>>) {
