@@ -1,11 +1,37 @@
 {
   "name": "validata",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Type safe data validation and sanitization",
+  "keywords": [
+    "typescript",
+    "type-safe",
+    "typesafe",
+    "typed",
+    "validate",
+    "validator",
+    "validation",
+    "clean",
+    "cleanse",
+    "sanitise",
+    "sanitize",
+    "data validator",
+    "data clean",
+    "data cleanse",
+    "object validator",
+    "request validator"
+  ],
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:gregbacchus/validata.git"
+  },
   "scripts": {
     "lint": "npx tslint --project tsconfig.json",
-    "test": "npx jest"
+    "test": "npx jest",
+    "build": "rm -rf dist && npx tsc --outDir dist --sourceMap",
+    "prepublishOnly": "npm run build && npm version patch",
+    "postpublish": "git push"
   },
   "author": "",
   "license": "ISC",
