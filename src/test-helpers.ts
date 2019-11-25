@@ -1,4 +1,4 @@
-import { ContractProperty, isIssue, Path } from './types';
+import { isIssue, Path, ValueProcessor } from './types';
 
 export interface TestIssue {
   path?: Path[];
@@ -11,7 +11,7 @@ export interface TestDefinition<T> {
   issues?: TestIssue[];
 }
 
-export function runTests<T>(fut: ContractProperty<T>, ...tests: Array<TestDefinition<T>>) {
+export function runTests<T>(fut: ValueProcessor<T>, ...tests: Array<TestDefinition<T>>) {
   tests.forEach((test) => {
     const result = fut.process(test.input);
     if (test.issues) {
@@ -39,7 +39,7 @@ export function runTests<T>(fut: ContractProperty<T>, ...tests: Array<TestDefini
   });
 }
 
-export function expectIssue<T>(fut: ContractProperty<T>, value: any, reason: string, path: Path[] = []) {
+export function expectIssue<T>(fut: ValueProcessor<T>, value: any, reason: string, path: Path[] = []) {
   const result = fut.process(value);
   if (!isIssue(result)) {
     fail('no issue');
@@ -55,13 +55,13 @@ export function expectIssue<T>(fut: ContractProperty<T>, value: any, reason: str
   );
 }
 
-export function expectSuccess<T>(fut: ContractProperty<T>, value: any) {
+export function expectSuccess<T>(fut: ValueProcessor<T>, value: any) {
   const result = fut.process(value);
   expect(result).toBeDefined();
   expect(isIssue(result)).toBeFalsy();
 }
 
-export function expectValue<T>(fut: ContractProperty<T>, value: any, coerced: T) {
+export function expectValue<T>(fut: ValueProcessor<T>, value: any, coerced: T) {
   const result = fut.process(value);
   expect(result).toBeDefined();
   expect(isIssue(result)).toBeFalsy();

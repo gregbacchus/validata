@@ -1,4 +1,4 @@
-import { Contract, ContractProperty, isIssue, Issue, IssueResult, Result } from './types';
+import { Contract, isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
 interface ObjectOptions<T> {
   contract?: Contract<T>;
@@ -93,7 +93,7 @@ const children = <T>(options?: ObjectOptions<T>) => (fn: (value: T) => Result<T>
   };
 };
 
-export function IsObject<T extends object>(options?: ObjectOptions<T>): ContractProperty<T> {
+export function IsObject<T extends object>(options?: ObjectOptions<T>): ValueProcessor<T> {
   return {
     process: isObject<T>()(children(options)((value) => {
       const result = validate(value, options);
@@ -102,7 +102,7 @@ export function IsObject<T extends object>(options?: ObjectOptions<T>): Contract
   };
 }
 
-export function MaybeObject<T extends object>(options?: ObjectOptions<T>): ContractProperty<T | undefined> {
+export function MaybeObject<T extends object>(options?: ObjectOptions<T>): ValueProcessor<T | undefined> {
   return {
     process: maybeObject<T>()(children(options)((value) => {
       const result = validate(value, options);

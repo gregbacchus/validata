@@ -1,5 +1,5 @@
 export type Contract<T> = {
-  [P in keyof T]: ContractProperty<T[P]>;
+  [P in keyof T]: ValueProcessor<T[P]>;
 };
 
 export type Result<T> = ValueResult<T> | IssueResult;
@@ -50,6 +50,6 @@ export interface IssueResult {
   issues: Issue[];
 }
 
-export interface ContractProperty<T> {
+export interface ValueProcessor<T> {
   process(value: any): Result<T> | undefined;
 }

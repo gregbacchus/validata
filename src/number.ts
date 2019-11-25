@@ -1,4 +1,4 @@
-import { ContractProperty, Issue, IssueResult, Result } from './types';
+import { Issue, IssueResult, Result, ValueProcessor } from './types';
 
 interface NumberOptions {
   max?: number;
@@ -93,7 +93,7 @@ function validate(value: number, options: NumberOptions | undefined): IssueResul
   return result.issues.length ? result : undefined;
 }
 
-export function IsNumber(options?: NumberOptions): ContractProperty<number> {
+export function IsNumber(options?: NumberOptions): ValueProcessor<number> {
   return {
     process: requiredStrictType()((value) => {
       const result = validate(value, options);
@@ -102,7 +102,7 @@ export function IsNumber(options?: NumberOptions): ContractProperty<number> {
   };
 }
 
-export function MaybeNumber(options?: NumberOptions): ContractProperty<number | undefined> {
+export function MaybeNumber(options?: NumberOptions): ValueProcessor<number | undefined> {
   return {
     process: maybe()(strictType()((value) => {
       if (value === undefined) {
@@ -114,7 +114,7 @@ export function MaybeNumber(options?: NumberOptions): ContractProperty<number | 
   };
 }
 
-export function AsNumber(options?: AsNumberOptions): ContractProperty<number> {
+export function AsNumber(options?: AsNumberOptions): ValueProcessor<number> {
   return {
     process: coerce(options)((value) => {
       const result = validate(value, options);
@@ -123,7 +123,7 @@ export function AsNumber(options?: AsNumberOptions): ContractProperty<number> {
   };
 }
 
-export function MaybeAsNumber(options?: AsNumberOptions): ContractProperty<number | undefined> {
+export function MaybeAsNumber(options?: AsNumberOptions): ValueProcessor<number | undefined> {
   return {
     process: maybe()(coerce(options)((value) => {
       const result = validate(value, options);

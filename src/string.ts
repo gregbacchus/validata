@@ -1,4 +1,4 @@
-import { ContractProperty, Issue, IssueResult, Result } from './types';
+import { Issue, IssueResult, Result, ValueProcessor } from './types';
 
 interface StringOptions {
   regex?: RegExp;
@@ -49,7 +49,7 @@ const coerce = (options?: StringOptions) => (fn: (value: string) => Result<strin
   };
 };
 
-export function IsString(options?: StringOptions): ContractProperty<string> {
+export function IsString(options?: StringOptions): ValueProcessor<string> {
   return {
     process: (value) => {
       if (value === undefined || value === null) {
@@ -64,7 +64,7 @@ export function IsString(options?: StringOptions): ContractProperty<string> {
   };
 }
 
-export function MaybeString(options?: StringOptions): ContractProperty<string | undefined> {
+export function MaybeString(options?: StringOptions): ValueProcessor<string | undefined> {
   return {
     process: maybe()((value) => {
       if (typeof value !== 'string') {
@@ -76,7 +76,7 @@ export function MaybeString(options?: StringOptions): ContractProperty<string | 
   };
 }
 
-export function AsString(options?: StringOptions): ContractProperty<string> {
+export function AsString(options?: StringOptions): ValueProcessor<string> {
   return {
     process: coerce(options)((value) => {
       const result = validate(value, options);
@@ -85,7 +85,7 @@ export function AsString(options?: StringOptions): ContractProperty<string> {
   };
 }
 
-export function MaybeAsString(options?: StringOptions): ContractProperty<string | undefined> {
+export function MaybeAsString(options?: StringOptions): ValueProcessor<string | undefined> {
   return {
     process: maybe()(coerce(options)((value) => {
       const result = validate(value, options);

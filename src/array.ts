@@ -1,9 +1,9 @@
-import { ContractProperty, exists as defined, isIssue, Issue, IssueResult, isValue, Result } from './types';
+import { exists as defined, isIssue, Issue, IssueResult, isValue, Result, ValueProcessor } from './types';
 
 interface ArrayOptions<T> {
   maxLength?: number;
   minLength?: number;
-  item: ContractProperty<T>;
+  item: ValueProcessor<T>;
 }
 
 function validate<T>(value: T[], options: ArrayOptions<T> | undefined) {
@@ -89,7 +89,7 @@ const children = <T>(options?: ArrayOptions<T>) =>
       return fn(results.map((item) => isValue(item.processed) ? item.processed.value : item.originalValue));
     };
 
-export function IsArray<T>(options?: ArrayOptions<T>): ContractProperty<T[]> {
+export function IsArray<T>(options?: ArrayOptions<T>): ValueProcessor<T[]> {
   return {
     process: isArray<T>()(children(options)((value) => {
       const result = validate(value, options);
@@ -98,7 +98,7 @@ export function IsArray<T>(options?: ArrayOptions<T>): ContractProperty<T[]> {
   };
 }
 
-export function MaybeArray<T>(options?: ArrayOptions<T>): ContractProperty<T[] | undefined> {
+export function MaybeArray<T>(options?: ArrayOptions<T>): ValueProcessor<T[] | undefined> {
   return {
     process: maybeArray<T>()(children(options)((value) => {
       const result = validate(value, options);
