@@ -8,8 +8,16 @@ export interface ValueResult<T> {
   value: T;
 }
 
-export function isIssue<T>(result: ValueResult<T> | IssueResult | undefined): result is IssueResult {
-  return (result as IssueResult).issues !== undefined;
+export function isValue<T>(result: Result<T> | undefined): result is ValueResult<T> {
+  return !!result && result.hasOwnProperty('value');
+}
+
+export function isIssue<T>(result: Result<T> | undefined): result is IssueResult {
+  return !!result && (result as IssueResult).issues !== undefined;
+}
+
+export function exists<T>(value: T | undefined): value is T {
+  return value !== undefined;
 }
 
 export type Path = string | number | symbol;

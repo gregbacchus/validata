@@ -1,3 +1,5 @@
+import { IsArray } from './array';
+import { IsNumber } from './number';
 import { IsObject } from './object';
 import { AsString, IsString, MaybeString } from './string';
 
@@ -20,3 +22,13 @@ console.log(sample.process({
   myString: '123',
   numericString: 123,
 }));
+
+const sample2 = IsArray({
+  item: IsNumber({ min: 17 }),
+  minLength: 1,
+});
+
+console.log(sample2.process([]));
+console.log(JSON.stringify(sample2.process([1])));
+console.log(sample2.process([102, 123]));
+console.log(sample2.process([new Date()]));
