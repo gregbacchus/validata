@@ -2,20 +2,26 @@ import { AsNumber, IsNumber, MaybeAsNumber, MaybeNumber } from './number';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 
 describe('IsNumber', () => {
-  it('will handle non-number', () => {
+  it('incorrect type will cause an issue', () => {
     const fut = IsNumber();
     runTests(fut,
-      { input: null, issues: [{ reason: 'not-defined' }] },
-      { input: undefined, issues: [{ reason: 'not-defined' }] },
       { input: 'test', issues: [{ reason: 'incorrect-type' }] },
       { input: new Date(), issues: [{ reason: 'incorrect-type' }] },
       { input: [], issues: [{ reason: 'incorrect-type' }] },
       { input: {}, issues: [{ reason: 'incorrect-type' }] },
+    );
+  });
+
+  it('null, undefined or NaN will cause an issue', () => {
+    const fut = IsNumber();
+    runTests(fut,
+      { input: null, issues: [{ reason: 'not-defined' }] },
+      { input: undefined, issues: [{ reason: 'not-defined' }] },
       { input: NaN, issues: [{ reason: 'not-a-number' }] },
     );
   });
 
-  it('will handle number', () => {
+  it('will accept number', () => {
     const fut = IsNumber();
     expectSuccess(fut, 123);
     expectSuccess(fut, 0);
@@ -38,14 +44,18 @@ describe('IsNumber', () => {
 });
 
 describe('MaybeNumber', () => {
-  it('will handle non-number', () => {
+  it('incorrect type will cause issue', () => {
     const fut = MaybeNumber();
-    expectValue(fut, null, undefined);
-    expectValue(fut, undefined, undefined);
     expectIssue(fut, 'test', 'incorrect-type');
     expectIssue(fut, new Date(), 'incorrect-type');
     expectIssue(fut, [], 'incorrect-type');
     expectIssue(fut, {}, 'incorrect-type');
+  });
+
+  it('null, undefined or NaN will be coerced to undefined', () => {
+    const fut = MaybeNumber();
+    expectValue(fut, null, undefined);
+    expectValue(fut, undefined, undefined);
     expectValue(fut, NaN, undefined);
   });
 
@@ -72,7 +82,7 @@ describe('MaybeNumber', () => {
 });
 
 describe('AsNumber', () => {
-  it('will handle non-number', () => {
+  it('incorrect type will be converted to number', () => {
     const fut = AsNumber();
     expectValue(fut, null, NaN);
     expectValue(fut, undefined, NaN);
@@ -80,6 +90,19 @@ describe('AsNumber', () => {
     expectValue(fut, new Date(1562057445845), 1562057445845);
     expectValue(fut, [], NaN);
     expectValue(fut, {}, NaN);
+    expectValue(fut, NaN, NaN);
+  });
+
+  it('incorrect type that cannot be converted will have default used', () => {
+    const fut = AsNumber({ default: 17.54 });
+    expectValue(fut, 123.4, 123.4);
+    expectValue(fut, null, 17.54);
+    expectValue(fut, undefined, 17.54);
+    expectValue(fut, 'test', 17.54);
+    expectValue(fut, '123.4', 123.4);
+    expectValue(fut, [], 17.54);
+    expectValue(fut, {}, 17.54);
+    expectValue(fut, NaN, 17.54);
   });
 
   it('will handle number', () => {
@@ -103,30 +126,39 @@ describe('AsNumber', () => {
     expectSuccess(fut, 7);
     expectIssue(fut, 2, 'validator');
   });
+});
 
-  it('will use default', () => {
-    const fut = AsNumber({ default: 17.54 });
+describe('MaybeAsNumber', () => {
+  it('incorrect type will be converted to NaN', () => {
+    const fut = MaybeAsNumber();
+    expectValue(fut, 'test', NaN);
+    expectValue(fut, [], NaN);
+    expectValue(fut, ['test'], NaN);
+    expectValue(fut, {}, NaN);
+    expectValue(fut, NaN, NaN);
+  });
+
+  it('Date will be converted to number', () => {
+    const fut = MaybeAsNumber();
+    expectValue(fut, new Date(1562057445845), 1562057445845);
+  });
+
+  it('null or undefined will be converted to NaN', () => {
+    const fut = MaybeAsNumber();
+    expectValue(fut, null, NaN);
+    expectValue(fut, undefined, NaN);
+  });
+
+  it('incorrect type, null, undefined or NaN that cannot be converted will have default used', () => {
+    const fut = MaybeAsNumber({ default: 17.54 });
     expectValue(fut, 123.4, 123.4);
     expectValue(fut, null, 17.54);
     expectValue(fut, undefined, 17.54);
     expectValue(fut, 'test', 17.54);
     expectValue(fut, '123.4', 123.4);
-    expectValue(fut, new Date(1562057445845), 1562057445845);
     expectValue(fut, [], 17.54);
     expectValue(fut, {}, 17.54);
-  });
-});
-
-describe('MaybeAsNumber', () => {
-  it('will handle non-number', () => {
-    const fut = MaybeAsNumber();
-    expectValue(fut, null, undefined);
-    expectValue(fut, undefined, undefined);
-    expectValue(fut, 'test', NaN);
-    expectValue(fut, new Date(1562057445845), 1562057445845);
-    expectValue(fut, [], NaN);
-    expectValue(fut, ['test'], NaN);
-    expectValue(fut, {}, NaN);
+    expectValue(fut, NaN, 17.54);
   });
 
   it('will handle number', () => {

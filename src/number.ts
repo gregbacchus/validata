@@ -11,12 +11,15 @@ interface AsNumberOptions extends NumberOptions {
   default?: number;
 }
 
-const required = () => (fn: (value: unknown) => Result<number>) => {
+const requiredStrictType = () => (fn: (value: number) => Result<number>) => {
   return (value: unknown) => {
     if (value === undefined || value === null) {
       return { issues: [Issue.from(value, 'not-defined')] };
     }
-    if (typeof value === 'number' && Number.isNaN(value)) {
+    if (typeof value !== 'number') {
+      return { issues: [Issue.from(value, 'incorrect-type')] };
+    }
+    if (Number.isNaN(value)) {
       return { issues: [Issue.from(value, 'not-a-number')] };
     }
 
@@ -24,8 +27,11 @@ const required = () => (fn: (value: unknown) => Result<number>) => {
   };
 };
 
-const strictType = () => (fn: (value: number) => Result<number>) => {
+const strictType = () => (fn: (value: number | undefined) => Result<number | undefined>) => {
   return (value: unknown) => {
+    if (value === undefined || value === null) {
+      return fn(undefined);
+    }
     if (typeof value !== 'number') {
       return { issues: [Issue.from(value, 'incorrect-type')] };
     }
@@ -40,7 +46,7 @@ const strictType = () => (fn: (value: number) => Result<number>) => {
 const maybe = () => (fn: (value: unknown) => Result<number | undefined>) => {
   return (value: unknown) => {
     if (value === undefined || value === null || typeof value === 'number' && Number.isNaN(value)) {
-      return { value: undefined };
+      return fn(undefined);
     }
 
     return fn(value);
@@ -48,7 +54,7 @@ const maybe = () => (fn: (value: unknown) => Result<number | undefined>) => {
 };
 
 const coerce = (options?: AsNumberOptions) => (fn: (value: number) => Result<number>) => {
-  return (value: any) => {
+  return (value: unknown) => {
     if (Array.isArray(value)) {
       return { value: options && options.default !== undefined && options.default || Number.NaN };
     }
@@ -89,16 +95,19 @@ function validate(value: number, options: NumberOptions | undefined): IssueResul
 
 export function IsNumber(options?: NumberOptions): ContractProperty<number> {
   return {
-    process: required()(strictType()((value) => {
+    process: requiredStrictType()((value) => {
       const result = validate(value, options);
       return result || { value };
-    })),
+    }),
   };
 }
 
 export function MaybeNumber(options?: NumberOptions): ContractProperty<number | undefined> {
   return {
     process: maybe()(strictType()((value) => {
+      if (value === undefined) {
+        return { value: undefined };
+      }
       const result = validate(value, options);
       return result || { value };
     })),
