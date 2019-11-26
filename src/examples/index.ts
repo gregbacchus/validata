@@ -34,8 +34,7 @@ console.log(JSON.stringify(sample2.process([1])));
 console.log(sample2.process([102, 123]));
 console.log(sample2.process([new Date()]));
 
-const input = [new Date()];
-const result = sample2.process(input);
+const result = sample2.process([new Date()]);
 if (isIssue(result)) {
   console.log('Issues', result.issues);
 } else {
