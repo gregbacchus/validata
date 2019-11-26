@@ -3,7 +3,7 @@ import { exists as defined, isIssue, Issue, IssueResult, isValue, Result, ValueP
 interface ArrayOptions<T> {
   maxLength?: number;
   minLength?: number;
-  item: ValueProcessor<T>;
+  item?: ValueProcessor<T>;
 }
 
 function validate<T>(value: T[], options: ArrayOptions<T> | undefined) {
