@@ -25,4 +25,4 @@
 * if the value is of the type it will be accepted
 * if the value can be converted to the type, it will ne converted
 * if the value is cannot be converted or is `null` or `undefined`, the default will be used if provided
-* otherwise it will be sanitized to undefined (or NaN in the case of number)
+* otherwise it will be sanitized to undefined

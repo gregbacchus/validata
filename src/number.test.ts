@@ -129,13 +129,13 @@ describe('AsNumber', () => {
 });
 
 describe('MaybeAsNumber', () => {
-  it('incorrect type will be converted to NaN', () => {
+  it('incorrect type will be converted to undefined', () => {
     const fut = MaybeAsNumber();
-    expectValue(fut, 'test', NaN);
-    expectValue(fut, [], NaN);
-    expectValue(fut, ['test'], NaN);
-    expectValue(fut, {}, NaN);
-    expectValue(fut, NaN, NaN);
+    expectValue(fut, 'test', undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, ['test'], undefined);
+    expectValue(fut, {}, undefined);
+    expectValue(fut, NaN, undefined);
   });
 
   it('Date will be converted to number', () => {
@@ -145,8 +145,8 @@ describe('MaybeAsNumber', () => {
 
   it('null or undefined will be converted to NaN', () => {
     const fut = MaybeAsNumber();
-    expectValue(fut, null, NaN);
-    expectValue(fut, undefined, NaN);
+    expectValue(fut, null, undefined);
+    expectValue(fut, undefined, undefined);
   });
 
   it('incorrect type, null, undefined or NaN that cannot be converted will have default used', () => {

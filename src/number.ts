@@ -77,6 +77,33 @@ const coerce = (options?: AsNumberOptions) => (fn: (value: number) => Result<num
   };
 };
 
+const coerceMaybe = (options?: AsNumberOptions) => (fn: (value: number) => Result<number>) => {
+  return (value: unknown) => {
+    if (value === undefined) {
+      return { value: options?.default ?? undefined };
+    }
+    if (Array.isArray(value)) {
+      return { value: options?.default ?? undefined };
+    }
+    if (value === null) {
+      return { value: options && options.default !== undefined && options.default || Number.NaN };
+    }
+    let coerced = Number(value);
+    if (Number.isNaN(coerced)) {
+      return { value: options?.default ?? undefined };
+    }
+    if (options) {
+      if (options.min !== undefined && coerced < options.min) {
+        coerced = options.min;
+      }
+      if (options.max !== undefined && coerced > options.max) {
+        coerced = options.max;
+      }
+    }
+    return fn(coerced);
+  };
+};
+
 function validate(value: number, options: NumberOptions | undefined): IssueResult | undefined {
   if (!options) return undefined;
 
@@ -125,7 +152,7 @@ export function AsNumber(options?: AsNumberOptions): ValueProcessor<number> {
 
 export function MaybeAsNumber(options?: AsNumberOptions): ValueProcessor<number | undefined> {
   return {
-    process: maybe()(coerce(options)((value) => {
+    process: maybe()(coerceMaybe(options)((value) => {
       const result = validate(value, options);
       return result || { value };
     })),
