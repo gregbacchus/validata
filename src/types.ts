@@ -51,5 +51,5 @@ export interface IssueResult {
 }
 
 export interface ValueProcessor<T> {
-  process(value: any): Result<T> | undefined;
+  process(value: any): Result<T>;
 }

@@ -124,7 +124,7 @@ export function IsNumber(options?: NumberOptions): ValueProcessor<number> {
   return {
     process: requiredStrictType()((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     }),
   };
 }
@@ -136,7 +136,7 @@ export function MaybeNumber(options?: NumberOptions): ValueProcessor<number | un
         return { value: undefined };
       }
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     })),
   };
 }
@@ -145,7 +145,7 @@ export function AsNumber(options?: AsNumberOptions): ValueProcessor<number> {
   return {
     process: coerce(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     }),
   };
 }
@@ -154,7 +154,7 @@ export function MaybeAsNumber(options?: AsNumberOptions): ValueProcessor<number 
   return {
     process: maybe()(coerceMaybe(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     })),
   };
 }

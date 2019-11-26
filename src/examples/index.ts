@@ -2,6 +2,7 @@ import { IsArray } from '../array';
 import { IsNumber } from '../number';
 import { IsObject } from '../object';
 import { AsString, IsString, MaybeString } from '../string';
+import { isIssue } from '../types';
 
 interface Sample {
   myString: string;
@@ -32,3 +33,11 @@ console.log(sample2.process([]));
 console.log(JSON.stringify(sample2.process([1])));
 console.log(sample2.process([102, 123]));
 console.log(sample2.process([new Date()]));
+
+const input = [new Date()];
+const result = sample2.process(input);
+if (isIssue(result)) {
+  console.log('Issues', result.issues);
+} else {
+  console.log('Accepted value', result.value);
+}

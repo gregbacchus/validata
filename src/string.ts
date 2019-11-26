@@ -59,7 +59,7 @@ export function IsString(options?: StringOptions): ValueProcessor<string> {
         return { issues: [Issue.from(value, 'incorrect-type')] };
       }
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     },
   };
 }
@@ -71,7 +71,7 @@ export function MaybeString(options?: StringOptions): ValueProcessor<string | un
         return { value: undefined };
       }
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     }),
   };
 }
@@ -80,7 +80,7 @@ export function AsString(options?: StringOptions): ValueProcessor<string> {
   return {
     process: coerce(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     }),
   };
 }
@@ -89,7 +89,7 @@ export function MaybeAsString(options?: StringOptions): ValueProcessor<string | 
   return {
     process: maybe()(coerce(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     })),
   };
 }

@@ -93,7 +93,7 @@ export function IsArray<T>(options?: ArrayOptions<T>): ValueProcessor<T[]> {
   return {
     process: isArray<T>()(children(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     })),
   };
 }
@@ -102,7 +102,7 @@ export function MaybeArray<T>(options?: ArrayOptions<T>): ValueProcessor<T[] | u
   return {
     process: maybeArray<T>()(children(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     })),
   };
 }

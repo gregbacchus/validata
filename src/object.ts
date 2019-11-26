@@ -97,7 +97,7 @@ export function IsObject<T extends object>(options?: ObjectOptions<T>): ValuePro
   return {
     process: isObject<T>()(children(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     })),
   };
 }
@@ -106,7 +106,7 @@ export function MaybeObject<T extends object>(options?: ObjectOptions<T>): Value
   return {
     process: maybeObject<T>()(children(options)((value) => {
       const result = validate(value, options);
-      return result || { value };
+      return result ?? { value };
     })),
   };
 }
