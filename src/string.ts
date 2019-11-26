@@ -1,9 +1,17 @@
 import { Issue, IssueResult, Result, ValueProcessor } from './types';
 
+interface StringPadding {
+  length: number;
+  padWith: string;
+}
+
 interface StringOptions {
   regex?: RegExp;
   maxLength?: number;
   minLength?: number;
+  padStart?: StringPadding;
+  padEnd?: StringPadding;
+  trim?: 'start' | 'end' | 'both' | 'none';
   validator?: (value: string, options?: any) => boolean;
   validatorOptions?: any;
 }
@@ -43,6 +51,23 @@ const coerce = (options?: StringOptions) => (fn: (value: string) => Result<strin
     if (options) {
       if (options.maxLength !== undefined && coerced.length > options.maxLength) {
         coerced = coerced.slice(0, options.maxLength);
+      }
+      switch (options.trim) {
+        case 'start':
+          coerced = coerced.trimStart();
+          break;
+        case 'end':
+          coerced = coerced.trimRight();
+          break;
+        case 'both':
+          coerced = coerced.trim();
+          break;
+      }
+      if (options.padStart && coerced.length < options.padStart.length) {
+        coerced = coerced.padStart(options.padStart.length, options.padStart.padWith);
+      }
+      if (options.padEnd && coerced.length < options.padEnd.length) {
+        coerced = coerced.padEnd(options.padEnd.length, options.padEnd.padWith);
       }
     }
     return fn(coerced);
