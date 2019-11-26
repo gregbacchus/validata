@@ -1,7 +1,7 @@
-import { IsArray } from './array';
-import { IsNumber } from './number';
-import { IsObject } from './object';
-import { AsString, IsString, MaybeString } from './string';
+import { IsArray } from '../array';
+import { IsNumber } from '../number';
+import { IsObject } from '../object';
+import { AsString, IsString, MaybeString } from '../string';
 
 interface Sample {
   myString: string;
