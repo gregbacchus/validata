@@ -52,6 +52,29 @@ Outputs:
 
 ## API
 
+Work is done by a typed `ValueProcessor`, as returned by`IsObject<T>()` or `AsNumber()`.
+
+```typescript
+interface ValueProcessor<T> {
+  process(value: any): Result<T>;
+}
+```
+
+The `process()` method returns a `Result<T>`.The `Result` is either a list of issues
+(meaning validation failures) or the accepted value (it may be coerced/altered from the original).
+
+```typescript
+type Result<T> = ValueResult<T> | IssueResult;
+
+interface ValueResult<T> {
+  value: T;
+}
+
+interface IssueResult {
+  issues: Issue[];
+}
+```
+
 ## Naming conventions
 
 ### `Is...` e.g. `IsNumber`
