@@ -86,13 +86,15 @@ interface IssueResult {
 ### `Maybe...` e.g. `MaybeNumber`
 
 * if the value is of the type it will be accepted
-* otherwise it will be sanitized to undefined
+* `null` or `undefined` it will sanitized to undefined
+* otherwise it will cause an issue
 
 ### `As...` e.g. `AsNumber`
 
 * if the value is of the type it will be accepted
+* `null` or `undefined` converted to default, if provided, or cause an issue
 * if the value can be converted to the type, it will be converted and used
-* if the value is cannot be converted or is `null` or `undefined`, the default will be used if provided
+* if the value is cannot be converted the default will be used if provided
 * otherwise it will cause an issue
 
 ### `MaybeAs...` e.g. `MaybeAsNumber`

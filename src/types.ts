@@ -53,3 +53,9 @@ export interface IssueResult {
 export interface ValueProcessor<T> {
   process(value: any): Result<T>;
 }
+
+export type Definitely<T, O> = (options?: O) => (fn: (value: unknown) => Result<T>) => (value: unknown) => Result<T>;
+export type Maybe<T, O> = (options?: O) => (fn: (value: unknown) => Result<T>) => (value: unknown) => Result<T | undefined>;
+export type Is<T, O> = (options?: O) => (fn: (value: T) => Result<T>) => (value: unknown) => Result<T>;
+export type As<T, O> = (options?: O) => (fn: (value: T) => Result<T>) => (value: unknown) => Result<T>;
+export type Coerce<T, O> = (options?: O) => (fn: (value: T) => Result<T>) => (value: T) => Result<T>;

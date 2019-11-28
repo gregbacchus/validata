@@ -58,14 +58,18 @@ export function expectIssue<T>(fut: ValueProcessor<T>, value: any, reason: strin
 export function expectSuccess<T>(fut: ValueProcessor<T>, value: any) {
   const result = fut.process(value);
   expect(result).toBeDefined();
-  expect(isIssue(result)).toBeFalsy();
+  if (isIssue(result)) {
+    fail(`Unexpected issue: ${JSON.stringify(result)}`);
+  }
 }
 
 export function expectValue<T>(fut: ValueProcessor<T>, value: any, coerced: T) {
   const result = fut.process(value);
   expect(result).toBeDefined();
-  expect(isIssue(result)).toBeFalsy();
-  if (result && !isIssue(result)) {
+  if (isIssue(result)) {
+    fail(`Unexpected issue: ${JSON.stringify(result)}`);
+  }
+  if (result) {
     expect(result.value).toEqual(coerced);
   }
 }

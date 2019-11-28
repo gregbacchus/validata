@@ -1,22 +1,95 @@
-import { Issue, IssueResult, Result, ValueProcessor } from './types';
+import { As, Coerce, Definitely, Is, Issue, IssueResult, Maybe, ValueProcessor } from './types';
 
 interface StringPadding {
   length: number;
   padWith: string;
 }
 
-interface StringOptions {
-  regex?: RegExp;
-  maxLength?: number;
-  minLength?: number;
+interface DefinitelyOptions { }
+
+interface MaybeOptions {
+  incorrectTypeToUndefined?: boolean;
+}
+
+interface IsOptions { }
+
+interface AsOptions { }
+
+interface CoerceOptions {
+  limitLength?: number;
   padStart?: StringPadding;
   padEnd?: StringPadding;
   trim?: 'start' | 'end' | 'both' | 'none';
+}
+
+interface ValidationOptions {
+  regex?: RegExp;
+  maxLength?: number;
+  minLength?: number;
   validator?: (value: string, options?: any) => boolean;
   validatorOptions?: any;
 }
 
-function validate(value: string, options: StringOptions | undefined): IssueResult | undefined {
+const definitely: Definitely<string, DefinitelyOptions> = (_options?) => (fn) => (value) => {
+  if (value === undefined || value === null) {
+    return { issues: [Issue.from(value, 'not-defined')] };
+  }
+  return fn(value);
+};
+
+const maybe: Maybe<string, MaybeOptions> = (options?) => (fn) => (value) => {
+  if (value === undefined || value === null) {
+    return { value: undefined };
+  }
+
+  if (options?.incorrectTypeToUndefined) {
+    if (typeof value !== 'string') {
+      return { value: undefined };
+    }
+  }
+
+  return fn(value);
+};
+
+const is: Is<string, IsOptions> = (_options?) => (fn) => (value) => {
+  if (typeof value !== 'string') {
+    return { issues: [Issue.from(value, 'incorrect-type')] };
+  }
+  return fn(value);
+};
+
+const as: As<string, AsOptions> = (_options?) => (fn) => (value) => {
+  return fn(String(value));
+};
+
+const coerce: Coerce<string, CoerceOptions> = (options?) => (fn) => (value) => {
+  if (!options) return fn(value);
+
+  let coerced = value;
+  if (options.limitLength !== undefined && coerced.length > options.limitLength) {
+    coerced = coerced.slice(0, options.limitLength);
+  }
+  switch (options.trim) {
+    case 'start':
+      coerced = coerced.trimStart();
+      break;
+    case 'end':
+      coerced = coerced.trimRight();
+      break;
+    case 'both':
+      coerced = coerced.trim();
+      break;
+  }
+  if (options.padStart && coerced.length < options.padStart.length) {
+    coerced = coerced.padStart(options.padStart.length, options.padStart.padWith);
+  }
+  if (options.padEnd && coerced.length < options.padEnd.length) {
+    coerced = coerced.padEnd(options.padEnd.length, options.padEnd.padWith);
+  }
+  return fn(coerced);
+};
+
+function validate(value: string, options?: ValidationOptions): IssueResult | undefined {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };
@@ -35,86 +108,42 @@ function validate(value: string, options: StringOptions | undefined): IssueResul
   return result.issues.length ? result : undefined;
 }
 
-const maybe = () => (fn: (value: string) => Result<string | undefined>) => {
-  return (value: any) => {
-    if (value === undefined || value === null) {
-      return { value: undefined };
-    }
-
-    return fn(value);
-  };
-};
-
-const coerce = (options?: StringOptions) => (fn: (value: string) => Result<string>) => {
-  return (value: any) => {
-    let coerced = String(value);
-    if (options) {
-      if (options.maxLength !== undefined && coerced.length > options.maxLength) {
-        coerced = coerced.slice(0, options.maxLength);
-      }
-      switch (options.trim) {
-        case 'start':
-          coerced = coerced.trimStart();
-          break;
-        case 'end':
-          coerced = coerced.trimRight();
-          break;
-        case 'both':
-          coerced = coerced.trim();
-          break;
-      }
-      if (options.padStart && coerced.length < options.padStart.length) {
-        coerced = coerced.padStart(options.padStart.length, options.padStart.padWith);
-      }
-      if (options.padEnd && coerced.length < options.padEnd.length) {
-        coerced = coerced.padEnd(options.padEnd.length, options.padEnd.padWith);
-      }
-    }
-    return fn(coerced);
-  };
-};
-
-export function IsString(options?: StringOptions): ValueProcessor<string> {
+type IsStringOptions = DefinitelyOptions & IsOptions & CoerceOptions & ValidationOptions;
+export function IsString(options?: IsStringOptions): ValueProcessor<string> {
   return {
-    process: (value) => {
-      if (value === undefined || value === null) {
-        return { issues: [Issue.from(value, 'not-defined')] };
-      }
-      if (typeof value !== 'string') {
-        return { issues: [Issue.from(value, 'incorrect-type')] };
-      }
+    process: definitely(options)(is(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
-    },
+    }))),
   };
 }
 
-export function MaybeString(options?: StringOptions): ValueProcessor<string | undefined> {
+type MaybeStringOptions = MaybeOptions & IsOptions & CoerceOptions & ValidationOptions;
+export function MaybeString(options?: MaybeStringOptions): ValueProcessor<string | undefined> {
   return {
-    process: maybe()((value) => {
-      if (typeof value !== 'string') {
-        return { value: undefined };
-      }
+    process: maybe(options)(is(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
-    }),
+    }))),
   };
 }
 
-export function AsString(options?: StringOptions): ValueProcessor<string> {
+type AsStringOptions = DefinitelyOptions & AsOptions & CoerceOptions & ValidationOptions;
+export function AsString(options?: AsStringOptions): ValueProcessor<string> {
   return {
-    process: coerce(options)((value) => {
+    process: definitely(options)(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
-    }),
+    }))),
   };
 }
 
-export function MaybeAsString(options?: StringOptions): ValueProcessor<string | undefined> {
+type MaybeAsStringOptions = MaybeOptions & AsOptions & CoerceOptions & ValidationOptions;
+export function MaybeAsString(options?: MaybeAsStringOptions): ValueProcessor<string | undefined> {
   return {
-    process: maybe()(coerce(options)((value) => {
+    process: maybe(options)(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
-    })),
+    }))),
   };
 }

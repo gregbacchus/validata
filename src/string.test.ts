@@ -60,6 +60,16 @@ describe('MaybeString', () => {
     const fut = MaybeString();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
+    expectIssue(fut, 0, 'incorrect-type');
+    expectIssue(fut, new Date(), 'incorrect-type');
+    expectIssue(fut, [], 'incorrect-type');
+    expectIssue(fut, {}, 'incorrect-type');
+  });
+
+  it('will handle non-string', () => {
+    const fut = MaybeString({ incorrectTypeToUndefined: true });
+    expectValue(fut, null, undefined);
+    expectValue(fut, undefined, undefined);
     expectValue(fut, 0, undefined);
     expectValue(fut, new Date(), undefined);
     expectValue(fut, [], undefined);
@@ -119,6 +129,16 @@ describe('AsString', () => {
     expectValue(fut, {}, '[object Object]');
   });
 
+  it('will handle non-string with default', () => {
+    const fut = AsString({ default: 'foo' });
+    expectValue(fut, null, 'foo');
+    expectValue(fut, undefined, 'foo');
+    expectValue(fut, 0, '0');
+    expectValue(fut, new Date(1562057445845), 'Tue Jul 02 2019 20:50:45 GMT+1200 (New Zealand Standard Time)');
+    expectValue(fut, [], '');
+    expectValue(fut, {}, '[object Object]');
+  });
+
   it('will handle strings', () => {
     const fut = AsString();
     expectSuccess(fut, '');
@@ -136,9 +156,52 @@ describe('AsString', () => {
   it('will check regex', () => {
     const fut = AsString({ regex: /^[0-9]{3}$/ });
     expectSuccess(fut, '123');
+    expectSuccess(fut, 654);
     expectIssue(fut, 'as', 'regex');
     expectIssue(fut, '12', 'regex');
     expectIssue(fut, '12345', 'regex');
+  });
+
+  it('will trim', () => {
+    const fut = AsString({ trim: 'both' });
+    expectValue(fut, '  123  ', '123');
+    expectValue(fut, '123  ', '123');
+    expectValue(fut, '  123', '123');
+    expectValue(fut, '123', '123');
+  });
+
+  it('will trim start', () => {
+    const fut = AsString({ trim: 'start' });
+    expectValue(fut, '  123  ', '123  ');
+    expectValue(fut, '123  ', '123  ');
+    expectValue(fut, '  123', '123');
+    expectValue(fut, '123', '123');
+  });
+
+  it('will trim end', () => {
+    const fut = AsString({ trim: 'end' });
+    expectValue(fut, '  123  ', '  123');
+    expectValue(fut, '123  ', '123');
+    expectValue(fut, '  123', '  123');
+    expectValue(fut, '123', '123');
+  });
+
+  it('will pad start', () => {
+    const fut = AsString({ padStart: { length: 6, padWith: '-' } });
+    expectValue(fut, '', '------');
+    expectValue(fut, 'A', '-----A');
+    expectValue(fut, 'ABCDE', '-ABCDE');
+    expectValue(fut, 'ABCDEF', 'ABCDEF');
+    expectValue(fut, 'ABCDEFGHI', 'ABCDEFGHI');
+  });
+
+  it('will pad end', () => {
+    const fut = AsString({ padEnd: { length: 6, padWith: '-' } });
+    expectValue(fut, '', '------');
+    expectValue(fut, 'A', 'A-----');
+    expectValue(fut, 'ABCDE', 'ABCDE-');
+    expectValue(fut, 'ABCDEF', 'ABCDEF');
+    expectValue(fut, 'ABCDEFGHI', 'ABCDEFGHI');
   });
 
   it('will check custom validator', () => {
