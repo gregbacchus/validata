@@ -54,8 +54,11 @@ export interface ValueProcessor<T> {
   process(value: any): Result<T>;
 }
 
-export type Definitely<T, O> = (options?: O) => (fn: (value: unknown) => Result<T>) => (value: unknown) => Result<T>;
-export type Maybe<T, O> = (options?: O) => (fn: (value: unknown) => Result<T>) => (value: unknown) => Result<T | undefined>;
-export type Is<T, O> = (options?: O) => (fn: (value: T) => Result<T>) => (value: unknown) => Result<T>;
-export type As<T, O> = (options?: O) => (fn: (value: T) => Result<T>) => (value: unknown) => Result<T>;
-export type Coerce<T, O> = (options?: O) => (fn: (value: T) => Result<T>) => (value: T) => Result<T>;
+export type Next<T, R> = (value: T) => Result<R>;
+
+export type UndefinedHandler<T, O> = (options?: O) => () => Result<T> | undefined;
+export type Definitely<T, O> = (options?: O, undefinedHandler?: () => Result<T> | undefined) => (next: Next<unknown, T>) => (value: unknown) => Result<T>;
+export type Maybe<T, O> = (options?: O, undefinedHandler?: () => Result<T> | undefined) => (next: Next<unknown, T>) => (value: unknown) => Result<T | undefined>;
+export type Is<T, O> = (options?: O) => (next: Next<T, T>) => (value: unknown) => Result<T>;
+export type As<T, O> = (options?: O) => (next: Next<T, T>) => (value: unknown) => Result<T>;
+export type Coerce<T, O> = (options?: O) => (next: Next<T, T>) => (value: T) => Result<T>;

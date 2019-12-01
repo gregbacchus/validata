@@ -51,7 +51,7 @@ function process<T extends object>(contract: Contract<T>, target: T): Result<T> 
   return issues.length ? { issues } : { value: output };
 }
 
-const isObject = <T>() => (fn: (value: T) => Result<T>) => {
+const isObject = <T>() => (next: (value: T) => Result<T>) => {
   return (value: any) => {
     if (value === undefined || value === null) {
       return { issues: [Issue.from(value, 'not-defined')] };
@@ -59,11 +59,11 @@ const isObject = <T>() => (fn: (value: T) => Result<T>) => {
     if (typeof value !== 'object' || Array.isArray(value) || value instanceof Date) {
       return { issues: [Issue.from(value, 'incorrect-type')] };
     }
-    return fn(value);
+    return next(value);
   };
 };
 
-const maybeObject = <T>() => (fn: (value: T) => Result<T | undefined>) => {
+const maybeObject = <T>() => (next: (value: T) => Result<T | undefined>) => {
   return (value: any) => {
     if (value === undefined || value === null) {
       return { value: undefined };
@@ -71,13 +71,13 @@ const maybeObject = <T>() => (fn: (value: T) => Result<T | undefined>) => {
     if (typeof value !== 'object' || Array.isArray(value) || value instanceof Date) {
       return { value: undefined };
     }
-    return fn(value);
+    return next(value);
   };
 };
 
-const children = <T>(options?: ObjectOptions<T>) => (fn: (value: T) => Result<T>) => {
+const children = <T>(options?: ObjectOptions<T>) => (next: (value: T) => Result<T>) => {
   return (value: any) => {
-    if (!options) return fn(value);
+    if (!options) return next(value);
 
     let coerced = value;
     if (options.contract) {
@@ -89,7 +89,7 @@ const children = <T>(options?: ObjectOptions<T>) => (fn: (value: T) => Result<T>
         coerced = result.value;
       }
     }
-    return fn(coerced);
+    return next(coerced);
   };
 };
 

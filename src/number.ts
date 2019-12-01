@@ -11,7 +11,7 @@ interface AsNumberOptions extends NumberOptions {
   default?: number;
 }
 
-const requiredStrictType = () => (fn: (value: number) => Result<number>) => {
+const requiredStrictType = () => (next: (value: number) => Result<number>) => {
   return (value: unknown) => {
     if (value === undefined || value === null) {
       return { issues: [Issue.from(value, 'not-defined')] };
@@ -23,14 +23,14 @@ const requiredStrictType = () => (fn: (value: number) => Result<number>) => {
       return { issues: [Issue.from(value, 'not-a-number')] };
     }
 
-    return fn(value);
+    return next(value);
   };
 };
 
-const strictType = () => (fn: (value: number | undefined) => Result<number | undefined>) => {
+const strictType = () => (next: (value: number | undefined) => Result<number | undefined>) => {
   return (value: unknown) => {
     if (value === undefined || value === null) {
-      return fn(undefined);
+      return next(undefined);
     }
     if (typeof value !== 'number') {
       return { issues: [Issue.from(value, 'incorrect-type')] };
@@ -39,21 +39,21 @@ const strictType = () => (fn: (value: number | undefined) => Result<number | und
       return { issues: [Issue.from(value, 'not-a-number')] };
     }
 
-    return fn(value);
+    return next(value);
   };
 };
 
-const maybe = () => (fn: (value: unknown) => Result<number | undefined>) => {
+const maybe = () => (next: (value: unknown) => Result<number | undefined>) => {
   return (value: unknown) => {
     if (value === undefined || value === null || typeof value === 'number' && Number.isNaN(value)) {
-      return fn(undefined);
+      return next(undefined);
     }
 
-    return fn(value);
+    return next(value);
   };
 };
 
-const coerce = (options?: AsNumberOptions) => (fn: (value: number) => Result<number>) => {
+const coerce = (options?: AsNumberOptions) => (next: (value: number) => Result<number>) => {
   return (value: unknown) => {
     if (Array.isArray(value)) {
       return { value: options && options.default !== undefined && options.default || Number.NaN };
@@ -73,11 +73,11 @@ const coerce = (options?: AsNumberOptions) => (fn: (value: number) => Result<num
         coerced = options.max;
       }
     }
-    return fn(coerced);
+    return next(coerced);
   };
 };
 
-const coerceMaybe = (options?: AsNumberOptions) => (fn: (value: number) => Result<number>) => {
+const coerceMaybe = (options?: AsNumberOptions) => (next: (value: number) => Result<number>) => {
   return (value: unknown) => {
     if (value === undefined) {
       return { value: options?.default ?? undefined };
@@ -100,7 +100,7 @@ const coerceMaybe = (options?: AsNumberOptions) => (fn: (value: number) => Resul
         coerced = options.max;
       }
     }
-    return fn(coerced);
+    return next(coerced);
   };
 };
 

@@ -31,7 +31,7 @@ function validate<T>(value: T[], options: ArrayOptions<T> | undefined) {
   return result.issues.length ? result : undefined;
 }
 
-const isArray = <T>() => (fn: (value: T[]) => Result<T[]>) => {
+const isArray = <T>() => (next: (value: T[]) => Result<T[]>) => {
   return (value: any) => {
     if (value === undefined || value === null) {
       return { issues: [Issue.from(value, 'not-defined')] };
@@ -39,11 +39,11 @@ const isArray = <T>() => (fn: (value: T[]) => Result<T[]>) => {
     if (!Array.isArray(value)) {
       return { issues: [Issue.from(value, 'incorrect-type')] };
     }
-    return fn(value);
+    return next(value);
   };
 };
 
-const maybeArray = <T>() => (fn: (value: T[]) => Result<T[] | undefined>) => {
+const maybeArray = <T>() => (next: (value: T[]) => Result<T[] | undefined>) => {
   return (value: unknown) => {
     if (value === undefined || value === null) {
       return { value: undefined };
@@ -51,14 +51,14 @@ const maybeArray = <T>() => (fn: (value: T[]) => Result<T[] | undefined>) => {
     if (!Array.isArray(value)) {
       return { value: undefined };
     }
-    return fn(value);
+    return next(value);
   };
 };
 
 const children = <T>(options?: ArrayOptions<T>) =>
-  (fn: (value: T[]) => Result<T[]>) =>
+  (next: (value: T[]) => Result<T[]>) =>
     (value: T[]): Result<T[]> => {
-      if (!options) return fn(value);
+      if (!options) return next(value);
 
       // check items
       const results = value.map((item, index) =>
@@ -86,7 +86,7 @@ const children = <T>(options?: ArrayOptions<T>) =>
       }
 
       // all good
-      return fn(results.map((item) => isValue(item.processed) ? item.processed.value : item.originalValue));
+      return next(results.map((item) => isValue(item.processed) ? item.processed.value : item.originalValue));
     };
 
 export function IsArray<T>(options?: ArrayOptions<T>): ValueProcessor<T[]> {
