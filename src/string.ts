@@ -32,7 +32,7 @@ interface ValidationOptions {
   validatorOptions?: any;
 }
 
-const asUndefined: UndefinedHandler<string, AsOptions> = (options) => () => {
+const asDefault: UndefinedHandler<string, AsOptions> = (options) => () => {
   if (options?.default) {
     return { value: options.default };
   }
@@ -140,7 +140,7 @@ export function MaybeString(options?: MaybeStringOptions): ValueProcessor<string
 type AsStringOptions = DefinitelyOptions & AsOptions & CoerceOptions & ValidationOptions;
 export function AsString(options?: AsStringOptions): ValueProcessor<string> {
   return {
-    process: definitely(options, asUndefined(options))(as(options)(coerce(options)((value) => {
+    process: definitely(options, asDefault(options))(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
@@ -150,7 +150,7 @@ export function AsString(options?: AsStringOptions): ValueProcessor<string> {
 type MaybeAsStringOptions = MaybeOptions & AsOptions & CoerceOptions & ValidationOptions;
 export function MaybeAsString(options?: MaybeAsStringOptions): ValueProcessor<string | undefined> {
   return {
-    process: maybe(options, asUndefined(options))(as(options)(coerce(options)((value) => {
+    process: maybe(options, asDefault(options))(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
