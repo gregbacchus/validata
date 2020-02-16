@@ -1,20 +1,9 @@
-import { As, Coerce, Definitely, Is, Issue, IssueResult, Maybe, UndefinedHandler, ValueProcessor } from './types';
+import { Check, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck } from './common';
+import { Coerce, Issue, IssueResult } from './types';
 
 interface StringPadding {
   length: number;
   padWith: string;
-}
-
-interface DefinitelyOptions { }
-
-interface MaybeOptions {
-  incorrectTypeToUndefined?: boolean;
-}
-
-interface IsOptions { }
-
-interface AsOptions {
-  default?: string;
 }
 
 interface CoerceOptions {
@@ -32,43 +21,12 @@ interface ValidationOptions {
   validatorOptions?: any;
 }
 
-const asDefault: UndefinedHandler<string, AsOptions> = (options) => () => {
-  if (options?.default) {
-    return { value: options.default };
-  }
-  return undefined;
+const check: Check<string> = (value): value is string => {
+  return typeof value === 'string';
 };
 
-const definitely: Definitely<string, DefinitelyOptions> = (_options, undefinedHandler) => (next) => (value) => {
-  if (value === undefined || value === null) {
-    return (undefinedHandler && undefinedHandler()) ?? { issues: [Issue.from(value, 'not-defined')] };
-  }
-  return next(value);
-};
-
-const maybe: Maybe<string, MaybeOptions> = (options, undefinedHandler) => (next) => (value) => {
-  if (value === undefined || value === null) {
-    return (undefinedHandler && undefinedHandler()) ?? { value: undefined };
-  }
-
-  if (options?.incorrectTypeToUndefined) {
-    if (typeof value !== 'string') {
-      return { value: undefined };
-    }
-  }
-
-  return next(value);
-};
-
-const is: Is<string, IsOptions> = (_options) => (next) => (value) => {
-  if (typeof value !== 'string') {
-    return { issues: [Issue.from(value, 'incorrect-type')] };
-  }
-  return next(value);
-};
-
-const as: As<string, AsOptions> = (_options) => (next) => (value) => {
-  return next(String(value));
+const convert: Convert<string> = (value) => {
+  return String(value);
 };
 
 const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => {
@@ -117,42 +75,7 @@ const validate = (value: string, options?: ValidationOptions): IssueResult | und
   return result.issues.length ? result : undefined;
 };
 
-type IsStringOptions = DefinitelyOptions & IsOptions & CoerceOptions & ValidationOptions;
-export const IsString = (options?: IsStringOptions): ValueProcessor<string> => {
-  return {
-    process: definitely(options)(is(options)(coerce(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    }))),
-  };
-};
-
-type MaybeStringOptions = MaybeOptions & IsOptions & CoerceOptions & ValidationOptions;
-export const MaybeString = (options?: MaybeStringOptions): ValueProcessor<string | undefined> => {
-  return {
-    process: maybe(options)(is(options)(coerce(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    }))),
-  };
-};
-
-type AsStringOptions = DefinitelyOptions & AsOptions & CoerceOptions & ValidationOptions;
-export const AsString = (options?: AsStringOptions): ValueProcessor<string> => {
-  return {
-    process: definitely(options, asDefault(options))(as(options)(coerce(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    }))),
-  };
-};
-
-type MaybeAsStringOptions = MaybeOptions & AsOptions & CoerceOptions & ValidationOptions;
-export const MaybeAsString = (options?: MaybeAsStringOptions): ValueProcessor<string | undefined> => {
-  return {
-    process: maybe(options, asDefault(options))(as(options)(coerce(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    }))),
-  };
-};
+export const isString = createIsCheck(check, coerce, validate);
+export const maybeString = createMaybeCheck(check, coerce, validate);
+export const asString = createAsCheck(convert, coerce, validate);
+export const maybeAsString = createMaybeAsCheck(check, convert, coerce, validate);

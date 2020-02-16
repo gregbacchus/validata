@@ -1,6 +1,6 @@
 import { AsNumber, IsNumber } from './number';
 import { IsObject, MaybeObject } from './object';
-import { AsString, IsString } from './string';
+import { asString, isString } from './string';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 
 interface MyObject {
@@ -34,7 +34,7 @@ describe('IsObject', () => {
     const fut = IsObject<MyObject>({
       contract: {
         a: AsNumber({ min: 25 }),
-        b: AsString(),
+        b: asString(),
       },
     });
     expectValue(fut, { a: 47, b: 'asd' }, { a: 47, b: 'asd' });
@@ -48,10 +48,10 @@ describe('IsObject', () => {
         o: IsObject({
           contract: {
             a: IsNumber(),
-            b: AsString(),
+            b: asString(),
           },
         }),
-        s: AsString(),
+        s: asString(),
       },
     });
     runTests(fut,
@@ -78,7 +78,7 @@ describe('IsObject', () => {
     const fut = IsObject<MyObject>({
       contract: {
         a: IsNumber({ min: 25 }),
-        b: IsString(),
+        b: isString(),
       },
     });
     expectValue(fut, { a: 47, b: 'asd' }, { a: 47, b: 'asd' });
@@ -87,7 +87,6 @@ describe('IsObject', () => {
     expectIssue(fut, {}, 'not-defined', ['a']);
     expectIssue(fut, {}, 'not-defined', ['b']);
   });
-
 });
 
 describe('MaybeObject', () => {
@@ -106,5 +105,4 @@ describe('MaybeObject', () => {
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });
   });
-
 });

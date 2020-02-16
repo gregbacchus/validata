@@ -1,10 +1,10 @@
 import validator from 'validator';
-import { AsString, IsString, MaybeAsString, MaybeString } from './string';
+import { asString, isString, maybeAsString, maybeString } from './string';
 import { expectIssue, expectSuccess, expectValue } from './test-helpers';
 
-describe('IsString', () => {
+describe('isString', () => {
   it('will handle non-string', () => {
-    const fut = IsString();
+    const fut = isString();
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
     expectIssue(fut, 0, 'incorrect-type');
@@ -14,21 +14,21 @@ describe('IsString', () => {
   });
 
   it('will handle strings', () => {
-    const fut = IsString();
+    const fut = isString();
     expectValue(fut, '', '');
     expectValue(fut, 'asd', 'asd');
     expectValue(fut, '123', '123');
   });
 
   it('will validate string length', () => {
-    const fut = IsString({ minLength: 2, maxLength: 5 });
+    const fut = isString({ minLength: 2, maxLength: 5 });
     expectValue(fut, 'asdf', 'asdf');
     expectIssue(fut, 'a', 'min-length');
     expectIssue(fut, 'asdfghjk', 'max-length');
   });
 
   it('will check regex', () => {
-    const fut = IsString({ regex: /^[0-9]{3}$/ });
+    const fut = isString({ regex: /^[0-9]{3}$/ });
     expectValue(fut, '123', '123');
     expectIssue(fut, 'as', 'regex');
     expectIssue(fut, '12', 'regex');
@@ -36,28 +36,28 @@ describe('IsString', () => {
   });
 
   it('will check custom validator', () => {
-    const fut = IsString({ validator: (value) => value === 'test' });
+    const fut = isString({ validator: (value) => value === 'test' });
     expectValue(fut, 'test', 'test');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = IsString({ validator: validator.isEmail });
+    const fut = isString({ validator: validator.isEmail });
     expectSuccess(fut, 'me@home.com');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = IsString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
+    const fut = isString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
     expectSuccess(fut, 'a');
     expectSuccess(fut, 's');
     expectIssue(fut, 'other', 'validator');
   });
 });
 
-describe('MaybeString', () => {
+describe('maybeString', () => {
   it('will handle non-string', () => {
-    const fut = MaybeString();
+    const fut = maybeString();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
     expectIssue(fut, 0, 'incorrect-type');
@@ -67,7 +67,7 @@ describe('MaybeString', () => {
   });
 
   it('will handle non-string', () => {
-    const fut = MaybeString({ incorrectTypeToUndefined: true });
+    const fut = maybeString({ incorrectTypeToUndefined: true });
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
     expectValue(fut, 0, undefined);
@@ -77,21 +77,21 @@ describe('MaybeString', () => {
   });
 
   it('will handle strings', () => {
-    const fut = MaybeString();
+    const fut = maybeString();
     expectSuccess(fut, '');
     expectSuccess(fut, 'asd');
     expectSuccess(fut, '123');
   });
 
   it('will validate string length', () => {
-    const fut = MaybeString({ minLength: 2, maxLength: 5 });
+    const fut = maybeString({ minLength: 2, maxLength: 5 });
     expectSuccess(fut, 'asdf');
     expectIssue(fut, 'a', 'min-length');
     expectIssue(fut, 'asdfghjk', 'max-length');
   });
 
   it('will check regex', () => {
-    const fut = MaybeString({ regex: /^[0-9]{3}$/ });
+    const fut = maybeString({ regex: /^[0-9]{3}$/ });
     expectSuccess(fut, '123');
     expectIssue(fut, 'as', 'regex');
     expectIssue(fut, '12', 'regex');
@@ -99,28 +99,28 @@ describe('MaybeString', () => {
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeString({ validator: (value) => value === 'test' });
+    const fut = maybeString({ validator: (value) => value === 'test' });
     expectSuccess(fut, 'test');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeString({ validator: validator.isEmail });
+    const fut = maybeString({ validator: validator.isEmail });
     expectSuccess(fut, 'me@home.com');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
+    const fut = maybeString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
     expectSuccess(fut, 'a');
     expectSuccess(fut, 's');
     expectIssue(fut, 'other', 'validator');
   });
 });
 
-describe('AsString', () => {
+describe('asString', () => {
   it('will handle non-string', () => {
-    const fut = AsString();
+    const fut = asString();
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
     expectValue(fut, 0, '0');
@@ -130,7 +130,7 @@ describe('AsString', () => {
   });
 
   it('will handle non-string with default', () => {
-    const fut = AsString({ default: 'foo' });
+    const fut = asString({ default: 'foo' });
     expectValue(fut, null, 'foo');
     expectValue(fut, undefined, 'foo');
     expectValue(fut, 0, '0');
@@ -140,27 +140,27 @@ describe('AsString', () => {
   });
 
   it('will handle strings', () => {
-    const fut = AsString();
+    const fut = asString();
     expectSuccess(fut, '');
     expectSuccess(fut, 'asd');
     expectSuccess(fut, '123');
   });
 
   it('will validate string length', () => {
-    const fut = AsString({ minLength: 2, maxLength: 5 });
+    const fut = asString({ minLength: 2, maxLength: 5 });
     expectSuccess(fut, 'asdf');
     expectIssue(fut, 'a', 'min-length');
     expectIssue(fut, 'asdfghjk', 'max-length');
   });
 
   it('will limit string length', () => {
-    const fut = AsString({ limitLength: 5 });
+    const fut = asString({ limitLength: 5 });
     expectSuccess(fut, 'asdf');
     expectValue(fut, 'asdfghjk', 'asdfg');
   });
 
   it('will check regex', () => {
-    const fut = AsString({ regex: /^[0-9]{3}$/ });
+    const fut = asString({ regex: /^[0-9]{3}$/ });
     expectValue(fut, '123', '123');
     expectValue(fut, 654, '654');
     expectIssue(fut, 'as', 'regex');
@@ -169,7 +169,7 @@ describe('AsString', () => {
   });
 
   it('will trim', () => {
-    const fut = AsString({ trim: 'both' });
+    const fut = asString({ trim: 'both' });
     expectValue(fut, '  123  ', '123');
     expectValue(fut, '123  ', '123');
     expectValue(fut, '  123', '123');
@@ -177,7 +177,7 @@ describe('AsString', () => {
   });
 
   it('will trim start', () => {
-    const fut = AsString({ trim: 'start' });
+    const fut = asString({ trim: 'start' });
     expectValue(fut, '  123  ', '123  ');
     expectValue(fut, '123  ', '123  ');
     expectValue(fut, '  123', '123');
@@ -185,7 +185,7 @@ describe('AsString', () => {
   });
 
   it('will trim end', () => {
-    const fut = AsString({ trim: 'end' });
+    const fut = asString({ trim: 'end' });
     expectValue(fut, '  123  ', '  123');
     expectValue(fut, '123  ', '123');
     expectValue(fut, '  123', '  123');
@@ -193,7 +193,7 @@ describe('AsString', () => {
   });
 
   it('will pad start', () => {
-    const fut = AsString({ padStart: { length: 6, padWith: '-' } });
+    const fut = asString({ padStart: { length: 6, padWith: '-' } });
     expectValue(fut, '', '------');
     expectValue(fut, 'A', '-----A');
     expectValue(fut, 'ABCDE', '-ABCDE');
@@ -202,7 +202,7 @@ describe('AsString', () => {
   });
 
   it('will pad end', () => {
-    const fut = AsString({ padEnd: { length: 6, padWith: '-' } });
+    const fut = asString({ padEnd: { length: 6, padWith: '-' } });
     expectValue(fut, '', '------');
     expectValue(fut, 'A', 'A-----');
     expectValue(fut, 'ABCDE', 'ABCDE-');
@@ -211,28 +211,28 @@ describe('AsString', () => {
   });
 
   it('will check custom validator', () => {
-    const fut = AsString({ validator: (value) => value === 'test' });
+    const fut = asString({ validator: (value) => value === 'test' });
     expectSuccess(fut, 'test');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = AsString({ validator: validator.isEmail });
+    const fut = asString({ validator: validator.isEmail });
     expectSuccess(fut, 'me@home.com');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = AsString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
+    const fut = asString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
     expectSuccess(fut, 'a');
     expectSuccess(fut, 's');
     expectIssue(fut, 'other', 'validator');
   });
 });
 
-describe('MaybeAsString', () => {
+describe('maybeAsString', () => {
   it('will handle non-string', () => {
-    const fut = MaybeAsString();
+    const fut = maybeAsString();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
     expectValue(fut, 0, '0');
@@ -242,7 +242,7 @@ describe('MaybeAsString', () => {
   });
 
   it('will handle non-string with default', () => {
-    const fut = MaybeAsString({ default: 'foo' });
+    const fut = maybeAsString({ default: 'foo' });
     expectValue(fut, null, 'foo');
     expectValue(fut, undefined, 'foo');
     expectValue(fut, 0, '0');
@@ -252,27 +252,27 @@ describe('MaybeAsString', () => {
   });
 
   it('will handle strings', () => {
-    const fut = MaybeAsString();
+    const fut = maybeAsString();
     expectSuccess(fut, '');
     expectSuccess(fut, 'asd');
     expectSuccess(fut, '123');
   });
 
   it('will validate string length', () => {
-    const fut = MaybeAsString({ minLength: 2, maxLength: 5 });
+    const fut = maybeAsString({ minLength: 2, maxLength: 5 });
     expectSuccess(fut, 'asdf');
     expectIssue(fut, 'a', 'min-length');
     expectIssue(fut, 'asdfghjk', 'max-length');
   });
 
   it('will limit string length', () => {
-    const fut = MaybeAsString({ limitLength: 5 });
+    const fut = maybeAsString({ limitLength: 5 });
     expectSuccess(fut, 'asdf');
     expectValue(fut, 'asdfghjk', 'asdfg');
   });
 
   it('will check regex', () => {
-    const fut = MaybeAsString({ regex: /^[0-9]{3}$/ });
+    const fut = maybeAsString({ regex: /^[0-9]{3}$/ });
     expectSuccess(fut, '123');
     expectIssue(fut, 'as', 'regex');
     expectIssue(fut, '12', 'regex');
@@ -280,19 +280,19 @@ describe('MaybeAsString', () => {
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeAsString({ validator: (value) => value === 'test' });
+    const fut = maybeAsString({ validator: (value) => value === 'test' });
     expectSuccess(fut, 'test');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeAsString({ validator: validator.isEmail });
+    const fut = maybeAsString({ validator: validator.isEmail });
     expectSuccess(fut, 'me@home.com');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeAsString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
+    const fut = maybeAsString({ validator: validator.isIn, validatorOptions: ['a', 's'] });
     expectSuccess(fut, 'a');
     expectSuccess(fut, 's');
     expectIssue(fut, 'other', 'validator');

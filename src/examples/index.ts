@@ -1,7 +1,7 @@
 import { IsArray } from '../array';
 import { IsNumber } from '../number';
 import { IsObject } from '../object';
-import { AsString, IsString, MaybeString } from '../string';
+import { asString, isString, maybeString } from '../string';
 import { isIssue } from '../types';
 
 interface Sample {
@@ -12,9 +12,9 @@ interface Sample {
 
 const sample = IsObject<Sample>({
   contract: {
-    maybeString: MaybeString(),
-    myString: IsString(),
-    numericString: AsString(),
+    maybeString: maybeString(),
+    myString: isString(),
+    numericString: asString(),
   },
 });
 
