@@ -28,7 +28,7 @@
   },
   "scripts": {
     "lint": "npx tslint --project tsconfig.json",
-    "test": "npx jest",
+    "test": "npx jest --verbose",
     "build": "rm -rf dist && npx tsc --outDir dist --sourceMap",
     "prepublishOnly": "npm run build && npm version patch",
     "postpublish": "git push"
