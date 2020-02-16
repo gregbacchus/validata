@@ -55,10 +55,3 @@ export interface ValueProcessor<T> {
 }
 
 export type Next<T, R> = (value: T) => Result<R>;
-
-export type UndefinedHandler<T, O> = (options?: O) => () => Result<T> | undefined;
-export type Definitely<T, O> = (options?: O, undefinedHandler?: () => Result<T> | undefined) => (next: Next<unknown, T>) => (value: unknown) => Result<T>;
-export type Maybe<T, O> = (options?: O, undefinedHandler?: () => Result<T> | undefined) => (next: Next<unknown, T>) => (value: unknown) => Result<T | undefined>;
-export type Is<T, O> = (options?: O) => (next: Next<T, T>) => (value: unknown) => Result<T>;
-export type As<T, O> = (options?: O) => (next: Next<T, T>) => (value: unknown) => Result<T>;
-export type Coerce<T, O> = (options?: O) => (next: Next<T, T>) => (value: T) => Result<T>;

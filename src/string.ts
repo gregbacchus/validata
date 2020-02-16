@@ -1,5 +1,5 @@
-import { Check, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
-import { Coerce, Issue, IssueResult } from './types';
+import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { Issue, IssueResult } from './types';
 
 interface StringPadding {
   length: number;
