@@ -1,5 +1,5 @@
 import { IsArray } from '../array';
-import { IsNumber } from '../number';
+import { isNumber } from '../number';
 import { IsObject } from '../object';
 import { asString, isString, maybeString } from '../string';
 import { isIssue } from '../types';
@@ -25,7 +25,7 @@ console.log(sample.process({
 }));
 
 const sample2 = IsArray({
-  item: IsNumber({ min: 17 }),
+  item: isNumber({ min: 17 }),
   minLength: 1,
 });
 

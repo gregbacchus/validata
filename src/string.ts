@@ -1,4 +1,4 @@
-import { Check, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck } from './common';
+import { Check, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 import { Coerce, Issue, IssueResult } from './types';
 
 interface StringPadding {
@@ -56,7 +56,7 @@ const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => 
   return next(coerced);
 };
 
-const validate = (value: string, options?: ValidationOptions): IssueResult | undefined => {
+const validate: Validate<string, ValidationOptions> = (value, options) => {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };

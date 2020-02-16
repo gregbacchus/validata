@@ -27,9 +27,9 @@
     "url": "git@github.com:gregbacchus/validata.git"
   },
   "scripts": {
-    "lint": "npx tslint --project tsconfig.json",
-    "test": "npx jest --verbose",
-    "build": "rm -rf dist && npx tsc --outDir dist --sourceMap",
+    "lint": "node_modules/.bin/tslint --project tsconfig.json",
+    "test": "node_modules/.bin/jest --verbose",
+    "build": "rm -rf dist && node_modules/.bin/tsc --outDir dist --sourceMap",
     "prepublishOnly": "npm run build && npm version patch",
     "postpublish": "git push"
   },

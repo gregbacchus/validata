@@ -1,9 +1,9 @@
-import { AsNumber, IsNumber, MaybeAsNumber, MaybeNumber } from './number';
+import { asNumber, isNumber, maybeAsNumber, maybeNumber } from './number';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 
 describe('IsNumber', () => {
   it('incorrect type will cause an issue', () => {
-    const fut = IsNumber();
+    const fut = isNumber();
     runTests(fut,
       { input: 'test', issues: [{ reason: 'incorrect-type' }] },
       { input: new Date(), issues: [{ reason: 'incorrect-type' }] },
@@ -13,16 +13,16 @@ describe('IsNumber', () => {
   });
 
   it('null, undefined or NaN will cause an issue', () => {
-    const fut = IsNumber();
+    const fut = isNumber();
     runTests(fut,
       { input: null, issues: [{ reason: 'not-defined' }] },
       { input: undefined, issues: [{ reason: 'not-defined' }] },
-      { input: NaN, issues: [{ reason: 'not-a-number' }] },
+      { input: NaN, issues: [{ reason: 'incorrect-type' }] },
     );
   });
 
   it('will accept number', () => {
-    const fut = IsNumber();
+    const fut = isNumber();
     expectSuccess(fut, 123);
     expectSuccess(fut, 0);
     expectSuccess(fut, 1.23234);
@@ -30,14 +30,14 @@ describe('IsNumber', () => {
   });
 
   it('will validate range', () => {
-    const fut = IsNumber({ min: 2, max: 5 });
+    const fut = isNumber({ min: 2, max: 5 });
     expectSuccess(fut, 4);
     expectIssue(fut, 1, 'min');
     expectIssue(fut, 8, 'max');
   });
 
   it('will check custom validator', () => {
-    const fut = IsNumber({ validator: (value) => value === 7 });
+    const fut = isNumber({ validator: (value) => value === 7 });
     expectSuccess(fut, 7);
     expectIssue(fut, 2, 'validator');
   });
@@ -45,7 +45,7 @@ describe('IsNumber', () => {
 
 describe('MaybeNumber', () => {
   it('incorrect type will cause issue', () => {
-    const fut = MaybeNumber();
+    const fut = maybeNumber();
     expectIssue(fut, 'test', 'incorrect-type');
     expectIssue(fut, new Date(), 'incorrect-type');
     expectIssue(fut, [], 'incorrect-type');
@@ -53,14 +53,14 @@ describe('MaybeNumber', () => {
   });
 
   it('null, undefined or NaN will be coerced to undefined', () => {
-    const fut = MaybeNumber();
+    const fut = maybeNumber();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
     expectValue(fut, NaN, undefined);
   });
 
   it('will handle number', () => {
-    const fut = MaybeNumber();
+    const fut = maybeNumber();
     expectSuccess(fut, 123);
     expectSuccess(fut, 0);
     expectSuccess(fut, 1.23234);
@@ -68,33 +68,41 @@ describe('MaybeNumber', () => {
   });
 
   it('will validate range', () => {
-    const fut = MaybeNumber({ min: 2, max: 5 });
+    const fut = maybeNumber({ min: 2, max: 5 });
     expectSuccess(fut, 4);
     expectIssue(fut, 1, 'min');
     expectIssue(fut, 8, 'max');
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeNumber({ validator: (value) => value === 7 });
+    const fut = maybeNumber({ validator: (value) => value === 7 });
     expectSuccess(fut, 7);
     expectIssue(fut, 2, 'validator');
   });
 });
 
 describe('AsNumber', () => {
-  it('incorrect type will be converted to number', () => {
-    const fut = AsNumber();
-    expectValue(fut, null, NaN);
-    expectValue(fut, undefined, NaN);
-    expectValue(fut, 'test', NaN);
+  it('null or undefined will be an issue', () => {
+    const fut = asNumber();
+    expectIssue(fut, null, 'not-defined');
+    expectIssue(fut, undefined, 'not-defined');
+  });
+
+  it('incorrect type with no conversion will be an issue', () => {
+    const fut = asNumber();
+    expectIssue(fut, 'test', 'no-conversion');
+    expectIssue(fut, [], 'no-conversion');
+    expectIssue(fut, {}, 'no-conversion');
+    expectIssue(fut, NaN, 'no-conversion');
+  });
+
+  it('Date will be converted', () => {
+    const fut = asNumber();
     expectValue(fut, new Date(1562057445845), 1562057445845);
-    expectValue(fut, [], NaN);
-    expectValue(fut, {}, NaN);
-    expectValue(fut, NaN, NaN);
   });
 
   it('incorrect type that cannot be converted will have default used', () => {
-    const fut = AsNumber({ default: 17.54 });
+    const fut = asNumber({ default: 17.54 });
     expectValue(fut, 123.4, 123.4);
     expectValue(fut, null, 17.54);
     expectValue(fut, undefined, 17.54);
@@ -106,7 +114,7 @@ describe('AsNumber', () => {
   });
 
   it('will handle number', () => {
-    const fut = AsNumber();
+    const fut = asNumber();
     expectSuccess(fut, 123);
     expectSuccess(fut, 0);
     expectSuccess(fut, 1.23234);
@@ -114,15 +122,15 @@ describe('AsNumber', () => {
     expectSuccess(fut, '-1.23234');
   });
 
-  it('will validate range', () => {
-    const fut = AsNumber({ min: 2, max: 5 });
+  it('will coerce range', () => {
+    const fut = asNumber({ coerceMin: 2, coerceMax: 5 });
     expectSuccess(fut, 4);
     expectValue(fut, 1, 2);
     expectValue(fut, 8, 5);
   });
 
   it('will check custom validator', () => {
-    const fut = AsNumber({ validator: (value) => value === 7 });
+    const fut = asNumber({ validator: (value) => value === 7 });
     expectSuccess(fut, 7);
     expectIssue(fut, 2, 'validator');
   });
@@ -130,7 +138,7 @@ describe('AsNumber', () => {
 
 describe('MaybeAsNumber', () => {
   it('incorrect type will be converted to undefined', () => {
-    const fut = MaybeAsNumber();
+    const fut = maybeAsNumber();
     expectValue(fut, 'test', undefined);
     expectValue(fut, [], undefined);
     expectValue(fut, ['test'], undefined);
@@ -139,18 +147,18 @@ describe('MaybeAsNumber', () => {
   });
 
   it('Date will be converted to number', () => {
-    const fut = MaybeAsNumber();
+    const fut = maybeAsNumber();
     expectValue(fut, new Date(1562057445845), 1562057445845);
   });
 
   it('null or undefined will be converted to NaN', () => {
-    const fut = MaybeAsNumber();
+    const fut = maybeAsNumber();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
   });
 
   it('incorrect type, null, undefined or NaN that cannot be converted will have default used', () => {
-    const fut = MaybeAsNumber({ default: 17.54 });
+    const fut = maybeAsNumber({ default: 17.54 });
     expectValue(fut, 123.4, 123.4);
     expectValue(fut, null, 17.54);
     expectValue(fut, undefined, 17.54);
@@ -162,22 +170,22 @@ describe('MaybeAsNumber', () => {
   });
 
   it('will handle number', () => {
-    const fut = MaybeAsNumber();
+    const fut = maybeAsNumber();
     expectSuccess(fut, 123);
     expectSuccess(fut, 0);
     expectSuccess(fut, 1.23234);
     expectSuccess(fut, -1.23234);
   });
 
-  it('will validate range', () => {
-    const fut = MaybeAsNumber({ min: 2, max: 5 });
+  it('will coerce range', () => {
+    const fut = maybeAsNumber({ coerceMin: 2, coerceMax: 5 });
     expectSuccess(fut, 4);
     expectValue(fut, 1, 2);
     expectValue(fut, 8, 5);
   });
 
   it('will check custom validator', () => {
-    const fut = MaybeAsNumber({ validator: (value) => value === 7 });
+    const fut = maybeAsNumber({ validator: (value) => value === 7 });
     expectSuccess(fut, 7);
     expectIssue(fut, 2, 'validator');
   });

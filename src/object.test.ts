@@ -1,4 +1,4 @@
-import { AsNumber, IsNumber } from './number';
+import { asNumber, isNumber } from './number';
 import { IsObject, MaybeObject } from './object';
 import { asString, isString } from './string';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
@@ -33,7 +33,7 @@ describe('IsObject', () => {
   it('will process children', () => {
     const fut = IsObject<MyObject>({
       contract: {
-        a: AsNumber({ min: 25 }),
+        a: asNumber({ coerceMin: 25 }),
         b: asString(),
       },
     });
@@ -47,7 +47,7 @@ describe('IsObject', () => {
       contract: {
         o: IsObject({
           contract: {
-            a: IsNumber(),
+            a: isNumber(),
             b: asString(),
           },
         }),
@@ -77,7 +77,7 @@ describe('IsObject', () => {
   it('will process children', () => {
     const fut = IsObject<MyObject>({
       contract: {
-        a: IsNumber({ min: 25 }),
+        a: isNumber({ min: 25 }),
         b: isString(),
       },
     });

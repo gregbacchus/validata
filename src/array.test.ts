@@ -1,5 +1,5 @@
 import { IsArray, MaybeArray } from './array';
-import { IsNumber } from './number';
+import { isNumber } from './number';
 // import { AsString, IsString } from './string';
 import { expectIssue, expectSuccess, expectValue } from './test-helpers';
 
@@ -43,7 +43,7 @@ describe('IsArray', () => {
 
   it('will process items', () => {
     const fut = IsArray({
-      item: IsNumber({ min: 25 }),
+      item: isNumber({ min: 25 }),
     });
     expectSuccess(fut, []);
     expectSuccess(fut, [87]);

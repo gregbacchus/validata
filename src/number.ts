@@ -1,110 +1,48 @@
-import { Issue, IssueResult, Result, ValueProcessor } from './types';
+import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Empty, Validate } from './common';
+import { Issue, IssueResult } from './types';
 
-interface NumberOptions {
+interface CoerceOptions {
+  coerceMin?: number;
+  coerceMax?: number;
+}
+
+interface ValidationOptions {
   max?: number;
   min?: number;
   validator?: (value: number, options?: any) => boolean;
   validatorOptions?: any;
 }
 
-interface AsNumberOptions extends NumberOptions {
-  default?: number;
-}
-
-const requiredStrictType = () => (next: (value: number) => Result<number>) => {
-  return (value: unknown) => {
-    if (value === undefined || value === null) {
-      return { issues: [Issue.from(value, 'not-defined')] };
-    }
-    if (typeof value !== 'number') {
-      return { issues: [Issue.from(value, 'incorrect-type')] };
-    }
-    if (Number.isNaN(value)) {
-      return { issues: [Issue.from(value, 'not-a-number')] };
-    }
-
-    return next(value);
-  };
+export const empty: Empty = (value) => {
+  return value === null || value === undefined || typeof value === 'number' && Number.isNaN(value);
 };
 
-const strictType = () => (next: (value: number | undefined) => Result<number | undefined>) => {
-  return (value: unknown) => {
-    if (value === undefined || value === null) {
-      return next(undefined);
-    }
-    if (typeof value !== 'number') {
-      return { issues: [Issue.from(value, 'incorrect-type')] };
-    }
-    if (Number.isNaN(value)) {
-      return { issues: [Issue.from(value, 'not-a-number')] };
-    }
-
-    return next(value);
-  };
+const check: Check<number> = (value): value is number => {
+  return typeof value === 'number' && !Number.isNaN(value);
 };
 
-const maybe = () => (next: (value: unknown) => Result<number | undefined>) => {
-  return (value: unknown) => {
-    if (value === undefined || value === null || typeof value === 'number' && Number.isNaN(value)) {
-      return next(undefined);
-    }
+const convert: Convert<number> = (value) => {
+  if (Array.isArray(value)) return undefined;
 
-    return next(value);
-  };
+  const converted = Number(value);
+  if (!Number.isNaN(converted)) return converted;
+  return undefined;
 };
 
-const coerce = (options?: AsNumberOptions) => (next: (value: number) => Result<number>) => {
-  return (value: unknown) => {
-    if (Array.isArray(value)) {
-      return { value: options && options.default !== undefined && options.default || Number.NaN };
-    }
-    if (value === null) {
-      return { value: options && options.default !== undefined && options.default || Number.NaN };
-    }
-    let coerced = Number(value);
-    if (options) {
-      if (Number.isNaN(coerced) && options.default !== undefined) {
-        return { value: options.default };
-      }
-      if (options.min !== undefined && coerced < options.min) {
-        coerced = options.min;
-      }
-      if (options.max !== undefined && coerced > options.max) {
-        coerced = options.max;
-      }
-    }
-    return next(coerced);
-  };
+const coerce: Coerce<number, CoerceOptions> = (options) => (next) => (value) => {
+  if (!options) return next(value);
+
+  let coerced = value;
+  if (options.coerceMin !== undefined && coerced < options.coerceMin) {
+    coerced = options.coerceMin;
+  }
+  if (options.coerceMax !== undefined && coerced > options.coerceMax) {
+    coerced = options.coerceMax;
+  }
+  return next(coerced);
 };
 
-const coerceMaybe = (options?: AsNumberOptions) => (next: (value: number) => Result<number>) => {
-  return (value: unknown) => {
-    if (value === undefined) {
-      return { value: options?.default ?? undefined };
-    }
-    if (Array.isArray(value)) {
-      return { value: options?.default ?? undefined };
-    }
-    if (value === null) {
-      return { value: options && options.default !== undefined && options.default || Number.NaN };
-    }
-    let coerced = Number(value);
-    if (Number.isNaN(coerced)) {
-      return { value: options?.default ?? undefined };
-    }
-    if (options) {
-      if (options.min !== undefined && coerced < options.min) {
-        coerced = options.min;
-      }
-      if (options.max !== undefined && coerced > options.max) {
-        coerced = options.max;
-      }
-    }
-    return next(coerced);
-  };
-};
-
-const validate = (value: number, options: NumberOptions | undefined): IssueResult | undefined => {
+const validate: Validate<number, ValidationOptions> = (value, options) => {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };
@@ -120,41 +58,7 @@ const validate = (value: number, options: NumberOptions | undefined): IssueResul
   return result.issues.length ? result : undefined;
 };
 
-export const IsNumber = (options?: NumberOptions): ValueProcessor<number> => {
-  return {
-    process: requiredStrictType()((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    }),
-  };
-};
-
-export const MaybeNumber = (options?: NumberOptions): ValueProcessor<number | undefined> => {
-  return {
-    process: maybe()(strictType()((value) => {
-      if (value === undefined) {
-        return { value: undefined };
-      }
-      const result = validate(value, options);
-      return result ?? { value };
-    })),
-  };
-};
-
-export const AsNumber = (options?: AsNumberOptions): ValueProcessor<number> => {
-  return {
-    process: coerce(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    }),
-  };
-};
-
-export const MaybeAsNumber = (options?: AsNumberOptions): ValueProcessor<number | undefined> => {
-  return {
-    process: maybe()(coerceMaybe(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    })),
-  };
-};
+export const isNumber = createIsCheck(check, coerce, validate);
+export const maybeNumber = createMaybeCheck(check, coerce, validate, empty);
+export const asNumber = createAsCheck(convert, coerce, validate);
+export const maybeAsNumber = createMaybeAsCheck(check, convert, coerce, validate, empty);
