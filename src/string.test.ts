@@ -15,21 +15,21 @@ describe('IsString', () => {
 
   it('will handle strings', () => {
     const fut = IsString();
-    expectSuccess(fut, '');
-    expectSuccess(fut, 'asd');
-    expectSuccess(fut, '123');
+    expectValue(fut, '', '');
+    expectValue(fut, 'asd', 'asd');
+    expectValue(fut, '123', '123');
   });
 
   it('will validate string length', () => {
     const fut = IsString({ minLength: 2, maxLength: 5 });
-    expectSuccess(fut, 'asdf');
+    expectValue(fut, 'asdf', 'asdf');
     expectIssue(fut, 'a', 'min-length');
     expectIssue(fut, 'asdfghjk', 'max-length');
   });
 
   it('will check regex', () => {
     const fut = IsString({ regex: /^[0-9]{3}$/ });
-    expectSuccess(fut, '123');
+    expectValue(fut, '123', '123');
     expectIssue(fut, 'as', 'regex');
     expectIssue(fut, '12', 'regex');
     expectIssue(fut, '12345', 'regex');
@@ -37,7 +37,7 @@ describe('IsString', () => {
 
   it('will check custom validator', () => {
     const fut = IsString({ validator: (value) => value === 'test' });
-    expectSuccess(fut, 'test');
+    expectValue(fut, 'test', 'test');
     expectIssue(fut, 'other', 'validator');
   });
 
@@ -121,8 +121,8 @@ describe('MaybeString', () => {
 describe('AsString', () => {
   it('will handle non-string', () => {
     const fut = AsString();
-    expectValue(fut, null, 'null');
-    expectValue(fut, undefined, 'undefined');
+    expectIssue(fut, null, 'not-defined');
+    expectIssue(fut, undefined, 'not-defined');
     expectValue(fut, 0, '0');
     expectValue(fut, new Date(1562057445845), 'Tue Jul 02 2019 20:50:45 GMT+1200 (New Zealand Standard Time)');
     expectValue(fut, [], '');
@@ -150,13 +150,19 @@ describe('AsString', () => {
     const fut = AsString({ minLength: 2, maxLength: 5 });
     expectSuccess(fut, 'asdf');
     expectIssue(fut, 'a', 'min-length');
+    expectIssue(fut, 'asdfghjk', 'max-length');
+  });
+
+  it('will limit string length', () => {
+    const fut = AsString({ limitLength: 5 });
+    expectSuccess(fut, 'asdf');
     expectValue(fut, 'asdfghjk', 'asdfg');
   });
 
   it('will check regex', () => {
     const fut = AsString({ regex: /^[0-9]{3}$/ });
-    expectSuccess(fut, '123');
-    expectSuccess(fut, 654);
+    expectValue(fut, '123', '123');
+    expectValue(fut, 654, '654');
     expectIssue(fut, 'as', 'regex');
     expectIssue(fut, '12', 'regex');
     expectIssue(fut, '12345', 'regex');
@@ -235,6 +241,16 @@ describe('MaybeAsString', () => {
     expectValue(fut, {}, '[object Object]');
   });
 
+  it('will handle non-string with default', () => {
+    const fut = MaybeAsString({ default: 'foo' });
+    expectValue(fut, null, 'foo');
+    expectValue(fut, undefined, 'foo');
+    expectValue(fut, 0, '0');
+    expectValue(fut, new Date(1562057445845), 'Tue Jul 02 2019 20:50:45 GMT+1200 (New Zealand Standard Time)');
+    expectValue(fut, [], '');
+    expectValue(fut, {}, '[object Object]');
+  });
+
   it('will handle strings', () => {
     const fut = MaybeAsString();
     expectSuccess(fut, '');
@@ -246,6 +262,12 @@ describe('MaybeAsString', () => {
     const fut = MaybeAsString({ minLength: 2, maxLength: 5 });
     expectSuccess(fut, 'asdf');
     expectIssue(fut, 'a', 'min-length');
+    expectIssue(fut, 'asdfghjk', 'max-length');
+  });
+
+  it('will limit string length', () => {
+    const fut = MaybeAsString({ limitLength: 5 });
+    expectSuccess(fut, 'asdf');
     expectValue(fut, 'asdfghjk', 'asdfg');
   });
 

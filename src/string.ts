@@ -1,4 +1,4 @@
-import { As, Coerce, Definitely, Is, Issue, IssueResult, Maybe, ValueProcessor } from './types';
+import { As, Coerce, Definitely, Is, Issue, IssueResult, Maybe, UndefinedHandler, ValueProcessor } from './types';
 
 interface StringPadding {
   length: number;
@@ -13,7 +13,9 @@ interface MaybeOptions {
 
 interface IsOptions { }
 
-interface AsOptions { }
+interface AsOptions {
+  default?: string;
+}
 
 interface CoerceOptions {
   limitLength?: number;
@@ -30,16 +32,23 @@ interface ValidationOptions {
   validatorOptions?: any;
 }
 
-const definitely: Definitely<string, DefinitelyOptions> = (_options?) => (fn) => (value) => {
-  if (value === undefined || value === null) {
-    return { issues: [Issue.from(value, 'not-defined')] };
+const asDefault: UndefinedHandler<string, AsOptions> = (options) => () => {
+  if (options?.default) {
+    return { value: options.default };
   }
-  return fn(value);
+  return undefined;
 };
 
-const maybe: Maybe<string, MaybeOptions> = (options?) => (fn) => (value) => {
+const definitely: Definitely<string, DefinitelyOptions> = (_options, undefinedHandler) => (next) => (value) => {
   if (value === undefined || value === null) {
-    return { value: undefined };
+    return (undefinedHandler && undefinedHandler()) ?? { issues: [Issue.from(value, 'not-defined')] };
+  }
+  return next(value);
+};
+
+const maybe: Maybe<string, MaybeOptions> = (options, undefinedHandler) => (next) => (value) => {
+  if (value === undefined || value === null) {
+    return (undefinedHandler && undefinedHandler()) ?? { value: undefined };
   }
 
   if (options?.incorrectTypeToUndefined) {
@@ -48,22 +57,22 @@ const maybe: Maybe<string, MaybeOptions> = (options?) => (fn) => (value) => {
     }
   }
 
-  return fn(value);
+  return next(value);
 };
 
-const is: Is<string, IsOptions> = (_options?) => (fn) => (value) => {
+const is: Is<string, IsOptions> = (_options) => (next) => (value) => {
   if (typeof value !== 'string') {
     return { issues: [Issue.from(value, 'incorrect-type')] };
   }
-  return fn(value);
+  return next(value);
 };
 
-const as: As<string, AsOptions> = (_options?) => (fn) => (value) => {
-  return fn(String(value));
+const as: As<string, AsOptions> = (_options) => (next) => (value) => {
+  return next(String(value));
 };
 
-const coerce: Coerce<string, CoerceOptions> = (options?) => (fn) => (value) => {
-  if (!options) return fn(value);
+const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => {
+  if (!options) return next(value);
 
   let coerced = value;
   if (options.limitLength !== undefined && coerced.length > options.limitLength) {
@@ -86,7 +95,7 @@ const coerce: Coerce<string, CoerceOptions> = (options?) => (fn) => (value) => {
   if (options.padEnd && coerced.length < options.padEnd.length) {
     coerced = coerced.padEnd(options.padEnd.length, options.padEnd.padWith);
   }
-  return fn(coerced);
+  return next(coerced);
 };
 
 function validate(value: string, options?: ValidationOptions): IssueResult | undefined {
@@ -131,7 +140,7 @@ export function MaybeString(options?: MaybeStringOptions): ValueProcessor<string
 type AsStringOptions = DefinitelyOptions & AsOptions & CoerceOptions & ValidationOptions;
 export function AsString(options?: AsStringOptions): ValueProcessor<string> {
   return {
-    process: definitely(options)(as(options)(coerce(options)((value) => {
+    process: definitely(options, asDefault(options))(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
@@ -141,7 +150,7 @@ export function AsString(options?: AsStringOptions): ValueProcessor<string> {
 type MaybeAsStringOptions = MaybeOptions & AsOptions & CoerceOptions & ValidationOptions;
 export function MaybeAsString(options?: MaybeAsStringOptions): ValueProcessor<string | undefined> {
   return {
-    process: maybe(options)(as(options)(coerce(options)((value) => {
+    process: maybe(options, asDefault(options))(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
