@@ -13,3 +13,4 @@
 *.map
 .env
 !jest.config.js
+!.eslintrc.js

@@ -1,0 +1,132 @@
+module.exports = {
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jest": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "@typescript-eslint/tslint",
+    "prefer-arrow"
+  ],
+  "rules": {
+    "@typescript-eslint/adjacent-overload-signatures": "error",
+    "@typescript-eslint/array-type": "off",
+    "@typescript-eslint/ban-types": "error",
+    "@typescript-eslint/class-name-casing": "error",
+    "@typescript-eslint/consistent-type-assertions": "error",
+    "@typescript-eslint/explicit-function-return-type": ["warn", { "allowExpressions": true }],
+    "@typescript-eslint/explicit-member-accessibility": ["error", {
+      accessibility: 'no-public',
+    }],
+    "@typescript-eslint/indent": [
+      "error",
+      2,
+      { "SwitchCase": 1 }
+    ],
+    "@typescript-eslint/interface-name-prefix": "error",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-misused-new": "error",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-parameter-properties": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "args": "none" }],
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-var-requires": "warn",
+    "@typescript-eslint/prefer-for-of": "error",
+    "@typescript-eslint/prefer-function-type": "error",
+    "@typescript-eslint/prefer-namespace-keyword": "error",
+    "@typescript-eslint/quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "@typescript-eslint/triple-slash-reference": "error",
+    "@typescript-eslint/unbound-method": ["error", { ignoreStatic: true }],
+    "@typescript-eslint/unified-signatures": "error",
+    "arrow-parens": [
+      "error",
+    ],
+    "camelcase": "error",
+    "complexity": "off",
+    "constructor-super": "error",
+    "curly": [
+      "error",
+      "multi-line"
+    ],
+    "dot-notation": "error",
+    "eol-last": ["warn", "always"],
+    "eqeqeq": "error",
+    "guard-for-in": "error",
+    "id-match": "error",
+    "max-classes-per-file": "off",
+    "max-len": "off",
+    "new-parens": "error",
+    "no-bitwise": "error",
+    "no-caller": "error",
+    "no-cond-assign": "error",
+    "no-console": "off",
+    "no-debugger": "error",
+    "no-empty": "off",
+    "no-eval": "error",
+    "no-fallthrough": "off",
+    "no-invalid-this": "off",
+    "no-multiple-empty-lines": ["warn", { "max": 1 }],
+    "no-new-wrappers": "error",
+    "no-shadow": [
+      "off",
+      {
+        "hoist": "all"
+      }
+    ],
+    "no-throw-literal": "error",
+    "no-trailing-spaces": "error",
+    "no-undef-init": "error",
+    "no-underscore-dangle": "off",
+    "no-unsafe-finally": "error",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": true
+      }
+    ],
+    "no-unused-labels": "error",
+    "no-var": "error",
+    "object-shorthand": "error",
+    "one-var": [
+      "error",
+      "never"
+    ],
+    "padded-blocks": ["warn", "never"],
+    "prefer-arrow/prefer-arrow-functions": "error",
+    "prefer-const": "error",
+    "radix": "error",
+    "spaced-comment": "error",
+    "semi": "error",
+    "use-isnan": "error",
+    "valid-typeof": "off",
+    "@typescript-eslint/tslint/config": [
+      "error",
+      {
+        "rules": {
+          "jsdoc-format": true,
+          "no-reference-import": true
+        }
+      }
+    ]
+  }
+};

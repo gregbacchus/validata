@@ -8,26 +8,26 @@ export interface ValueResult<T> {
   value: T;
 }
 
-export function isValue<T>(result: Result<T> | undefined): result is ValueResult<T> {
-  return !!result && result.hasOwnProperty('value');
-}
+export const isValue = <T>(result: Result<T> | undefined): result is ValueResult<T> => {
+  return !!result && ('value' in result);
+};
 
-export function isIssue<T>(result: Result<T> | undefined): result is IssueResult {
+export const isIssue = <T>(result: Result<T> | undefined): result is IssueResult => {
   return !!result && (result as IssueResult).issues !== undefined;
-}
+};
 
-export function exists<T>(value: T | undefined): value is T {
+export const exists = <T>(value: T | undefined): value is T => {
   return value !== undefined;
-}
+};
 
 export type Path = string | number | symbol;
 
 export class Issue {
-  static from(value: any, reason: string) {
+  static from(value: any, reason: string): Issue {
     return new Issue([], value, reason);
   }
 
-  static fromChild(path: Path, value: any, reason: string) {
+  static fromChild(path: Path, value: any, reason: string): Issue {
     return new Issue([path], value, reason);
   }
 

@@ -11,7 +11,7 @@ export interface TestDefinition<T> {
   issues?: TestIssue[];
 }
 
-export function runTests<T>(fut: ValueProcessor<T>, ...tests: Array<TestDefinition<T>>) {
+export const runTests = <T>(fut: ValueProcessor<T>, ...tests: Array<TestDefinition<T>>): void => {
   tests.forEach((test) => {
     const result = fut.process(test.input);
     if (test.issues) {
@@ -37,11 +37,12 @@ export function runTests<T>(fut: ValueProcessor<T>, ...tests: Array<TestDefiniti
       }
     }
   });
-}
+};
 
-export function expectIssue<T>(fut: ValueProcessor<T>, value: any, reason: string, path: Path[] = []) {
+export const expectIssue = <T>(fut: ValueProcessor<T>, value: any, reason: string, path: Path[] = []): void => {
   const result = fut.process(value);
   if (!isIssue(result)) {
+    // eslint-disable-next-line no-undef
     fail('no issue');
     return;
   }
@@ -53,23 +54,25 @@ export function expectIssue<T>(fut: ValueProcessor<T>, value: any, reason: strin
       }),
     ]),
   );
-}
+};
 
-export function expectSuccess<T>(fut: ValueProcessor<T>, value: any) {
+export const expectSuccess = <T>(fut: ValueProcessor<T>, value: any): void => {
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
+    // eslint-disable-next-line no-undef
     fail(`Unexpected issue: ${JSON.stringify(result)}`);
   }
-}
+};
 
-export function expectValue<T>(fut: ValueProcessor<T>, value: any, coerced: T) {
+export const expectValue = <T>(fut: ValueProcessor<T>, value: any, coerced: T): void => {
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
+    // eslint-disable-next-line no-undef
     fail(`Unexpected issue: ${JSON.stringify(result)}`);
   }
   if (result) {
     expect(result.value).toEqual(coerced);
   }
-}
+};

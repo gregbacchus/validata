@@ -98,7 +98,7 @@ const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => 
   return next(coerced);
 };
 
-function validate(value: string, options?: ValidationOptions): IssueResult | undefined {
+const validate = (value: string, options?: ValidationOptions): IssueResult | undefined => {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };
@@ -115,44 +115,44 @@ function validate(value: string, options?: ValidationOptions): IssueResult | und
     result.issues.push(Issue.from(value, 'validator'));
   }
   return result.issues.length ? result : undefined;
-}
+};
 
 type IsStringOptions = DefinitelyOptions & IsOptions & CoerceOptions & ValidationOptions;
-export function IsString(options?: IsStringOptions): ValueProcessor<string> {
+export const IsString = (options?: IsStringOptions): ValueProcessor<string> => {
   return {
     process: definitely(options)(is(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
   };
-}
+};
 
 type MaybeStringOptions = MaybeOptions & IsOptions & CoerceOptions & ValidationOptions;
-export function MaybeString(options?: MaybeStringOptions): ValueProcessor<string | undefined> {
+export const MaybeString = (options?: MaybeStringOptions): ValueProcessor<string | undefined> => {
   return {
     process: maybe(options)(is(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
   };
-}
+};
 
 type AsStringOptions = DefinitelyOptions & AsOptions & CoerceOptions & ValidationOptions;
-export function AsString(options?: AsStringOptions): ValueProcessor<string> {
+export const AsString = (options?: AsStringOptions): ValueProcessor<string> => {
   return {
     process: definitely(options, asDefault(options))(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
   };
-}
+};
 
 type MaybeAsStringOptions = MaybeOptions & AsOptions & CoerceOptions & ValidationOptions;
-export function MaybeAsString(options?: MaybeAsStringOptions): ValueProcessor<string | undefined> {
+export const MaybeAsString = (options?: MaybeAsStringOptions): ValueProcessor<string | undefined> => {
   return {
     process: maybe(options, asDefault(options))(as(options)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
   };
-}
+};

@@ -104,7 +104,7 @@ const coerceMaybe = (options?: AsNumberOptions) => (next: (value: number) => Res
   };
 };
 
-function validate(value: number, options: NumberOptions | undefined): IssueResult | undefined {
+const validate = (value: number, options: NumberOptions | undefined): IssueResult | undefined => {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };
@@ -118,18 +118,18 @@ function validate(value: number, options: NumberOptions | undefined): IssueResul
     result.issues.push(Issue.from(value, 'validator'));
   }
   return result.issues.length ? result : undefined;
-}
+};
 
-export function IsNumber(options?: NumberOptions): ValueProcessor<number> {
+export const IsNumber = (options?: NumberOptions): ValueProcessor<number> => {
   return {
     process: requiredStrictType()((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }),
   };
-}
+};
 
-export function MaybeNumber(options?: NumberOptions): ValueProcessor<number | undefined> {
+export const MaybeNumber = (options?: NumberOptions): ValueProcessor<number | undefined> => {
   return {
     process: maybe()(strictType()((value) => {
       if (value === undefined) {
@@ -139,22 +139,22 @@ export function MaybeNumber(options?: NumberOptions): ValueProcessor<number | un
       return result ?? { value };
     })),
   };
-}
+};
 
-export function AsNumber(options?: AsNumberOptions): ValueProcessor<number> {
+export const AsNumber = (options?: AsNumberOptions): ValueProcessor<number> => {
   return {
     process: coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }),
   };
-}
+};
 
-export function MaybeAsNumber(options?: AsNumberOptions): ValueProcessor<number | undefined> {
+export const MaybeAsNumber = (options?: AsNumberOptions): ValueProcessor<number | undefined> => {
   return {
     process: maybe()(coerceMaybe(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     })),
   };
-}
+};

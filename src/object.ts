@@ -6,7 +6,7 @@ interface ObjectOptions<T> {
   validatorOptions?: any;
 }
 
-function validate<T>(_value: T, options: ObjectOptions<T> | undefined) {
+const validate = <T>(_value: T, options: ObjectOptions<T> | undefined): IssueResult | undefined => {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };
@@ -17,13 +17,13 @@ function validate<T>(_value: T, options: ObjectOptions<T> | undefined) {
   //   result.errors.push('validator');
   // }
   return result.issues.length ? result : undefined;
-}
+};
 
-function process<T extends object>(contract: Contract<T>, target: T): Result<T> {
+const process = <T extends object>(contract: Contract<T>, target: T): Result<T> => {
   const issues: Issue[] = [];
 
   (Object.keys(target) as Array<keyof T>).forEach((key) => {
-    if (!contract.hasOwnProperty(key)) {
+    if (!(key in contract)) {
       issues.push(
         Issue.fromChild(key, target[key], 'unexpected-property'),
       );
@@ -49,7 +49,7 @@ function process<T extends object>(contract: Contract<T>, target: T): Result<T> 
     }
   });
   return issues.length ? { issues } : { value: output };
-}
+};
 
 const isObject = <T>() => (next: (value: T) => Result<T>) => {
   return (value: any) => {
@@ -93,20 +93,20 @@ const children = <T>(options?: ObjectOptions<T>) => (next: (value: T) => Result<
   };
 };
 
-export function IsObject<T extends object>(options?: ObjectOptions<T>): ValueProcessor<T> {
+export const IsObject = <T extends object>(options?: ObjectOptions<T>): ValueProcessor<T> => {
   return {
     process: isObject<T>()(children(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     })),
   };
-}
+};
 
-export function MaybeObject<T extends object>(options?: ObjectOptions<T>): ValueProcessor<T | undefined> {
+export const MaybeObject = <T extends object>(options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
   return {
     process: maybeObject<T>()(children(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     })),
   };
-}
+};

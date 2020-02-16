@@ -6,7 +6,7 @@ interface ArrayOptions<T> {
   item?: ValueProcessor<T>;
 }
 
-function validate<T>(value: T[], options: ArrayOptions<T> | undefined) {
+const validate = <T>(value: T[], options: ArrayOptions<T> | undefined): IssueResult | undefined => {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };
@@ -29,7 +29,7 @@ function validate<T>(value: T[], options: ArrayOptions<T> | undefined) {
   //   }
   // });
   return result.issues.length ? result : undefined;
-}
+};
 
 const isArray = <T>() => (next: (value: T[]) => Result<T[]>) => {
   return (value: any) => {
@@ -89,20 +89,20 @@ const children = <T>(options?: ArrayOptions<T>) =>
       return next(results.map((item) => isValue(item.processed) ? item.processed.value : item.originalValue));
     };
 
-export function IsArray<T>(options?: ArrayOptions<T>): ValueProcessor<T[]> {
+export const IsArray = <T>(options?: ArrayOptions<T>): ValueProcessor<T[]> => {
   return {
     process: isArray<T>()(children(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     })),
   };
-}
+};
 
-export function MaybeArray<T>(options?: ArrayOptions<T>): ValueProcessor<T[] | undefined> {
+export const MaybeArray = <T>(options?: ArrayOptions<T>): ValueProcessor<T[] | undefined> => {
   return {
     process: maybeArray<T>()(children(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     })),
   };
-}
+};

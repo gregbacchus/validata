@@ -2,5 +2,7 @@
   "cSpell.words": [
     "validata"
   ],
+  "eslint.enable": true,
+  "tslint.enable": true,
   "typescript.tsdk": "node_modules/typescript/lib"
 }
