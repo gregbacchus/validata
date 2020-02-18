@@ -1,87 +1,60 @@
-import { Contract, isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
+import { Check, createIsCheck, createMaybeCheck } from './common';
+import { Contract, isIssue, Issue, IssueResult, Next, Result, ValueProcessor } from './types';
 
-interface ObjectOptions<T> {
+interface CoerceOptions<T> {
   contract?: Contract<T>;
+}
+
+interface ValidationOptions<T> {
   validator?: (value: T, options?: any) => boolean;
   validatorOptions?: any;
 }
 
-const validate = <T>(_value: T, options: ObjectOptions<T> | undefined): IssueResult | undefined => {
-  if (!options) return undefined;
+export type Coerce<T> = (next: Next<T, T>) => (value: T) => Result<T>;
 
-  const result: IssueResult = { issues: [] };
-  // if (options.max !== undefined && value > options.max) {
-  //   result.errors.push('max');
-  // }
-  // if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-  //   result.errors.push('validator');
-  // }
-  return result.issues.length ? result : undefined;
-};
+class Generic<T extends object> {
+  check: Check<T> = (value: unknown): value is T => {
+    return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
+  }
 
-const process = <T extends object>(contract: Contract<T>, target: T): Result<T> => {
-  const issues: Issue[] = [];
+  process = (contract: Contract<T>, target: T): Result<T> => {
+    const issues: Issue[] = [];
 
-  (Object.keys(target) as Array<keyof T>).forEach((key) => {
-    if (!(key in contract)) {
-      issues.push(
-        Issue.fromChild(key, target[key], 'unexpected-property'),
-      );
-    }
-  });
+    (Object.keys(target) as Array<keyof T>).forEach((key) => {
+      if (!(key in contract)) {
+        issues.push(
+          Issue.fromChild(key, target[key], 'unexpected-property'),
+        );
+      }
+    });
 
-  const output: T = {} as any;
-  const keys = Object.keys(contract) as Array<keyof T>;
-  keys.forEach((key) => {
-    const check = contract[key];
-    const value = target[key];
-    const childResult = check.process(value);
-    if (isIssue(childResult)) {
-      childResult.issues.forEach((issue) => {
-        issues.push(issue.nest(key));
-      });
-      return;
-    }
-    if (childResult) {
-      output[key] = childResult.value;
-    } else {
-      output[key] = value;
-    }
-  });
-  return issues.length ? { issues } : { value: output };
-};
+    const output: T = {} as any;
+    const keys = Object.keys(contract) as Array<keyof T>;
+    keys.forEach((key) => {
+      const check = contract[key];
+      const value = target[key];
+      const childResult = check.process(value);
+      if (isIssue(childResult)) {
+        childResult.issues.forEach((issue) => {
+          issues.push(issue.nest(key));
+        });
+        return;
+      }
+      if (childResult) {
+        output[key] = childResult.value;
+      } else {
+        output[key] = value;
+      }
+    });
+    return issues.length ? { issues } : { value: output };
+  }
 
-const isObject = <T>() => (next: (value: T) => Result<T>) => {
-  return (value: any) => {
-    if (value === undefined || value === null) {
-      return { issues: [Issue.from(value, 'not-defined')] };
-    }
-    if (typeof value !== 'object' || Array.isArray(value) || value instanceof Date) {
-      return { issues: [Issue.from(value, 'incorrect-type')] };
-    }
-    return next(value);
-  };
-};
-
-const maybeObject = <T>() => (next: (value: T) => Result<T | undefined>) => {
-  return (value: any) => {
-    if (value === undefined || value === null) {
-      return { value: undefined };
-    }
-    if (typeof value !== 'object' || Array.isArray(value) || value instanceof Date) {
-      return { value: undefined };
-    }
-    return next(value);
-  };
-};
-
-const children = <T>(options?: ObjectOptions<T>) => (next: (value: T) => Result<T>) => {
-  return (value: any) => {
+  coerce = (options?: CoerceOptions<T>): Coerce<T> => (next) => (value) => {
     if (!options) return next(value);
 
     let coerced = value;
     if (options.contract) {
-      const result = process(options.contract, coerced);
+      const result = this.process(options.contract, coerced);
       if (isIssue(result)) {
         return result;
       }
@@ -90,23 +63,25 @@ const children = <T>(options?: ObjectOptions<T>) => (next: (value: T) => Result<
       }
     }
     return next(coerced);
-  };
+  }
+
+  validate = (value: T, options?: ValidationOptions<T>): IssueResult | undefined => {
+    if (!options) return undefined;
+
+    const result: IssueResult = { issues: [] };
+    if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
+      result.issues.push(Issue.from(value, 'validator'));
+    }
+    return result.issues.length ? result : undefined;
+  }
+}
+
+export const isObject = <T extends object>(options?: CoerceOptions<T> & ValidationOptions<T>): ValueProcessor<T> => {
+  const generic = new Generic<T>();
+  return createIsCheck(generic.check, generic.coerce, generic.validate)(options);
 };
 
-export const IsObject = <T extends object>(options?: ObjectOptions<T>): ValueProcessor<T> => {
-  return {
-    process: isObject<T>()(children(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    })),
-  };
-};
-
-export const MaybeObject = <T extends object>(options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
-  return {
-    process: maybeObject<T>()(children(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    })),
-  };
+export const maybeObject = <T extends object>(options?: CoerceOptions<T> & ValidationOptions<T>): ValueProcessor<T | undefined> => {
+  const generic = new Generic<T>();
+  return createMaybeCheck(generic.check, generic.coerce, generic.validate)(options);
 };

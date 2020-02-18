@@ -1,5 +1,5 @@
 import { asNumber, isNumber } from './number';
-import { IsObject, MaybeObject } from './object';
+import { isObject, maybeObject } from './object';
 import { asString, isString } from './string';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 
@@ -15,7 +15,7 @@ interface ParentObject {
 
 describe('IsObject', () => {
   it('will handle non-object', () => {
-    const fut = IsObject();
+    const fut = isObject();
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
     expectIssue(fut, 0, 'incorrect-type');
@@ -25,13 +25,13 @@ describe('IsObject', () => {
   });
 
   it('will handle object', () => {
-    const fut = IsObject();
+    const fut = isObject();
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });
   });
 
   it('will process children', () => {
-    const fut = IsObject<MyObject>({
+    const fut = isObject<MyObject>({
       contract: {
         a: asNumber({ coerceMin: 25 }),
         b: asString(),
@@ -43,9 +43,9 @@ describe('IsObject', () => {
   });
 
   it('will process nested children', () => {
-    const fut = IsObject<ParentObject>({
+    const fut = isObject<ParentObject>({
       contract: {
-        o: IsObject({
+        o: isObject<MyObject>({
           contract: {
             a: isNumber(),
             b: asString(),
@@ -75,7 +75,7 @@ describe('IsObject', () => {
   });
 
   it('will process children', () => {
-    const fut = IsObject<MyObject>({
+    const fut = isObject<MyObject>({
       contract: {
         a: isNumber({ min: 25 }),
         b: isString(),
@@ -90,18 +90,22 @@ describe('IsObject', () => {
 });
 
 describe('MaybeObject', () => {
-  it('will handle non-object', () => {
-    const fut = MaybeObject();
+  it('will handle null and undefined', () => {
+    const fut = maybeObject();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
-    expectValue(fut, 0, undefined);
-    expectValue(fut, new Date(), undefined);
-    expectValue(fut, [], undefined);
-    expectValue(fut, 'test', undefined);
+  });
+
+  it('will handle non-object', () => {
+    const fut = maybeObject();
+    expectIssue(fut, 0, 'incorrect-type');
+    expectIssue(fut, new Date(), 'incorrect-type');
+    expectIssue(fut, [], 'incorrect-type');
+    expectIssue(fut, 'test', 'incorrect-type');
   });
 
   it('will handle object', () => {
-    const fut = MaybeObject();
+    const fut = maybeObject();
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });
   });
