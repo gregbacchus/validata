@@ -1,5 +1,5 @@
-import { Check, createIsCheck, createMaybeCheck } from './common';
-import { Contract, isIssue, Issue, IssueResult, Next, Result, ValueProcessor } from './types';
+import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
+import { Contract, isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<T> {
   contract?: Contract<T>;
@@ -9,8 +9,6 @@ interface ValidationOptions<T> {
   validator?: (value: T, options?: any) => boolean;
   validatorOptions?: any;
 }
-
-export type Coerce<T> = (next: Next<T, T>) => (value: T) => Result<T>;
 
 class Generic<T extends object> {
   check: Check<T> = (value: unknown): value is T => {
@@ -49,7 +47,7 @@ class Generic<T extends object> {
     return issues.length ? { issues } : { value: output };
   }
 
-  coerce = (options?: CoerceOptions<T>): Coerce<T> => (next) => (value) => {
+  coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
     if (!options) return next(value);
 
     let coerced = value;
@@ -65,7 +63,7 @@ class Generic<T extends object> {
     return next(coerced);
   }
 
-  validate = (value: T, options?: ValidationOptions<T>): IssueResult | undefined => {
+  validate: Validate<T, ValidationOptions<T>> = (value, options) => {
     if (!options) return undefined;
 
     const result: IssueResult = { issues: [] };
@@ -76,12 +74,14 @@ class Generic<T extends object> {
   }
 }
 
-export const isObject = <T extends object>(options?: CoerceOptions<T> & ValidationOptions<T>): ValueProcessor<T> => {
+export type Options<T> = CoerceOptions<T> & ValidationOptions<T>;
+
+export const isObject = <T extends object>(options?: Options<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
   return createIsCheck(generic.check, generic.coerce, generic.validate)(options);
 };
 
-export const maybeObject = <T extends object>(options?: CoerceOptions<T> & ValidationOptions<T>): ValueProcessor<T | undefined> => {
+export const maybeObject = <T extends object>(options?: Options<T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
   return createMaybeCheck(generic.check, generic.coerce, generic.validate)(options);
 };
