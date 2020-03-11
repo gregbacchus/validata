@@ -1,108 +1,87 @@
-import { exists as defined, isIssue, Issue, IssueResult, isValue, Result, ValueProcessor } from './types';
+import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
+import { isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
-interface ArrayOptions<T> {
-  maxLength?: number;
-  minLength?: number;
-  item?: ValueProcessor<T>;
+interface CoerceOptions<I, _T extends I[]> {
+  coerceMaxLength?: number;
+  item?: ValueProcessor<I>;
 }
 
-const validate = <T>(value: T[], options: ArrayOptions<T> | undefined): IssueResult | undefined => {
-  if (!options) return undefined;
+interface ValidationOptions<I, T extends I[]> {
+  maxLength?: number;
+  minLength?: number;
+  validator?: (value: T, options?: any) => boolean;
+  validatorOptions?: any;
+}
 
-  const result: IssueResult = { issues: [] };
-  // check length
-  if (options.minLength !== undefined && value.length < options.minLength) {
-    result.issues.push(Issue.from(value, 'min-length'));
+class Generic<I, T extends I[]> {
+  check: Check<T> = (value: unknown): value is T => {
+    return Array.isArray(value); // TODO check generic
   }
-  if (options.maxLength !== undefined && value.length > options.maxLength) {
-    result.issues.push(Issue.from(value, 'max-length'));
-  }
-  // // check items
-  // value.forEach((item, index) => {
-  //   if (options.item !== undefined) {
-  //     const itemResult = options.item.process(item);
-  //     if (isIssue(itemResult)) {
-  //       itemResult.issues.forEach((issue) => {
-  //         result.issues.push(issue.nest(index));
-  //       });
-  //     }
-  //   }
-  // });
-  return result.issues.length ? result : undefined;
-};
 
-const isArray = <T>() => (next: (value: T[]) => Result<T[]>) => {
-  return (value: any) => {
-    if (value === undefined || value === null) {
-      return { issues: [Issue.from(value, 'not-defined')] };
-    }
-    if (!Array.isArray(value)) {
-      return { issues: [Issue.from(value, 'incorrect-type')] };
-    }
-    return next(value);
-  };
-};
-
-const maybeArray = <T>() => (next: (value: T[]) => Result<T[] | undefined>) => {
-  return (value: unknown) => {
-    if (value === undefined || value === null) {
-      return { value: undefined };
-    }
-    if (!Array.isArray(value)) {
-      return { value: undefined };
-    }
-    return next(value);
-  };
-};
-
-const children = <T>(options?: ArrayOptions<T>) =>
-  (next: (value: T[]) => Result<T[]>) =>
-    (value: T[]): Result<T[]> => {
-      if (!options) return next(value);
-
-      // check items
-      const results = value.map((item, index) =>
-        ({
-          index,
-          originalValue: item,
-          processed: options.item !== undefined
-            ? options.item.process(item)
-            : undefined,
-        }),
-      );
-      const issueResults = results.map((item) =>
-        isIssue(item.processed)
-          ? { index: item.index, issue: item.processed }
-          : undefined,
-      ).filter(defined);
-
-      // there were issues, return them
-      if (issueResults.length) {
-        const issues = issueResults.reduce((acc, item) => [
-          ...acc,
-          ...item.issue.issues.map((issue) => issue.nest(item.index)),
-        ], [] as Issue[]);
-        return { issues };
+  process = (check: ValueProcessor<I>, target: T): Result<T> => {
+    const issues: Issue[] = [];
+    const output = [] as I[];
+    target.forEach((value, i) => {
+      const childResult = check.process(value);
+      if (isIssue(childResult)) {
+        childResult.issues.forEach((issue) => {
+          issues.push(issue.nest(i));
+        });
+        return;
       }
+      if (childResult) {
+        output.push(childResult.value);
+      } else {
+        output.push(value);
+      }
+    });
+    return issues.length ? { issues } : { value: output as T };
+  }
 
-      // all good
-      return next(results.map((item) => isValue(item.processed) ? item.processed.value : item.originalValue));
-    };
+  coerce: Coerce<T, CoerceOptions<I, T>> = (options) => (next) => (value) => {
+    if (!options) return next(value);
 
-export const IsArray = <T>(options?: ArrayOptions<T>): ValueProcessor<T[]> => {
-  return {
-    process: isArray<T>()(children(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    })),
-  };
+    let coerced = value;
+    if (options.coerceMaxLength !== undefined && coerced.length > options.coerceMaxLength) {
+      coerced = coerced.slice(0, options.coerceMaxLength) as T;
+    }
+    if (options.item) {
+      const result = this.process(options.item, coerced);
+      if (isIssue(result)) {
+        return result;
+      }
+      if (result) {
+        coerced = result.value;
+      }
+    }
+    return next(coerced);
+  }
+
+  validate: Validate<T, ValidationOptions<I, T>> = (value, options) => {
+    if (!options) return undefined;
+
+    const result: IssueResult = { issues: [] };
+    if (options.minLength !== undefined && value.length < options.minLength) {
+      result.issues.push(Issue.from(value, 'min-length'));
+    }
+    if (options.maxLength !== undefined && value.length > options.maxLength) {
+      result.issues.push(Issue.from(value, 'max-length'));
+    }
+    if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
+      result.issues.push(Issue.from(value, 'validator'));
+    }
+    return result.issues.length ? result : undefined;
+  }
+}
+
+export type Options<I, T extends I[]> = CoerceOptions<I, T> & ValidationOptions<I, T>;
+
+export const isArray = <I, T extends I[]>(options?: Options<I, T>): ValueProcessor<T> => {
+  const generic = new Generic<I, T>();
+  return createIsCheck(generic.check, generic.coerce, generic.validate)(options);
 };
 
-export const MaybeArray = <T>(options?: ArrayOptions<T>): ValueProcessor<T[] | undefined> => {
-  return {
-    process: maybeArray<T>()(children(options)((value) => {
-      const result = validate(value, options);
-      return result ?? { value };
-    })),
-  };
+export const maybeArray = <I, T extends I[]>(options?: Options<I, T>): ValueProcessor<T | undefined> => {
+  const generic = new Generic<I, T>();
+  return createMaybeCheck(generic.check, generic.coerce, generic.validate)(options);
 };

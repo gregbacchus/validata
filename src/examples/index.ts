@@ -1,4 +1,4 @@
-import { IsArray } from '../array';
+import { isArray } from '../array';
 import { isNumber } from '../number';
 import { isObject } from '../object';
 import { asString, isString, maybeString } from '../string';
@@ -24,7 +24,7 @@ console.log(sample.process({
   numericString: 123,
 }));
 
-const sample2 = IsArray({
+const sample2 = isArray({
   item: isNumber({ min: 17 }),
   minLength: 1,
 });
