@@ -13,8 +13,8 @@ interface ParentObject {
   s: string;
 }
 
-describe('IsObject', () => {
-  it('will handle non-object', () => {
+describe('isObject', () => {
+  it('will fail non-object', () => {
     const fut = isObject();
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
@@ -24,7 +24,7 @@ describe('IsObject', () => {
     expectIssue(fut, 'test', 'incorrect-type');
   });
 
-  it('will handle object', () => {
+  it('will accept object', () => {
     const fut = isObject();
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });
@@ -89,14 +89,14 @@ describe('IsObject', () => {
   });
 });
 
-describe('MaybeObject', () => {
-  it('will handle null and undefined', () => {
+describe('maybeObject', () => {
+  it('will coerce null and undefined', () => {
     const fut = maybeObject();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
   });
 
-  it('will handle non-object', () => {
+  it('will fail non-object', () => {
     const fut = maybeObject();
     expectIssue(fut, 0, 'incorrect-type');
     expectIssue(fut, new Date(), 'incorrect-type');
@@ -104,7 +104,7 @@ describe('MaybeObject', () => {
     expectIssue(fut, 'test', 'incorrect-type');
   });
 
-  it('will handle object', () => {
+  it('will accept object', () => {
     const fut = maybeObject();
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });

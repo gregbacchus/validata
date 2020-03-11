@@ -1,7 +1,7 @@
 import { asNumber, isNumber, maybeAsNumber, maybeNumber } from './number';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 
-describe('IsNumber', () => {
+describe('isNumber', () => {
   it('incorrect type will cause an issue', () => {
     const fut = isNumber();
     runTests(fut,
@@ -43,7 +43,7 @@ describe('IsNumber', () => {
   });
 });
 
-describe('MaybeNumber', () => {
+describe('maybeNumber', () => {
   it('incorrect type will cause issue', () => {
     const fut = maybeNumber();
     expectIssue(fut, 'test', 'incorrect-type');
@@ -81,7 +81,7 @@ describe('MaybeNumber', () => {
   });
 });
 
-describe('AsNumber', () => {
+describe('asNumber', () => {
   it('null or undefined will be an issue', () => {
     const fut = asNumber();
     expectIssue(fut, null, 'not-defined');
@@ -136,7 +136,7 @@ describe('AsNumber', () => {
   });
 });
 
-describe('MaybeAsNumber', () => {
+describe('maybeAsNumber', () => {
   it('incorrect type will be converted to undefined', () => {
     const fut = maybeAsNumber();
     expectValue(fut, 'test', undefined);

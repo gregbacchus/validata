@@ -14,7 +14,7 @@ import { expectIssue, expectSuccess, expectValue } from './test-helpers';
 // }
 
 describe('IsArray', () => {
-  it('will handle non-array', () => {
+  it('will fail non-array', () => {
     const fut = IsArray();
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
@@ -24,7 +24,7 @@ describe('IsArray', () => {
     expectIssue(fut, 'test', 'incorrect-type');
   });
 
-  it('will handle array', () => {
+  it('will accept array', () => {
     const fut = IsArray();
     expectSuccess(fut, []);
     expectSuccess(fut, [{ a: 47 }]);
@@ -54,7 +54,7 @@ describe('IsArray', () => {
 });
 
 describe('MaybeArray', () => {
-  it('will handle non-array', () => {
+  it('will fail non-array', () => {
     const fut = MaybeArray();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
@@ -64,7 +64,7 @@ describe('MaybeArray', () => {
     expectValue(fut, 'test', undefined);
   });
 
-  it('will handle array', () => {
+  it('will accept array', () => {
     const fut = MaybeArray();
     expectSuccess(fut, []);
     expectSuccess(fut, [{ a: 47 }]);
