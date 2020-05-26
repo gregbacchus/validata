@@ -23,17 +23,17 @@ export const exists = <T>(value: T | undefined): value is T => {
 export type Path = string | number | symbol;
 
 export class Issue {
-  static from(value: any, reason: string): Issue {
+  static from(value: unknown, reason: string): Issue {
     return new Issue([], value, reason);
   }
 
-  static fromChild(path: Path, value: any, reason: string): Issue {
+  static fromChild(path: Path, value: unknown, reason: string): Issue {
     return new Issue([path], value, reason);
   }
 
   private constructor(
     readonly path: Path[],
-    readonly value: any,
+    readonly value: unknown,
     readonly reason: string,
   ) { }
 
@@ -51,7 +51,7 @@ export interface IssueResult {
 }
 
 export interface ValueProcessor<T> {
-  process(value: any): Result<T>;
+  process(value: unknown): Result<T>;
 }
 
 export type Next<T, R> = (value: T) => Result<R>;

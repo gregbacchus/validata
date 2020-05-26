@@ -26,7 +26,7 @@ class Generic<T extends object> {
       }
     });
 
-    const output: T = {} as any;
+    const output = {} as T;
     const keys = Object.keys(contract) as Array<keyof T>;
     keys.forEach((key) => {
       const check = contract[key];

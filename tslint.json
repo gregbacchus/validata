@@ -9,6 +9,7 @@
         "statements"
       ]
     },
+    "array-type": false,
     "quotemark": [
       true,
       "single"

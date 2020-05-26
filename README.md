@@ -56,7 +56,7 @@ Work is done by a typed `ValueProcessor`, as returned by`IsObject<T>()` or `AsNu
 
 ```typescript
 interface ValueProcessor<T> {
-  process(value: any): Result<T>;
+  process(value: unknown): Result<T>;
 }
 ```
 

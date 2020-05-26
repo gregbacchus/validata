@@ -6,7 +6,7 @@ export interface TestIssue {
 }
 
 export interface TestDefinition<T> {
-  input: any;
+  input: unknown;
   expect?: T;
   issues?: TestIssue[];
 }
@@ -39,12 +39,11 @@ export const runTests = <T>(fut: ValueProcessor<T>, ...tests: Array<TestDefiniti
   });
 };
 
-export const expectIssue = <T>(fut: ValueProcessor<T>, value: any, reason: string, path: Path[] = []): void => {
+export const expectIssue = <T>(fut: ValueProcessor<T>, value: unknown, reason: string, path: Path[] = []): void => {
   const result = fut.process(value);
   if (!isIssue(result)) {
     // eslint-disable-next-line no-undef
     fail('no issue');
-    return;
   }
   expect(result.issues).toEqual(
     expect.arrayContaining([
@@ -56,7 +55,7 @@ export const expectIssue = <T>(fut: ValueProcessor<T>, value: any, reason: strin
   );
 };
 
-export const expectSuccess = <T>(fut: ValueProcessor<T>, value: any): void => {
+export const expectSuccess = <T>(fut: ValueProcessor<T>, value: unknown): void => {
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
@@ -65,7 +64,7 @@ export const expectSuccess = <T>(fut: ValueProcessor<T>, value: any): void => {
   }
 };
 
-export const expectValue = <T>(fut: ValueProcessor<T>, value: any, coerced: T): void => {
+export const expectValue = <T>(fut: ValueProcessor<T>, value: unknown, coerced: T): void => {
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
