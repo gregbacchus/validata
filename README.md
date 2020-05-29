@@ -242,6 +242,15 @@ const check = isString({
 });
 ```
 
+```typescript
+import validator from 'validator';
+
+const check = isString({
+  validator: validator: validator.isEmail,
+  validatorOptions: { allow_display_name: true }
+});
+```
+
 ### `isTuple`, `maybeTuple`
 
 Usage:
