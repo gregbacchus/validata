@@ -2,6 +2,7 @@ import { isArray } from '../array';
 import { isNumber } from '../number';
 import { isObject } from '../object';
 import { asString, isString, maybeString } from '../string';
+import { isTuple } from '../tuple';
 import { isIssue } from '../types';
 
 interface Sample {
@@ -37,3 +38,14 @@ if (isIssue(result)) {
 } else {
   console.log('Accepted value', result.value);
 }
+
+const sample3 = isTuple([
+  isNumber(),
+  asString(),
+]);
+
+console.log(JSON.stringify(sample3.process(['foo', 'bar'])));
+console.log(sample3.process([102, '123']));
+console.log(sample3.process([102, 123])); // same as above because of asString
+console.log(JSON.stringify(sample3.process([345])));
+console.log(JSON.stringify(sample3.process([1, 2, 3])));
