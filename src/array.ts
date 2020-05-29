@@ -1,8 +1,11 @@
 import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
 import { isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
-interface CoerceOptions<I, _T extends I[]> {
+interface ItemProcessor<I, _T extends I[]> {
   coerceMaxLength?: number;
+}
+
+interface CoerceOptions<I, T extends I[]> extends ItemProcessor<I, T> {
   item?: ValueProcessor<I>;
 }
 
@@ -74,14 +77,14 @@ class Generic<I, T extends I[]> {
   }
 }
 
-export type Options<I, T extends I[]> = CoerceOptions<I, T> & ValidationOptions<I, T>;
+export type ArrayOptions<I, T extends I[]> = ItemProcessor<I, T> & ValidationOptions<I, T>;
 
-export const isArray = <I, T extends I[]>(options?: Options<I, T>): ValueProcessor<T> => {
+export const isArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
   const generic = new Generic<I, T>();
-  return createIsCheck(generic.check, generic.coerce, generic.validate)(options);
+  return createIsCheck(generic.check, generic.coerce, generic.validate)({ ...options, item });
 };
 
-export const maybeArray = <I, T extends I[]>(options?: Options<I, T>): ValueProcessor<T | undefined> => {
+export const maybeArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<I, T>();
-  return createMaybeCheck(generic.check, generic.coerce, generic.validate)(options);
+  return createMaybeCheck(generic.check, generic.coerce, generic.validate)({ ...options, item });
 };

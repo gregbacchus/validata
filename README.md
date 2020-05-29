@@ -11,7 +11,7 @@ npm i validata
 ## Basic usage
 
 ```typescript
-import { AsString, IsObject, IsString, MaybeString } from 'validata';
+import { asString, isObject, isString, maybeString } from 'validata';
 
 interface Sample {
   maybeString: string | undefined;
@@ -19,12 +19,10 @@ interface Sample {
   numericString: string;
 }
 
-const sample = IsObject<Sample>({
-  contract: {
-    maybeString: MaybeString(), // will allow string data type or sanitize to undefined
-    myString: IsString(), // will allow only string data type
-    numericString: AsString(), // will allow string or attempt to convert to string
-  },
+const sample = isObject<Sample>({
+  maybeString: maybeString(), // will allow string data type or sanitize to undefined
+  myString: isString(), // will allow only string data type
+  numericString: isString(), // will allow string or attempt to convert to string
 });
 
 console.log(sample.process({

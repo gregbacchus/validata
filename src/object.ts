@@ -74,14 +74,14 @@ class Generic<T extends object> {
   }
 }
 
-export type Options<T> = CoerceOptions<T> & ValidationOptions<T>;
+export type ObjectOptions<T> = ValidationOptions<T>;
 
-export const isObject = <T extends object>(options?: Options<T>): ValueProcessor<T> => {
+export const isObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
-  return createIsCheck(generic.check, generic.coerce, generic.validate)(options);
+  return createIsCheck(generic.check, generic.coerce, generic.validate)({ ...options, contract });
 };
 
-export const maybeObject = <T extends object>(options?: Options<T>): ValueProcessor<T | undefined> => {
+export const maybeObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
-  return createMaybeCheck(generic.check, generic.coerce, generic.validate)(options);
+  return createMaybeCheck(generic.check, generic.coerce, generic.validate)({ ...options, contract });
 };

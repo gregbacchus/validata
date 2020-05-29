@@ -32,10 +32,8 @@ describe('isObject', () => {
 
   it('will process children', () => {
     const fut = isObject<MyObject>({
-      contract: {
-        a: asNumber({ coerceMin: 25 }),
-        b: asString(),
-      },
+      a: asNumber({ coerceMin: 25 }),
+      b: asString(),
     });
     expectValue(fut, { a: 47, b: 'asd' }, { a: 47, b: 'asd' });
     expectValue(fut, { a: '47', b: 12 }, { a: 47, b: '12' });
@@ -44,15 +42,11 @@ describe('isObject', () => {
 
   it('will process nested children', () => {
     const fut = isObject<ParentObject>({
-      contract: {
-        o: isObject<MyObject>({
-          contract: {
-            a: isNumber(),
-            b: asString(),
-          },
-        }),
-        s: asString(),
-      },
+      o: isObject<MyObject>({
+        a: isNumber(),
+        b: asString(),
+      }),
+      s: asString(),
     });
     runTests(fut,
       {
@@ -76,10 +70,8 @@ describe('isObject', () => {
 
   it('will process children', () => {
     const fut = isObject<MyObject>({
-      contract: {
-        a: isNumber({ min: 25 }),
-        b: isString(),
-      },
+      a: isNumber({ min: 25 }),
+      b: isString(),
     });
     expectValue(fut, { a: 47, b: 'asd' }, { a: 47, b: 'asd' });
     expectIssue(fut, { a: '47', b: 'asd' }, 'incorrect-type', ['a']);

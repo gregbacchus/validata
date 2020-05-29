@@ -33,7 +33,7 @@ describe('isArray', () => {
   });
 
   it('will give issue if range outside expected', () => {
-    const fut = isArray({ minLength: 1, maxLength: 2 });
+    const fut = isArray(undefined, { minLength: 1, maxLength: 2 });
     expectIssue(fut, [], 'min-length');
     expectSuccess(fut, [{ a: 47 }]);
     expectSuccess(fut, [12]);
@@ -42,9 +42,7 @@ describe('isArray', () => {
   });
 
   it('will process items', () => {
-    const fut = isArray({
-      item: isNumber({ coerceMax: 500, min: 25 }),
-    });
+    const fut = isArray(isNumber({ coerceMax: 500, min: 25 }));
     expectSuccess(fut, []);
     expectSuccess(fut, [87]);
     expectValue(fut, [87, 223, 543, 56], [87, 223, 500, 56]);
@@ -73,7 +71,7 @@ describe('maybeArray', () => {
   });
 
   it('will give issue if range outside expected', () => {
-    const fut = maybeArray({ minLength: 1, maxLength: 2 });
+    const fut = maybeArray(undefined, { minLength: 1, maxLength: 2 });
     expectIssue(fut, [], 'min-length');
     expectSuccess(fut, [{ a: 47 }]);
     expectSuccess(fut, [12]);

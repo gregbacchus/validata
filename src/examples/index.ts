@@ -11,11 +11,9 @@ interface Sample {
 }
 
 const sample = isObject<Sample>({
-  contract: {
-    maybeString: maybeString(),
-    myString: isString(),
-    numericString: asString(),
-  },
+  maybeString: maybeString(),
+  myString: isString(),
+  numericString: asString(),
 });
 
 console.log(sample.process({
@@ -24,8 +22,7 @@ console.log(sample.process({
   numericString: 123,
 }));
 
-const sample2 = isArray({
-  item: isNumber({ min: 17 }),
+const sample2 = isArray(isNumber({ min: 17 }), {
   minLength: 1,
 });
 
