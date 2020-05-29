@@ -50,7 +50,7 @@ Outputs:
 
 ## API
 
-Work is done by a typed `ValueProcessor`, as returned by`IsObject<T>()` or `AsNumber()`.
+Work is done by a typed `ValueProcessor`, as returned by`isObject<T>()` or `asNumber()`.
 
 ```typescript
 interface ValueProcessor<T> {
@@ -75,19 +75,19 @@ interface IssueResult {
 
 ## Naming conventions
 
-### `Is...` e.g. `IsNumber`
+### `is...` e.g. `isNumber`
 
 * if the value is of the type it will be accepted
 * `null` or `undefined` cause an issue
 * otherwise it will cause an issue
 
-### `Maybe...` e.g. `MaybeNumber`
+### `maybe...` e.g. `maybeNumber`
 
 * if the value is of the type it will be accepted
 * `null` or `undefined` it will sanitized to undefined
 * otherwise it will cause an issue
 
-### `As...` e.g. `AsNumber`
+### `as...` e.g. `asNumber`
 
 * if the value is of the type it will be accepted
 * `null` or `undefined` converted to default, if provided, or cause an issue
@@ -95,7 +95,7 @@ interface IssueResult {
 * if the value is cannot be converted the default will be used if provided
 * otherwise it will cause an issue
 
-### `MaybeAs...` e.g. `MaybeAsNumber`
+### `maybeAs...` e.g. `maybeAsNumber`
 
 * if the value is of the type it will be accepted
 * `null` or `undefined` converted to default, if provided, or sanitized to undefined
