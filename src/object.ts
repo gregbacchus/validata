@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
 import { Contract, isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
@@ -11,11 +13,11 @@ interface ValidationOptions<T> {
 }
 
 class Generic<T extends object> {
-  check: Check<T> = (value: unknown): value is T => {
+  public check: Check<T> = (value: unknown): value is T => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
   }
 
-  process = (contract: Contract<T>, target: T): Result<T> => {
+  public process = (contract: Contract<T>, target: T): Result<T> => {
     const issues: Issue[] = [];
 
     (Object.keys(target) as Array<keyof T>).forEach((key) => {
@@ -47,7 +49,7 @@ class Generic<T extends object> {
     return issues.length ? { issues } : { value: output };
   }
 
-  coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
+  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
     if (!options) return next(value);
 
     let coerced = value;
@@ -63,7 +65,7 @@ class Generic<T extends object> {
     return next(coerced);
   }
 
-  validate: Validate<T, ValidationOptions<T>> = (value, options) => {
+  public validate: Validate<T, ValidationOptions<T>> = (value, options) => {
     if (!options) return undefined;
 
     const result: IssueResult = { issues: [] };

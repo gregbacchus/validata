@@ -2,6 +2,8 @@ import validator from 'validator';
 import { asString, isString, maybeAsString, maybeString } from './string';
 import { expectIssue, expectSuccess, expectValue } from './test-helpers';
 
+// cSpell:disable
+
 describe('isString', () => {
   it('will handle non-string', () => {
     const fut = isString();

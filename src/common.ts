@@ -18,7 +18,7 @@ export type Convert<T> = (value: unknown) => T | undefined;
 export type Coerce<T, O> = (options?: O) => (next: Next<T, T>) => (value: T) => Result<T>;
 export type Validate<T, O> = (value: T, options?: O) => IssueResult | undefined;
 
-export const withDefault = <T>(options?: WithDefault<T>): UndefinedHandler<T> => () => {
+export const withDefault = <T>(options?: WithDefault<T>): UndefinedHandler<T> => (): Result<T> | undefined => {
   if (options?.default) {
     return { value: options.default };
   }

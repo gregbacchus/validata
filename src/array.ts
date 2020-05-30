@@ -1,11 +1,11 @@
 import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
 import { isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
-interface ItemProcessor<I, _T extends I[]> {
+interface ItemProcessor {
   coerceMaxLength?: number;
 }
 
-interface CoerceOptions<I, T extends I[]> extends ItemProcessor<I, T> {
+interface CoerceOptions<I> extends ItemProcessor {
   item?: ValueProcessor<I>;
 }
 
@@ -17,11 +17,11 @@ interface ValidationOptions<I, T extends I[]> {
 }
 
 class Generic<I, T extends I[]> {
-  check: Check<T> = (value: unknown): value is T => {
+  public check: Check<T> = (value: unknown): value is T => {
     return Array.isArray(value); // TODO check generic
   }
 
-  process = (check: ValueProcessor<I>, target: T): Result<T> => {
+  public process = (check: ValueProcessor<I>, target: T): Result<T> => {
     const issues: Issue[] = [];
     const output = [] as I[];
     target.forEach((value, i) => {
@@ -41,7 +41,7 @@ class Generic<I, T extends I[]> {
     return issues.length ? { issues } : { value: output as T };
   }
 
-  coerce: Coerce<T, CoerceOptions<I, T>> = (options) => (next) => (value) => {
+  public coerce: Coerce<T, CoerceOptions<I>> = (options) => (next) => (value) => {
     if (!options) return next(value);
 
     let coerced = value;
@@ -60,7 +60,7 @@ class Generic<I, T extends I[]> {
     return next(coerced);
   }
 
-  validate: Validate<T, ValidationOptions<I, T>> = (value, options) => {
+  public validate: Validate<T, ValidationOptions<I, T>> = (value, options) => {
     if (!options) return undefined;
 
     const result: IssueResult = { issues: [] };
@@ -77,7 +77,7 @@ class Generic<I, T extends I[]> {
   }
 }
 
-export type ArrayOptions<I, T extends I[]> = ItemProcessor<I, T> & ValidationOptions<I, T>;
+export type ArrayOptions<I, T extends I[]> = ItemProcessor & ValidationOptions<I, T>;
 
 export const isArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
   const generic = new Generic<I, T>();

@@ -13,11 +13,11 @@ interface ValidationOptions<T> {
 }
 
 class Generic<V> {
-  check: Check<Record<string, V>> = (value: unknown): value is Record<string, V> => {
+  public check: Check<Record<string, V>> = (value: unknown): value is Record<string, V> => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
   }
 
-  process = (check: ValueProcessor<V>, target: Record<string, V>): Result<Record<string, V>> => {
+  public process = (check: ValueProcessor<V>, target: Record<string, V>): Result<Record<string, V>> => {
     const issues: Issue[] = [];
 
     const output = {} as Record<string, V>;
@@ -40,7 +40,7 @@ class Generic<V> {
     return issues.length ? { issues } : { value: output };
   }
 
-  coerce: Coerce<Record<string, V>, CoerceOptions<V>> = (options) => (next) => (value) => {
+  public coerce: Coerce<Record<string, V>, CoerceOptions<V>> = (options) => (next) => (value) => {
     if (!options) return next(value);
 
     let coerced = value;
@@ -56,7 +56,7 @@ class Generic<V> {
     return next(coerced);
   }
 
-  validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, options) => {
+  public validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, options) => {
     if (!options) return undefined;
 
     const result: IssueResult = { issues: [] };

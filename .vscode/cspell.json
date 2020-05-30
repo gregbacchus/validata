@@ -1,0 +1,20 @@
+{
+  "ignorePaths": [
+    "**/.*",
+    "**/.*/",
+    "**/dist/",
+    "**/jest.config.json",
+    "**/node_modules/",
+    "**/package*.json",
+    "**/tsconfig.json"
+  ],
+  "language": "en-US",
+  "languageSettings": [],
+  "version": "1.0",
+  "words": [
+    "npmignore",
+    "npmrc",
+    "releaserc",
+    "validata"
+  ]
+}

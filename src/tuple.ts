@@ -11,12 +11,13 @@ interface ValidationOptions<T extends unknown[]> {
 }
 
 class Generic<T extends unknown[]> {
-  check: Check<T> = (value: unknown): value is T => {
+  public check: Check<T> = (value: unknown): value is T => {
     return Array.isArray(value); // TODO check generic
   }
 
-  process = (check: { [K in keyof T]: ValueProcessor<T[K]> }, target: T): Result<T> => {
+  public process = (check: { [K in keyof T]: ValueProcessor<T[K]> }, target: T): Result<T> => {
     const issues: Issue[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const output: T = [] as any;
     check.forEach((c, i) => {
       if (i >= target.length) {
@@ -46,7 +47,7 @@ class Generic<T extends unknown[]> {
     return issues.length ? { issues } : { value: output };
   }
 
-  coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
+  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
     if (!options) return next(value);
 
     let coerced = value;
@@ -60,7 +61,7 @@ class Generic<T extends unknown[]> {
     return next(coerced);
   }
 
-  validate: Validate<T, ValidationOptions<T>> = (value, options) => {
+  public validate: Validate<T, ValidationOptions<T>> = (value, options) => {
     if (!options) return undefined;
 
     const result: IssueResult = { issues: [] };
