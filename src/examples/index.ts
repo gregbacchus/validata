@@ -1,6 +1,7 @@
 import { isArray } from '../array';
-import { isNumber } from '../number';
+import { asNumber, isNumber } from '../number';
 import { isObject } from '../object';
+import { isRecord } from '../record';
 import { asString, isString, maybeString } from '../string';
 import { isTuple } from '../tuple';
 import { isIssue } from '../types';
@@ -49,3 +50,9 @@ console.log(sample3.process([102, '123']));
 console.log(sample3.process([102, 123])); // same as above because of asString
 console.log(JSON.stringify(sample3.process([345])));
 console.log(JSON.stringify(sample3.process([1, 2, 3])));
+
+const sample4 = isRecord(asNumber());
+
+console.log(JSON.stringify(sample4.process({ foo: 'bar' })));
+console.log(sample4.process({ foo: '123' }));
+console.log(sample4.process({ foo: 123 })); // same as above because of asNumber

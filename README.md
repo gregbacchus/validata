@@ -60,6 +60,8 @@ Checks:
 * maybeAsNumber
 * isObject
 * maybeObject
+* isRecord
+* maybeRecord
 * isString
 * maybeString
 * asString
@@ -195,6 +197,28 @@ const check = isObject<Sample>({
   myString: isString(),
   numericString: asString(),
 });
+```
+
+### `isRecord`, `maybeRecord`
+
+Usage:
+
+```typescript
+isRecord<V>(check, options);
+maybeRecord<V>(check, options);
+// where `check` is ValueProcessor<V>, and Record<string, V> is the type to be processed
+```
+
+Options:
+
+* `validator?: (value: Record<string, V>, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
+* `validatorOptions?: any` - options to pass to the _validator_
+
+Example:
+
+```typescript
+const check = isObject(isString());
+check.process({ foo: 'bar' })
 ```
 
 ### `isString`, `maybeString`, `asString`, `maybeAsString`
