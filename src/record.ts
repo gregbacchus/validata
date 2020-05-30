@@ -6,6 +6,8 @@ interface CoerceOptions<V> {
 }
 
 interface ValidationOptions<T> {
+  maxKeys?: number;
+  minKeys?: number;
   validator?: (value: T, options?: any) => boolean;
   validatorOptions?: any;
 }
@@ -58,6 +60,12 @@ class Generic<V> {
     if (!options) return undefined;
 
     const result: IssueResult = { issues: [] };
+    if (options.minKeys !== undefined && Object.keys(value).length < options.minKeys) {
+      result.issues.push(Issue.from(value, 'min-keys'));
+    }
+    if (options.maxKeys !== undefined && Object.keys(value).length > options.maxKeys) {
+      result.issues.push(Issue.from(value, 'max-keys'));
+    }
     if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
       result.issues.push(Issue.from(value, 'validator'));
     }
