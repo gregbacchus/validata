@@ -1,0 +1,21 @@
+{
+  "coverageReporters": [
+    "cobertura",
+    "lcov",
+    "text"
+  ],
+  "moduleFileExtensions": [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "json",
+    "node"
+  ],
+  "testEnvironment": "node",
+  "testRegex": "/(test|src)/.*\\.(test)\\.(tsx?)$",
+  "testURL": "http://localhost",
+  "transform": {
+    "^.+\\.tsx?$": "ts-jest"
+  }
+}
