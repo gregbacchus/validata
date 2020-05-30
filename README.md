@@ -217,7 +217,7 @@ Options:
 Example:
 
 ```typescript
-const check = isObject(isString());
+const check = isRecord(isString());
 check.process({ foo: 'bar' })
 ```
 
