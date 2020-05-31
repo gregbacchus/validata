@@ -3,7 +3,11 @@
 import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
 import { Contract, isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
-interface CoerceOptions<T> {
+interface AdditionalOptions {
+  stripExtraProperties?: boolean;
+}
+
+interface CoerceOptions<T> extends AdditionalOptions {
   contract?: Contract<T>;
 }
 
@@ -52,8 +56,15 @@ class Generic<T extends object> {
   public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
     if (!options) return next(value);
 
-    let coerced = value;
+    let coerced = { ...value };
     if (options.contract) {
+      if (options.stripExtraProperties) {
+        const allowedProperties = new Set(Object.keys(options.contract));
+        (Object.keys(coerced) as (keyof T)[]).forEach((key) => {
+          if (allowedProperties.has(key as string)) return;
+          delete coerced[key];
+        });
+      }
       const result = this.process(options.contract, coerced);
       if (isIssue(result)) {
         return result;
@@ -76,7 +87,7 @@ class Generic<T extends object> {
   }
 }
 
-export type ObjectOptions<T> = ValidationOptions<T>;
+export type ObjectOptions<T> = ValidationOptions<T> & AdditionalOptions;
 
 export const isObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();

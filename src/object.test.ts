@@ -79,6 +79,22 @@ describe('isObject', () => {
     expectIssue(fut, {}, 'not-defined', ['a']);
     expectIssue(fut, {}, 'not-defined', ['b']);
   });
+
+  it('will error on unexpected properties', () => {
+    const fut = isObject<MyObject>({
+      a: isNumber({ min: 25 }),
+      b: isString(),
+    });
+    expectIssue(fut, { a: 47, b: 'asd', c: 234 }, 'unexpected-property', ['c']);
+  });
+
+  it('will strip unexpected properties', () => {
+    const fut = isObject<MyObject>({
+      a: isNumber({ min: 25 }),
+      b: isString(),
+    }, { stripExtraProperties: true });
+    expectValue(fut, { a: 47, b: 'asd', c: 345, d: 'hello' }, { a: 47, b: 'asd' });
+  });
 });
 
 describe('maybeObject', () => {
