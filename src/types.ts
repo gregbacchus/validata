@@ -23,21 +23,21 @@ export const exists = <T>(value: T | undefined): value is T => {
 export type Path = string | number | symbol;
 
 export class Issue {
-  static from(value: unknown, reason: string): Issue {
+  public static from(value: unknown, reason: string): Issue {
     return new Issue([], value, reason);
   }
 
-  static fromChild(path: Path, value: unknown, reason: string): Issue {
+  public static fromChild(path: Path, value: unknown, reason: string): Issue {
     return new Issue([path], value, reason);
   }
 
   private constructor(
-    readonly path: Path[],
-    readonly value: unknown,
-    readonly reason: string,
+    public readonly path: Path[],
+    public readonly value: unknown,
+    public readonly reason: string,
   ) { }
 
-  nest(parent: Path): Issue {
+  public nest(parent: Path): Issue {
     return new Issue(
       [parent, ...this.path],
       this.value,
