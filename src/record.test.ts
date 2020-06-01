@@ -24,6 +24,15 @@ describe('isRecord', () => {
     const fut = isRecord(isNumber());
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });
+    expectIssue(fut, { a: 'foo' }, 'incorrect-type', ['a']);
+  });
+
+  it('will respect min and max number of keys', () => {
+    const fut = isRecord(isNumber(), { maxKeys: 4, minKeys: 2 });
+    expectIssue(fut, {}, 'min-keys', []);
+    expectIssue(fut, { a: 47 }, 'min-keys', []);
+    expectSuccess(fut, { a: 47, b: 4, c: 65 });
+    expectIssue(fut, { a: 47, b: 4, c: 65, d: 65, e: 76 }, 'max-keys', []);
   });
 
   it('will process children', () => {
