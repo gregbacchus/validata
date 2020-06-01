@@ -23,11 +23,11 @@ export const exists = <T>(value: T | undefined): value is T => {
 export type Path = string | number | symbol;
 
 export class Issue {
-  public static from(value: unknown, reason: string): Issue {
+  public static from = (value: unknown, reason: string): Issue => {
     return new Issue([], value, reason);
   }
 
-  public static fromChild(path: Path, value: unknown, reason: string): Issue {
+  public static fromChild = (path: Path, value: unknown, reason: string): Issue => {
     return new Issue([path], value, reason);
   }
 
@@ -37,7 +37,10 @@ export class Issue {
     public readonly reason: string,
   ) { }
 
-  public nest(parent: Path): Issue {
+  /**
+   * ARROW FUNCTION
+   */
+  public nest = (parent: Path): Issue => {
     return new Issue(
       [parent, ...this.path],
       this.value,
