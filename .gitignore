@@ -12,5 +12,3 @@
 *.d.ts
 *.map
 .env
-!jest.config.js
-!.eslintrc.js
