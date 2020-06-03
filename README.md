@@ -2,6 +2,8 @@
 
 Type safe data validation and sanitization.
 
+See [validata-koa](https://www.npmjs.com/package/validata-koa) for more usage in [Koa](https://www.npmjs.com/package/koa).
+
 ## Getting started
 
 ```bash
