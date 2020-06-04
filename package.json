@@ -52,5 +52,8 @@
     "typescript": "^3.9.3",
     "validator": "^13.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/luxon": "^1.24.0",
+    "luxon": "^1.24.1"
+  }
 }

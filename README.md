@@ -56,6 +56,10 @@ Checks:
 
 * isArray
 * maybeArray
+* isDate
+* maybeDate
+* asDate
+* maybeAsDate
 * isNumber
 * maybeNumber
 * asNumber
@@ -149,6 +153,24 @@ Example:
 ```typescript
 isArray<number>(isNumber({ max: 20, min: 10}), { coerceMaxLength: 7 });
 ```
+
+### `isDate`, `maybeDate`, `asDate`, `maybeAsDate`
+
+Usage:
+
+```typescript
+isDate(options);
+maybeDate(options);
+asDate(options);
+maybeAsDate(options);
+```
+
+Options:
+
+* `maxFuture?: Duration` - if the value is after this duration into the future, it's an error `max-future`
+* `maxPast?: Duration` - if the value is before this duration into the past, it's an error `max-past`
+* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
+* `validatorOptions?: any` - options to pass to the _validator_
 
 ### `isNumber`, `maybeNumber`, `asNumber`, `maybeAsNumber`
 

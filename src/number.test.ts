@@ -151,7 +151,7 @@ describe('maybeAsNumber', () => {
     expectValue(fut, new Date(1562057445845), 1562057445845);
   });
 
-  it('null or undefined will be converted to NaN', () => {
+  it('null or undefined will be converted to undefined', () => {
     const fut = maybeAsNumber();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
