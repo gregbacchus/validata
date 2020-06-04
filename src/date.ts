@@ -17,6 +17,8 @@ const check: Check<Date> = (value): value is Date => {
 };
 
 const convert: Convert<Date> = (value) => {
+  if (check(value)) return value;
+
   if (typeof value === 'number' && !Number.isNaN(value)) {
     const utc = DateTime.fromMillis(value, { zone: 'utc' });
     if (!utc.isValid) return undefined;

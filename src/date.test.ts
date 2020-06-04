@@ -1,3 +1,4 @@
+import { Duration } from 'luxon';
 import { asDate, isDate, maybeAsDate, maybeDate } from './date';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 
@@ -26,18 +27,17 @@ describe('isDate', () => {
     expectSuccess(fut, new Date());
   });
 
-  // it('will validate range', () => {
-  //   const fut = isDate({ min: 2, max: 5 });
-  //   expectSuccess(fut, 4);
-  //   expectIssue(fut, 1, 'min');
-  //   expectIssue(fut, 8, 'max');
-  // });
+  it('will validate future limit', () => {
+    const fut = isDate({ maxFuture: Duration.fromISO('PT10M') });
+    expectSuccess(fut, new Date());
+    expectIssue(fut, new Date(Date.now() + 60 * 60 * 1_000), 'max-future');
+  });
 
-  // it('will check custom validator', () => {
-  //   const fut = isDate({ validator: (value) => value === 7 });
-  //   expectSuccess(fut, 7);
-  //   expectIssue(fut, 2, 'validator');
-  // });
+  it('will validate past limit', () => {
+    const fut = isDate({ maxPast: Duration.fromISO('PT10M') });
+    expectSuccess(fut, new Date());
+    expectIssue(fut, new Date(Date.now() - 60 * 60 * 1_000), 'max-past');
+  });
 });
 
 describe('maybeDate', () => {
@@ -53,7 +53,6 @@ describe('maybeDate', () => {
     const fut = maybeDate();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
-    expectValue(fut, NaN, undefined);
   });
 
   it('will handle date', () => {
@@ -61,18 +60,17 @@ describe('maybeDate', () => {
     expectSuccess(fut, new Date());
   });
 
-  // it('will validate range', () => {
-  //   const fut = maybeDate({ min: 2, max: 5 });
-  //   expectSuccess(fut, 4);
-  //   expectIssue(fut, 1, 'min');
-  //   expectIssue(fut, 8, 'max');
-  // });
+  it('will validate future limit', () => {
+    const fut = maybeDate({ maxFuture: Duration.fromISO('PT10M') });
+    expectSuccess(fut, new Date());
+    expectIssue(fut, new Date(Date.now() + 60 * 60 * 1_000), 'max-future');
+  });
 
-  // it('will check custom validator', () => {
-  //   const fut = maybeDate({ validator: (value) => value === 7 });
-  //   expectSuccess(fut, 7);
-  //   expectIssue(fut, 2, 'validator');
-  // });
+  it('will validate past limit', () => {
+    const fut = maybeDate({ maxPast: Duration.fromISO('PT10M') });
+    expectSuccess(fut, new Date());
+    expectIssue(fut, new Date(Date.now() - 60 * 60 * 1_000), 'max-past');
+  });
 });
 
 describe('asDate', () => {
@@ -95,18 +93,6 @@ describe('asDate', () => {
     const date = new Date();
     expectValue(fut, date.getTime(), date);
   });
-
-  // it('incorrect type that cannot be converted will have default used', () => {
-  //   const fut = asDate({ default: 17.54 });
-  //   expectValue(fut, 123.4, 123.4);
-  //   expectValue(fut, null, 17.54);
-  //   expectValue(fut, undefined, 17.54);
-  //   expectValue(fut, 'test', 17.54);
-  //   expectValue(fut, '123.4', 123.4);
-  //   expectValue(fut, [], 17.54);
-  //   expectValue(fut, {}, 17.54);
-  //   expectValue(fut, NaN, 17.54);
-  // });
 
   it('will handle date', () => {
     const fut = asDate();
@@ -135,7 +121,7 @@ describe('maybeAsDate', () => {
 
   it('Date will be converted to date', () => {
     const fut = maybeAsDate();
-    expectValue(fut, 1562057445845, new Date());
+    expectValue(fut, 1562057445845, new Date(1562057445845));
     expectValue(fut, '2013-02-12T08:34:32.120Z', new Date(Date.parse('2013-02-12T08:34:32.120Z')));
   });
 
@@ -152,12 +138,17 @@ describe('maybeAsDate', () => {
     expectSuccess(fut, new Date());
   });
 
-  // it('will coerce range', () => {
-  //   const fut = maybeAsDate({ coerceMin: 2, coerceMax: 5 });
-  //   expectSuccess(fut, 4);
-  //   expectValue(fut, 1, 2);
-  //   expectValue(fut, 8, 5);
-  // });
+  it('will validate future limit', () => {
+    const fut = maybeAsDate({ maxFuture: Duration.fromISO('PT10M') });
+    expectSuccess(fut, new Date());
+    expectIssue(fut, new Date(Date.now() + 60 * 60 * 1_000), 'max-future');
+  });
+
+  it('will validate past limit', () => {
+    const fut = maybeAsDate({ maxPast: Duration.fromISO('PT10M') });
+    expectSuccess(fut, new Date());
+    expectIssue(fut, new Date(Date.now() - 60 * 60 * 1_000), 'max-past');
+  });
 
   it('will check custom validator', () => {
     const date = new Date();
