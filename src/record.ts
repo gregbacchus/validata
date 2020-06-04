@@ -2,7 +2,7 @@ import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './comm
 import { isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<V> {
-  check: ValueProcessor<V>;
+  check?: ValueProcessor<V>;
 }
 
 interface ValidationOptions<T> {
@@ -75,12 +75,12 @@ class Generic<V> {
 
 export type RecordOptions<T> = ValidationOptions<T>;
 
-export const isRecord = <V>(check: ValueProcessor<V>, options?: RecordOptions<Record<string, V>>): ValueProcessor<Record<string, V>> => {
+export const isRecord = <V>(check?: ValueProcessor<V>, options?: RecordOptions<Record<string, V>>): ValueProcessor<Record<string, V>> => {
   const generic = new Generic<V>();
   return createIsCheck(generic.check, generic.coerce, generic.validate)({ ...options, check });
 };
 
-export const maybeRecord = <V>(check: ValueProcessor<V>, options?: RecordOptions<Record<string, V>>): ValueProcessor<Record<string, V> | undefined> => {
+export const maybeRecord = <V>(check?: ValueProcessor<V>, options?: RecordOptions<Record<string, V>>): ValueProcessor<Record<string, V> | undefined> => {
   const generic = new Generic<V>();
   return createMaybeCheck(generic.check, generic.coerce, generic.validate)({ ...options, check });
 };
