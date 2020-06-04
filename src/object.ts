@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
+import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 import { Contract, isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
 
 interface AdditionalOptions {
@@ -20,6 +20,20 @@ class Generic<T extends object> {
   public check: Check<T> = (value: unknown): value is T => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
   }
+
+  public convert: Convert<T> = (value) => {
+    if (this.check(value)) return value;
+
+    if (typeof value === 'string' && value[0] === '{' && value[value.length - 1] === '}') {
+      try {
+        return JSON.parse(value) as T;
+      } catch {
+        return undefined;
+      }
+    }
+
+    return undefined;
+  };
 
   public process = (contract: Contract<T>, target: T): Result<T> => {
     const issues: Issue[] = [];
@@ -97,4 +111,14 @@ export const isObject = <T extends object>(contract?: Contract<T>, options?: Obj
 export const maybeObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
   return createMaybeCheck(generic.check, generic.coerce, generic.validate)({ ...options, contract });
+};
+
+export const asObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
+  const generic = new Generic<T>();
+  return createAsCheck(generic.convert, generic.coerce, generic.validate)({ ...options, contract });
+};
+
+export const maybeAsObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
+  const generic = new Generic<T>();
+  return createMaybeAsCheck(generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
 };

@@ -66,6 +66,8 @@ Checks:
 * maybeAsNumber
 * isObject
 * maybeObject
+* asObject
+* maybeAsObject
 * isRecord
 * maybeRecord
 * isString
@@ -192,13 +194,15 @@ Options:
 * `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
 * `validatorOptions?: any` - options to pass to the _validator_
 
-### `isObject`, `maybeObject`
+### `isObject`, `maybeObject`, `asObject`, `maybeAsObject`
 
 Usage:
 
 ```typescript
 isObject(contract, options);
 maybeObject(contract, options);
+asObject(contract, options); // will parse string JSON as object
+maybeAsObject(contract, options); // will parse string JSON as object
 // where `contract` is Record<string, ValueProcessor>
 ```
 
