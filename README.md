@@ -54,6 +54,7 @@ Outputs:
 
 Checks:
 
+* isAny
 * isArray
 * maybeArray
 * isDate
