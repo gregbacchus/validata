@@ -2,15 +2,15 @@ import { Check, Coerce, createIsCheck, Validate } from './common';
 import { Issue, IssueResult } from './types';
 
 interface ValidationOptions {
-  validator?: (value: number, options?: any) => boolean;
+  validator?: (value: any, options?: any) => boolean;
   validatorOptions?: any;
 }
 
-const check: Check<number> = (value): value is any => true;
+const check: Check<any> = (value): value is any => !value || !!value;
 
-const coerce: Coerce<number, undefined> = () => (next) => (value) => next(value);
+const coerce: Coerce<any, undefined> = () => (next) => (value) => next(value);
 
-const validate: Validate<number, ValidationOptions> = (value, options) => {
+const validate: Validate<any, ValidationOptions> = (value, options) => {
   if (!options) return undefined;
 
   const result: IssueResult = { issues: [] };
