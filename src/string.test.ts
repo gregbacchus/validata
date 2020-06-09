@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import validator from 'validator';
 import { asString, isString, maybeAsString, maybeString } from './string';
 import { expectIssue, expectSuccess, expectValue } from './test-helpers';
@@ -126,7 +127,7 @@ describe('asString', () => {
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
     expectValue(fut, 0, '0');
-    expectValue(fut, new Date(1562057445845), 'Tue Jul 02 2019 20:50:45 GMT+1200 (New Zealand Standard Time)');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
@@ -136,7 +137,7 @@ describe('asString', () => {
     expectValue(fut, null, 'foo');
     expectValue(fut, undefined, 'foo');
     expectValue(fut, 0, '0');
-    expectValue(fut, new Date(1562057445845), 'Tue Jul 02 2019 20:50:45 GMT+1200 (New Zealand Standard Time)');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
@@ -238,7 +239,7 @@ describe('maybeAsString', () => {
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
     expectValue(fut, 0, '0');
-    expectValue(fut, new Date(1562057445845), 'Tue Jul 02 2019 20:50:45 GMT+1200 (New Zealand Standard Time)');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
@@ -248,7 +249,7 @@ describe('maybeAsString', () => {
     expectValue(fut, null, 'foo');
     expectValue(fut, undefined, 'foo');
     expectValue(fut, 0, '0');
-    expectValue(fut, new Date(1562057445845), 'Tue Jul 02 2019 20:50:45 GMT+1200 (New Zealand Standard Time)');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
