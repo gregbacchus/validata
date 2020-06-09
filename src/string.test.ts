@@ -127,7 +127,7 @@ describe('asString', () => {
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
     expectValue(fut, 0, '0');
-    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T08:50:45.845Z');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
@@ -137,7 +137,7 @@ describe('asString', () => {
     expectValue(fut, null, 'foo');
     expectValue(fut, undefined, 'foo');
     expectValue(fut, 0, '0');
-    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T08:50:45.845Z');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
@@ -239,7 +239,7 @@ describe('maybeAsString', () => {
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
     expectValue(fut, 0, '0');
-    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T08:50:45.845Z');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
@@ -249,7 +249,7 @@ describe('maybeAsString', () => {
     expectValue(fut, null, 'foo');
     expectValue(fut, undefined, 'foo');
     expectValue(fut, 0, '0');
-    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T20:50:45.845+12:00');
+    expectValue(fut, DateTime.fromMillis(1562057445845, { zone: 'Pacific/Auckland' }).toJSDate(), '2019-07-02T08:50:45.845Z');
     expectValue(fut, [], '');
     expectValue(fut, {}, '[object Object]');
   });
