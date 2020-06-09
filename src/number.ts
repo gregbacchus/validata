@@ -47,10 +47,10 @@ const validate: Validate<number, ValidationOptions> = (value, options) => {
 
   const result: IssueResult = { issues: [] };
   if (options.min !== undefined && value < options.min) {
-    result.issues.push(Issue.from(value, 'min'));
+    result.issues.push(Issue.from(value, 'min', { min: options.min }));
   }
   if (options.max !== undefined && value > options.max) {
-    result.issues.push(Issue.from(value, 'max'));
+    result.issues.push(Issue.from(value, 'max', { max: options.max }));
   }
   if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
     result.issues.push(Issue.from(value, 'validator'));
@@ -58,7 +58,7 @@ const validate: Validate<number, ValidationOptions> = (value, options) => {
   return result.issues.length ? result : undefined;
 };
 
-export const isNumber = createIsCheck(check, coerce, validate);
-export const maybeNumber = createMaybeCheck(check, coerce, validate, empty);
-export const asNumber = createAsCheck(convert, coerce, validate);
-export const maybeAsNumber = createMaybeAsCheck(check, convert, coerce, validate, empty);
+export const isNumber = createIsCheck('number', check, coerce, validate);
+export const maybeNumber = createMaybeCheck('number', check, coerce, validate, empty);
+export const asNumber = createAsCheck('number', convert, coerce, validate);
+export const maybeAsNumber = createMaybeAsCheck('number', check, convert, coerce, validate, empty);

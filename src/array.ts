@@ -65,10 +65,10 @@ class Generic<I, T extends I[]> {
 
     const result: IssueResult = { issues: [] };
     if (options.minLength !== undefined && value.length < options.minLength) {
-      result.issues.push(Issue.from(value, 'min-length'));
+      result.issues.push(Issue.from(value, 'min-length', { length: value.length, min: options.minLength }));
     }
     if (options.maxLength !== undefined && value.length > options.maxLength) {
-      result.issues.push(Issue.from(value, 'max-length'));
+      result.issues.push(Issue.from(value, 'max-length', { length: value.length, max: options.maxLength }));
     }
     if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
       result.issues.push(Issue.from(value, 'validator'));
@@ -81,10 +81,10 @@ export type ArrayOptions<I, T extends I[]> = ItemProcessor & ValidationOptions<I
 
 export const isArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
   const generic = new Generic<I, T>();
-  return createIsCheck(generic.check, generic.coerce, generic.validate)({ ...options, item });
+  return createIsCheck('array', generic.check, generic.coerce, generic.validate)({ ...options, item });
 };
 
 export const maybeArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<I, T>();
-  return createMaybeCheck(generic.check, generic.coerce, generic.validate)({ ...options, item });
+  return createMaybeCheck('array', generic.check, generic.coerce, generic.validate)({ ...options, item });
 };

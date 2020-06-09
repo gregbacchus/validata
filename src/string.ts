@@ -71,13 +71,13 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
 
   const result: IssueResult = { issues: [] };
   if (options.minLength !== undefined && value.length < options.minLength) {
-    result.issues.push(Issue.from(value, 'min-length'));
+    result.issues.push(Issue.from(value, 'min-length', { length: value.length, min: options.minLength }));
   }
   if (options.maxLength !== undefined && value.length > options.maxLength) {
-    result.issues.push(Issue.from(value, 'max-length'));
+    result.issues.push(Issue.from(value, 'max-length', { length: value.length, max: options.maxLength }));
   }
   if (options.regex !== undefined && !options.regex.test(value)) {
-    result.issues.push(Issue.from(value, 'regex'));
+    result.issues.push(Issue.from(value, 'regex', { regex: options.regex }));
   }
   if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
     result.issues.push(Issue.from(value, 'validator'));
@@ -85,7 +85,7 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
   return result.issues.length ? result : undefined;
 };
 
-export const isString = createIsCheck(check, coerce, validate);
-export const maybeString = createMaybeCheck(check, coerce, validate);
-export const asString = createAsCheck(convert, coerce, validate);
-export const maybeAsString = createMaybeAsCheck(check, convert, coerce, validate);
+export const isString = createIsCheck('string', check, coerce, validate);
+export const maybeString = createMaybeCheck('string', check, coerce, validate);
+export const asString = createAsCheck('string', convert, coerce, validate);
+export const maybeAsString = createMaybeAsCheck('string', check, convert, coerce, validate);

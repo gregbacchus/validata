@@ -76,10 +76,10 @@ export type Options<T extends unknown[]> = ValidationOptions<T>;
 
 export const isTuple = <T extends unknown[]>(items: { [K in keyof T]: ValueProcessor<T[K]> }, options?: Options<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
-  return createIsCheck(generic.check, generic.coerce, generic.validate)({ ...options, items });
+  return createIsCheck('tuple', generic.check, generic.coerce, generic.validate)({ ...options, items });
 };
 
 export const maybeTuple = <T extends unknown[]>(items: { [K in keyof T]: ValueProcessor<T[K]> }, options?: Options<T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
-  return createMaybeCheck(generic.check, generic.coerce, generic.validate)({ ...options, items });
+  return createMaybeCheck('tuple', generic.check, generic.coerce, generic.validate)({ ...options, items });
 };

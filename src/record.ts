@@ -60,11 +60,12 @@ class Generic<V> {
     if (!options) return undefined;
 
     const result: IssueResult = { issues: [] };
-    if (options.minKeys !== undefined && Object.keys(value).length < options.minKeys) {
-      result.issues.push(Issue.from(value, 'min-keys'));
+    const keyCount = Object.keys(value).length;
+    if (options.minKeys !== undefined && keyCount < options.minKeys) {
+      result.issues.push(Issue.from(value, 'min-keys', { keyCount, min: options.minKeys }));
     }
-    if (options.maxKeys !== undefined && Object.keys(value).length > options.maxKeys) {
-      result.issues.push(Issue.from(value, 'max-keys'));
+    if (options.maxKeys !== undefined && keyCount > options.maxKeys) {
+      result.issues.push(Issue.from(value, 'max-keys', { keyCount, max: options.maxKeys }));
     }
     if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
       result.issues.push(Issue.from(value, 'validator'));
@@ -77,10 +78,10 @@ export type RecordOptions<T> = ValidationOptions<T>;
 
 export const isRecord = <V>(check?: ValueProcessor<V>, options?: RecordOptions<Record<string, V>>): ValueProcessor<Record<string, V>> => {
   const generic = new Generic<V>();
-  return createIsCheck(generic.check, generic.coerce, generic.validate)({ ...options, check });
+  return createIsCheck('record', generic.check, generic.coerce, generic.validate)({ ...options, check });
 };
 
 export const maybeRecord = <V>(check?: ValueProcessor<V>, options?: RecordOptions<Record<string, V>>): ValueProcessor<Record<string, V> | undefined> => {
   const generic = new Generic<V>();
-  return createMaybeCheck(generic.check, generic.coerce, generic.validate)({ ...options, check });
+  return createMaybeCheck('record', generic.check, generic.coerce, generic.validate)({ ...options, check });
 };

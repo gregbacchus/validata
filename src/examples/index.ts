@@ -18,20 +18,25 @@ const sample = isObject<Sample>({
   numericString: asString(),
 });
 
-console.log(sample.process({
+console.log(JSON.stringify(sample.process({
   maybeString: 123,
+  myString: 123,
+  numericString: 123,
+})));
+
+console.log(JSON.stringify(sample.process({
   myString: '123',
   numericString: 123,
-}));
+})));
 
 const sample2 = isArray(isNumber({ min: 17 }), {
   minLength: 1,
 });
 
-console.log(sample2.process([]));
+console.log(JSON.stringify(sample2.process([])));
 console.log(JSON.stringify(sample2.process([1])));
 console.log(sample2.process([102, 123]));
-console.log(sample2.process([new Date()]));
+console.log(JSON.stringify(sample2.process([new Date()])));
 
 const result = sample2.process([new Date()]);
 if (isIssue(result)) {

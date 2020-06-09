@@ -43,11 +43,17 @@ const validate: Validate<Date, ValidationOptions> = (value, options) => {
 
   const result: IssueResult = { issues: [] };
   const dateTime = DateTime.fromJSDate(value);
-  if (options.maxFuture && dateTime > DateTime.utc().plus(options.maxFuture)) {
-    result.issues.push(Issue.from(value, 'max-future'));
+  if (options.maxFuture) {
+    const max = DateTime.utc().plus(options.maxFuture);
+    if (dateTime > max) {
+      result.issues.push(Issue.from(value, 'max-future', { max }));
+    }
   }
-  if (options.maxPast && dateTime < DateTime.utc().minus(options.maxPast)) {
-    result.issues.push(Issue.from(value, 'max-past'));
+  if (options.maxPast) {
+    const min = DateTime.utc().minus(options.maxPast);
+    if (dateTime < min) {
+      result.issues.push(Issue.from(value, 'max-past', { min }));
+    }
   }
   if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
     result.issues.push(Issue.from(value, 'validator'));
@@ -55,7 +61,7 @@ const validate: Validate<Date, ValidationOptions> = (value, options) => {
   return result.issues.length ? result : undefined;
 };
 
-export const isDate = createIsCheck(check, coerce, validate);
-export const maybeDate = createMaybeCheck(check, coerce, validate);
-export const asDate = createAsCheck(convert, coerce, validate);
-export const maybeAsDate = createMaybeAsCheck(check, convert, coerce, validate);
+export const isDate = createIsCheck('date', check, coerce, validate);
+export const maybeDate = createMaybeCheck('date', check, coerce, validate);
+export const asDate = createAsCheck('date', convert, coerce, validate);
+export const maybeAsDate = createMaybeAsCheck('date', check, convert, coerce, validate);

@@ -54,28 +54,29 @@ export const maybe = <T>(empty: Empty, check: Check<T>, options?: MaybeOptions, 
   return result;
 };
 
-export const is = <T>(check: Check<T>): IsAs<T> => (next) => (value) => {
+export const is = <T>(check: Check<T>, typeName: string): IsAs<T> => (next) => (value) => {
   if (!check(value)) {
-    return { issues: [Issue.from(value, 'incorrect-type')] };
+    return { issues: [Issue.from(value, 'incorrect-type', { expectedType: typeName })] };
   }
   return next(value);
 };
 
-export const as = <T>(convert: Convert<T>, undefinedHandler?: UndefinedHandler<T>): IsAs<T> => (next) => (value) => {
+export const as = <T>(convert: Convert<T>, typeName: string, undefinedHandler?: UndefinedHandler<T>): IsAs<T> => (next) => (value) => {
   const converted = convert(value);
   if (converted === undefined || converted === null) {
-    return (undefinedHandler && undefinedHandler()) ?? { issues: [Issue.from(value, 'no-conversion')] };
+    return (undefinedHandler && undefinedHandler()) ?? { issues: [Issue.from(value, 'no-conversion', { toType: typeName })] };
   }
   return next(converted);
 };
 
 export const createIsCheck = <T, TCoerceOptions, TValidationOptions>(
+  typeName: string,
   check: Check<T>,
   coerce: Coerce<T, TCoerceOptions>,
   validate: (value: T, options?: TValidationOptions) => IssueResult | undefined,
 ) => (options?: TCoerceOptions & TValidationOptions): ValueProcessor<T> => {
   return {
-    process: definitely<T>()(is(check)(coerce(options)((value) => {
+    process: definitely<T>()(is(check, typeName)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
@@ -83,13 +84,14 @@ export const createIsCheck = <T, TCoerceOptions, TValidationOptions>(
 };
 
 export const createMaybeCheck = <T, TCoerceOptions, TValidationOptions>(
+  typeName: string,
   check: Check<T>,
   coerce: Coerce<T, TCoerceOptions>,
   validate: (value: T, options?: TValidationOptions) => IssueResult | undefined,
   empty = nullOrUndefined,
 ) => (options?: MaybeOptions & TCoerceOptions & TValidationOptions): ValueProcessor<T | undefined> => {
   return {
-    process: maybe(empty, check, options)(is(check)(coerce(options)((value) => {
+    process: maybe(empty, check, options)(is(check, typeName)(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
@@ -97,12 +99,13 @@ export const createMaybeCheck = <T, TCoerceOptions, TValidationOptions>(
 };
 
 export const createAsCheck = <T, TCoerceOptions, TValidationOptions>(
+  typeName: string,
   convert: Convert<T>,
   coerce: Coerce<T, TCoerceOptions>,
   validate: (value: T, options?: TValidationOptions) => IssueResult | undefined,
 ) => (options?: WithDefault<T> & TCoerceOptions & TValidationOptions): ValueProcessor<T> => {
   return {
-    process: definitely<T>(withDefault(options))(as(convert, withDefault(options))(coerce(options)((value) => {
+    process: definitely<T>(withDefault(options))(as(convert, typeName, withDefault(options))(coerce(options)((value) => {
       const result = validate(value, options);
       return result ?? { value };
     }))),
@@ -110,6 +113,7 @@ export const createAsCheck = <T, TCoerceOptions, TValidationOptions>(
 };
 
 export const createMaybeAsCheck = <T, TCoerceOptions, TValidationOptions>(
+  typeName: string,
   check: Check<T>,
   convert: Convert<T>,
   coerce: Coerce<T, TCoerceOptions>,
@@ -118,7 +122,7 @@ export const createMaybeAsCheck = <T, TCoerceOptions, TValidationOptions>(
 ) => (options?: MaybeOptions & WithDefault<T> & TCoerceOptions & TValidationOptions): ValueProcessor<T | undefined> => {
   return {
     process: maybe(empty, check, options, withDefault(options))(
-      as(convert, withDefault(options))(coerce(options)((value) => {
+      as(convert, typeName, withDefault(options))(coerce(options)((value) => {
         const result = validate(value, options);
         return result ?? { value };
       })),
