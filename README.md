@@ -24,29 +24,28 @@ interface Sample {
 const sample = isObject<Sample>({
   maybeString: maybeString(), // will allow string data type or sanitize to undefined
   myString: isString(), // will allow only string data type
-  numericString: isString(), // will allow string or attempt to convert to string
+  numericString: asString(), // will allow string or attempt to convert to string
 });
 
-console.log(sample.process({
-  maybeString: 123,
-  myString: '123',
-  numericString: 123,
-}));
-
-/*
-Outputs:
-{ value: { maybeString: undefined, myString: '123', numericString: '123' } }
-*/
-
-console.log(sample.process({
+console.log(JSON.stringify(sample.process({
   maybeString: 123,
   myString: 123,
   numericString: 123,
-}));
+})));
 
 /*
-Outputs:
-{ issues: [ { path: ['myString'], value: 123, reason: 'incorrect-type'}]}
+FAIL: Outputs:
+{"issues":[{"path":["maybeString"],"value":123,"reason":"incorrect-type","info":{"expectedType":"string"}},{"path":["myString"],"value":123,"reason":"incorrect-type","info":{"expectedType":"string"}}]}
+*/
+
+console.log(JSON.stringify(sample.process({
+  myString: '123',
+  numericString: 123,
+})));
+
+/*
+SUCCESS: Outputs:
+{"value":{"myString":"123","numericString":"123"}}
 */
 ```
 
