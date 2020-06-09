@@ -20,4 +20,4 @@ const validate: Validate<any, ValidationOptions> = (value, options) => {
   return result.issues.length ? result : undefined;
 };
 
-export const isAny = createIsCheck(check, coerce, validate);
+export const isAny = createIsCheck('anything', check, coerce, validate);
