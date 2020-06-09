@@ -1,5 +1,5 @@
 export type Contract<T> = {
-  [P in keyof T]: ValueProcessor<T[P]>;
+  [P in keyof T]-?: ValueProcessor<T[P]>;
 };
 
 export type Result<T> = ValueResult<T> | IssueResult;

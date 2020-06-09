@@ -103,22 +103,22 @@ class Generic<T extends object> {
 
 export type ObjectOptions<T> = ValidationOptions<T> & AdditionalOptions;
 
-export const isObject = <T extends object>(contract?: Contract<Required<T>>, options?: ObjectOptions<T>): ValueProcessor<T> => {
+export const isObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
   return createIsCheck('object', generic.check, generic.coerce, generic.validate)({ ...options, contract });
 };
 
-export const maybeObject = <T extends object>(contract?: Contract<Required<T>>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
+export const maybeObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
   return createMaybeCheck('object', generic.check, generic.coerce, generic.validate)({ ...options, contract });
 };
 
-export const asObject = <T extends object>(contract?: Contract<Required<T>>, options?: ObjectOptions<T>): ValueProcessor<T> => {
+export const asObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
   return createAsCheck('object', generic.convert, generic.coerce, generic.validate)({ ...options, contract });
 };
 
-export const maybeAsObject = <T extends object>(contract?: Contract<Required<T>>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
+export const maybeAsObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
   return createMaybeAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
 };
