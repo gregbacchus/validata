@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 import { Issue, IssueResult } from './types';
 
@@ -29,6 +29,12 @@ const check: Check<string> = (value): value is string => {
 const convert: Convert<string> = (value) => {
   if (value instanceof Date) {
     return DateTime.fromJSDate(value).toISO();
+  }
+  if (value instanceof DateTime) {
+    return value.toISO();
+  }
+  if (value instanceof Duration) {
+    return value.toISO();
   }
   return String(value);
 };
