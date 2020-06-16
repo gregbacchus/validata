@@ -239,6 +239,7 @@ maybeRecord<V>(check, options);
 
 Options:
 
+* `keyRegex?: RegExp` - regular expression to check each key name, or it's an error `key-regex`
 * `maxKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
 * `minKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
 * `validator?: (value: Record<string, V>, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
