@@ -1,3 +1,4 @@
+import { isAny } from './any';
 import { asNumber, isNumber } from './number';
 import { isObject } from './object';
 import { isRecord, maybeRecord } from './record';
@@ -33,6 +34,20 @@ describe('isRecord', () => {
     expectIssue(fut, { a: 47 }, 'min-keys', []);
     expectSuccess(fut, { a: 47, b: 4, c: 65 });
     expectIssue(fut, { a: 47, b: 4, c: 65, d: 65, e: 76 }, 'max-keys', []);
+  });
+
+  it('will check key names', () => {
+    const fut = isRecord(isAny(), { keyRegex: /^test/ });
+    expectIssue(fut, { a: 324 }, 'key-regex', []);
+    expectIssue(fut, { test: 47, Test: 'q34' }, 'key-regex', []);
+    expectSuccess(fut, { test: 47, tester: 4, testing: 65 });
+  });
+
+  it('will check key names - exclude chars', () => {
+    const fut = isRecord(isAny(), { keyRegex: /^[^.$]+$/ });
+    expectIssue(fut, { 'hello.world': 324 }, 'key-regex', []);
+    expectIssue(fut, { test: 47, $id: 'q34' }, 'key-regex', []);
+    expectSuccess(fut, { foo: 47, bar: 4, testing: 65 });
   });
 
   it('will process children', () => {

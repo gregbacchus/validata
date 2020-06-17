@@ -6,6 +6,7 @@ interface CoerceOptions<V> {
 }
 
 interface ValidationOptions<T> {
+  keyRegex?: RegExp;
   maxKeys?: number;
   minKeys?: number;
   validator?: (value: T, options?: any) => boolean;
@@ -61,6 +62,17 @@ class Generic<V> {
 
     const result: IssueResult = { issues: [] };
     const keyCount = Object.keys(value).length;
+    const keyRegex = options.keyRegex;
+    if (keyRegex !== undefined) {
+      result.issues.push(
+        ...Object.keys(value).reduce((acc, key) => {
+          if (!keyRegex.test(key)) {
+            acc.push(Issue.from(key, 'key-regex', { key, regex: keyRegex.toString() }));
+          }
+          return acc;
+        }, [] as Issue[])
+      );
+    }
     if (options.minKeys !== undefined && keyCount < options.minKeys) {
       result.issues.push(Issue.from(value, 'min-keys', { keyCount, min: options.minKeys }));
     }

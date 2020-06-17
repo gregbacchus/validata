@@ -77,7 +77,7 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
     result.issues.push(Issue.from(value, 'max-length', { length: value.length, max: options.maxLength }));
   }
   if (options.regex !== undefined && !options.regex.test(value)) {
-    result.issues.push(Issue.from(value, 'regex', { regex: options.regex }));
+    result.issues.push(Issue.from(value, 'regex', { regex: options.regex.toString() }));
   }
   if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
     result.issues.push(Issue.from(value, 'validator'));
