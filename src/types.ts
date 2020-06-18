@@ -27,8 +27,8 @@ export class Issue {
     return new Issue([], value, reason, info);
   }
 
-  public static fromChild = (path: Path, value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
-    return new Issue([path], value, reason, info);
+  public static fromChild = (path: Path | Path[], value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
+    return new Issue(Array.isArray(path) ? path : [path], value, reason, info);
   }
 
   private constructor(
