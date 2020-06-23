@@ -76,6 +76,10 @@ Checks:
 * maybeAsString
 * isTuple
 * maybeTuple
+* isUrl
+* maybeUrl
+* asUrl
+* maybeAsUrl
 
 Work is done by a typed `ValueProcessor`, as returned by`isObject<T>()` or `asNumber()`.
 
@@ -328,4 +332,33 @@ const check = isTuple([
   isNumber({ max: 9, min: 3 }),
   isString({ regex: /^\w+$/ }),
 ]);
+```
+
+### `isUrl`, `maybeUrl`, `asUrl`, `maybeAsUrl`
+
+Working with Node's URL object
+
+Usage:
+
+```typescript
+isUrl(options);
+maybeUrl(options);
+asUrl(options);
+maybeAsUrl(options);
+```
+
+Options:
+
+* `setProtocol?: string` - will coerce the protocol to the given value, if present
+* `protocol?: string` - given URL must have this protocol, or it's an error `invalid-protocol`
+* `validator?: (value: URL, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
+* `validatorOptions?: any` - options to pass to the _validator_
+
+
+Example:
+
+```typescript
+const check = asUrl({
+  protocol: 'https',
+});
 ```
