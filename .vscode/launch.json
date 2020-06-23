@@ -47,7 +47,6 @@
       "stopOnEntry": false,
       "args": [
         "--runInBand",
-        "--no-cache",
         "--config",
         "jest.config.json",
         "--runTestsByPath",
