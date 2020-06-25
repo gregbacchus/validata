@@ -305,7 +305,7 @@ const check = isString({
 import validator from 'validator';
 
 const check = isString({
-  validator: validator: validator.isEmail,
+  validator: validator.isEmail,
   validatorOptions: { allow_display_name: true }
 });
 ```
