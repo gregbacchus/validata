@@ -7,5 +7,6 @@ export * from './record';
 export * from './string';
 export * from './tuple';
 export * from './types';
+export * from './url';
 
 // intentionally left empty
