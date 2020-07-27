@@ -8,6 +8,7 @@ export * from './record';
 export * from './string';
 export * from './tuple';
 export * from './types';
+export * from './ulid';
 export * from './url';
 
 // intentionally left empty
