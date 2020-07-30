@@ -1,15 +1,5 @@
 import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 import { Issue, IssueResult } from './types';
-// // TODO replace with implementation from validata when available
-// export const maybeBoolean = (): ValueProcessor<boolean | undefined> => {
-//   return {
-//     process: (value: unknown) => {
-//       return {
-//         value: value === undefined ? undefined : !!value,
-//       };
-//     },
-//   };
-// };
 
 interface CoerceOptions {
 }
