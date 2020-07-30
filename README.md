@@ -54,32 +54,45 @@ SUCCESS: Outputs:
 Checks:
 
 * isAny
-* isArray
-* maybeArray
-* isDate
-* maybeDate
-* asDate
-* maybeAsDate
-* isNumber
-* maybeNumber
-* asNumber
-* maybeAsNumber
-* isObject
-* maybeObject
-* asObject
-* maybeAsObject
-* isRecord
-* maybeRecord
-* isString
-* maybeString
-* asString
-* maybeAsString
-* isTuple
-* maybeTuple
-* isUrl
-* maybeUrl
-* asUrl
-* maybeAsUrl
+* Array
+  * isArray
+  * maybeArray
+* Date
+  * isDate
+  * maybeDate
+  * asDate
+  * maybeAsDate
+* Number
+  * -
+  * maybeNumber
+  * asNumber
+  * maybeAsNumber
+* Boolean
+  * isBoolean
+  * maybeBoolean
+  * asBoolean
+  * maybeAsBoolean
+* Object
+  * isObject
+  * maybeObject
+  * asObject
+  * maybeAsObject
+* Record
+  * isRecord
+  * maybeRecord
+* String
+  * isString
+  * maybeString
+  * asString
+  * maybeAsString
+* Tuple
+  * isTuple
+  * maybeTuple
+* Url
+  * isUrl
+  * maybeUrl
+  * asUrl
+  * maybeAsUrl
 
 Work is done by a typed `ValueProcessor`, as returned by`isObject<T>()` or `asNumber()`.
 
@@ -195,6 +208,22 @@ Options:
 * `coerceMax?: number` - if the value is more than this, it will be set to this value
 * `max?: number` - if the value is than this, it's an error `max`
 * `min?: number` - if the value is than this, it's an error `min`
+* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
+* `validatorOptions?: any` - options to pass to the _validator_
+
+### `isBoolean`, `maybeBoolean`, `asBoolean`, `maybeAsBoolean`
+
+Usage:
+
+```typescript
+isBoolean(options);
+maybeBoolean(options);
+asBoolean(options);
+maybeAsBoolean(options);
+```
+
+Options:
+
 * `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
 * `validatorOptions?: any` - options to pass to the _validator_
 
