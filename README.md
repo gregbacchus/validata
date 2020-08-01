@@ -63,7 +63,7 @@ Checks:
   * asDate
   * maybeAsDate
 * Number
-  * -
+  * isNumber
   * maybeNumber
   * asNumber
   * maybeAsNumber
@@ -382,7 +382,6 @@ Options:
 * `protocol?: string` - given URL must have this protocol, or it's an error `invalid-protocol`
 * `validator?: (value: URL, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
 * `validatorOptions?: any` - options to pass to the _validator_
-
 
 Example:
 
