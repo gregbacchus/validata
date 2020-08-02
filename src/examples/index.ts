@@ -1,4 +1,5 @@
 import { isArray } from '../array';
+import { asBoolean, isBoolean } from '../boolean';
 import { asNumber, isNumber } from '../number';
 import { isObject } from '../object';
 import { isRecord } from '../record';
@@ -45,19 +46,25 @@ if (isIssue(result)) {
   console.log('Accepted value', result.value);
 }
 
-const sample3 = isTuple([
+const sample3 = isBoolean();
+const sample31 = asBoolean();
+
+console.log(JSON.stringify(sample3.process(true)));
+console.log(JSON.stringify(sample31.process('true')));
+
+const sample4 = isTuple([
   isNumber(),
   asString(),
 ]);
 
-console.log(JSON.stringify(sample3.process(['foo', 'bar'])));
-console.log(sample3.process([102, '123']));
-console.log(sample3.process([102, 123])); // same as above because of asString
-console.log(JSON.stringify(sample3.process([345])));
-console.log(JSON.stringify(sample3.process([1, 2, 3])));
+console.log(JSON.stringify(sample4.process(['foo', 'bar'])));
+console.log(sample4.process([102, '123']));
+console.log(sample4.process([102, 123])); // same as above because of asString
+console.log(JSON.stringify(sample4.process([345])));
+console.log(JSON.stringify(sample4.process([1, 2, 3])));
 
-const sample4 = isRecord(asNumber());
+const sample5 = isRecord(asNumber());
 
-console.log(JSON.stringify(sample4.process({ foo: 'bar' })));
-console.log(sample4.process({ foo: '123' }));
-console.log(sample4.process({ foo: 123 })); // same as above because of asNumber
+console.log(JSON.stringify(sample5.process({ foo: 'bar' })));
+console.log(sample5.process({ foo: '123' }));
+console.log(sample5.process({ foo: 123 })); // same as above because of asNumber

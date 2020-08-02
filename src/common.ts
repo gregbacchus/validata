@@ -19,8 +19,9 @@ export type Coerce<T, O> = (options?: O) => (next: Next<T, T>) => (value: T) => 
 export type Validate<T, O> = (value: T, options?: O) => IssueResult | undefined;
 
 export const withDefault = <T>(options?: WithDefault<T>): UndefinedHandler<T> => (): Result<T> | undefined => {
-  if (options?.default) {
-    return { value: options.default };
+  if (options && 'default' in options) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return { value: options.default! };
   }
   return undefined;
 };
