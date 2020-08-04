@@ -28,13 +28,13 @@ const check: Check<string> = (value): value is string => {
 
 const convert: Convert<string> = (value) => {
   if (value instanceof Date) {
-    return DateTime.fromJSDate(value).toUTC().toISO();
+    return DateTime.fromJSDate(value).toUTC().toISO() ?? undefined;
   }
   if (value instanceof DateTime) {
-    return value.toUTC().toISO();
+    return value.toUTC().toISO() ?? undefined;
   }
   if (value instanceof Duration) {
-    return value.toISO();
+    return value.toISO() ?? undefined;
   }
   return String(value);
 };
