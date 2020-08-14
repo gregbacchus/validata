@@ -18,7 +18,7 @@ export const expectFormatIssue = <T>(fut: ValueProcessor<T>, value: unknown, exp
         info: expect.objectContaining({
           expectedFormat,
         }),
-        reason: 'format',
+        reason: 'incorrect-format',
       }),
     ]),
   );

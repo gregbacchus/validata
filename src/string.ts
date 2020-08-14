@@ -84,7 +84,7 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
   if (options.format !== undefined) {
     const formatResult = options.format(value);
     if (formatResult !== true) {
-      result.issues.push(Issue.from(value, 'format', formatResult));
+      result.issues.push(Issue.from(value, 'incorrect-format', formatResult));
     }
   }
   if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
