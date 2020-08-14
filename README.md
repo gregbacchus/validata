@@ -335,6 +335,15 @@ const check = isString({
 ```
 
 ```typescript
+// change case
+import { pascalCase } from 'change-case';
+
+const check = isString({
+  transform: pascalCase
+});
+```
+
+```typescript
 const check = isString({
   maxLength: 10,
   minLength: 8,

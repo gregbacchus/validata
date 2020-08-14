@@ -8,10 +8,13 @@ interface StringPadding {
   padWith: string;
 }
 
+type StringTransform = (value: string) => string;
+
 interface CoerceOptions {
   limitLength?: number;
   padStart?: StringPadding;
   padEnd?: StringPadding;
+  transform?: StringTransform | StringTransform[];
   trim?: 'start' | 'end' | 'both' | 'none';
 }
 
@@ -58,6 +61,13 @@ const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => 
     case 'both':
       coerced = coerced.trim();
       break;
+  }
+  if (options.transform) {
+    if (Array.isArray(options.transform)) {
+      coerced = options.transform.reduce((acc, transform) => transform(acc), coerced);
+    } else {
+      coerced = options.transform(coerced);
+    }
   }
   if (options.padStart && coerced.length < options.padStart.length) {
     coerced = coerced.padStart(options.padStart.length, options.padStart.padWith);
