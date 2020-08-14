@@ -1,6 +1,6 @@
 {
   "name": "validata",
-  "version": "2.1.17",
+  "version": "2.1.18",
   "description": "Type safe data validation and sanitization",
   "keywords": [
     "typescript",
