@@ -305,6 +305,7 @@ Options:
 * `regex?: RegExp` - regular expression that must be matched, or it's an error `regex`
 * `maxLength?: number` - if the length of the string is more than this, it's an error `max-length`
 * `minLength?: number` - if the length of the string is less than this, it's an error `min-length`
+* `format:? StringFormatCheck` - extension point for string format checking, if check fails it's an issue `format` with `info.expectedFormat` set
 * `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error `validator`
 * `validatorOptions?: any` - options to pass to the _validator_
 
@@ -313,12 +314,23 @@ StringPadding:
 * `length: number` - will pad up until this length
 * `padWith: string` - the value to pad with
 
+StringFormat:
+
+* `StringFormat.ULID()` - https://github.com/ulid/spec
+* `StringFormat.UUID()` - https://www.ietf.org/rfc/rfc4122.txt
+
 Example:
 
 ```typescript
 const check = isString({
   limitLength: 6,
   padStart: { length: 6, padWith: '-' },
+});
+```
+
+```typescript
+const check = isString({
+  format: StringFormat.ULID()
 });
 ```
 

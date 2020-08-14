@@ -1,5 +1,6 @@
 import { DateTime, Duration } from 'luxon';
 import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { StringFormatCheck } from './string-format';
 import { Issue, IssueResult } from './types';
 
 interface StringPadding {
@@ -15,6 +16,7 @@ interface CoerceOptions {
 }
 
 interface ValidationOptions {
+  format?: StringFormatCheck;
   regex?: RegExp;
   maxLength?: number;
   minLength?: number;
@@ -78,6 +80,12 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
   }
   if (options.regex !== undefined && !options.regex.test(value)) {
     result.issues.push(Issue.from(value, 'regex', { regex: options.regex.toString() }));
+  }
+  if (options.format !== undefined) {
+    const formatResult = options.format(value);
+    if (formatResult !== true) {
+      result.issues.push(Issue.from(value, 'format', formatResult));
+    }
   }
   if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
     result.issues.push(Issue.from(value, 'validator'));
