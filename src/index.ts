@@ -10,5 +10,6 @@ export * from './string';
 export * from './tuple';
 export * from './types';
 export * from './url';
+export * from './validation-error';
 
 // intentionally left empty
