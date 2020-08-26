@@ -1,16 +1,14 @@
-import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Empty, Validate } from './common';
-import { Issue, IssueResult } from './types';
+import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Empty, Validate } from './common';
+import { Issue } from './types';
 
 interface CoerceOptions {
   coerceMin?: number;
   coerceMax?: number;
 }
 
-interface ValidationOptions {
+interface ValidationOptions extends CommonValidationOptions<number> {
   max?: number;
   min?: number;
-  validator?: (value: number, options?: any) => boolean;
-  validatorOptions?: any;
 }
 
 export const empty: Empty = (value) => {
@@ -43,19 +41,14 @@ const coerce: Coerce<number, CoerceOptions> = (options) => (next) => (value) => 
 };
 
 const validate: Validate<number, ValidationOptions> = (value, options) => {
-  if (!options) return undefined;
-
-  const result: IssueResult = { issues: [] };
+  const result = basicValidation(value, options);
   if (options.min !== undefined && value < options.min) {
     result.issues.push(Issue.from(value, 'min', { min: options.min }));
   }
   if (options.max !== undefined && value > options.max) {
     result.issues.push(Issue.from(value, 'max', { max: options.max }));
   }
-  if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-    result.issues.push(Issue.from(value, 'validator'));
-  }
-  return result.issues.length ? result : undefined;
+  return result;
 };
 
 export const isNumber = createIsCheck('number', check, coerce, validate);

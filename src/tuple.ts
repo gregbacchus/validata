@@ -1,14 +1,11 @@
-import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
-import { isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
+import { basicValidation, Check, Coerce, CommonValidationOptions, createIsCheck, createMaybeCheck, Validate } from './common';
+import { isIssue, Issue, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<T extends unknown[]> {
   items: { [K in keyof T]: ValueProcessor<T[K]> };
 }
 
-interface ValidationOptions<T extends unknown[]> {
-  validator?: (value: T, options?: any) => boolean;
-  validatorOptions?: any;
-}
+interface ValidationOptions<T extends unknown[]> extends CommonValidationOptions<T> { }
 
 class Generic<T extends unknown[]> {
   public check: Check<T> = (value: unknown): value is T => {
@@ -61,15 +58,7 @@ class Generic<T extends unknown[]> {
     return next(coerced);
   }
 
-  public validate: Validate<T, ValidationOptions<T>> = (value, options) => {
-    if (!options) return undefined;
-
-    const result: IssueResult = { issues: [] };
-    if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-      result.issues.push(Issue.from(value, 'validator'));
-    }
-    return result.issues.length ? result : undefined;
-  }
+  public validate: Validate<T, ValidationOptions<T>> = (value, options) => basicValidation(value, options);
 }
 
 export type Options<T extends unknown[]> = ValidationOptions<T>;

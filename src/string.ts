@@ -1,7 +1,7 @@
 import { DateTime, Duration } from 'luxon';
-import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 import { StringFormatCheck } from './string-format';
-import { Issue, IssueResult } from './types';
+import { Issue } from './types';
 
 interface StringPadding {
   length: number;
@@ -18,13 +18,11 @@ interface CoerceOptions {
   trim?: 'start' | 'end' | 'both' | 'none';
 }
 
-interface ValidationOptions {
+interface ValidationOptions extends CommonValidationOptions<string> {
   format?: StringFormatCheck;
   regex?: RegExp;
   maxLength?: number;
   minLength?: number;
-  validator?: (value: string, options?: any) => boolean;
-  validatorOptions?: any;
 }
 
 const check: Check<string> = (value): value is string => {
@@ -79,9 +77,7 @@ const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => 
 };
 
 const validate: Validate<string, ValidationOptions> = (value, options) => {
-  if (!options) return undefined;
-
-  const result: IssueResult = { issues: [] };
+  const result = basicValidation(value, options);
   if (options.minLength !== undefined && value.length < options.minLength) {
     result.issues.push(Issue.from(value, 'min-length', { length: value.length, min: options.minLength }));
   }
@@ -97,10 +93,7 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
       result.issues.push(Issue.from(value, 'incorrect-format', formatResult));
     }
   }
-  if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-    result.issues.push(Issue.from(value, 'validator'));
-  }
-  return result.issues.length ? result : undefined;
+  return result;
 };
 
 export const isString = createIsCheck('string', check, coerce, validate);

@@ -1,13 +1,9 @@
-import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
-import { Issue, IssueResult } from './types';
+import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 
 interface CoerceOptions {
 }
 
-interface ValidationOptions {
-  validator?: (value: boolean, options?: any) => boolean;
-  validatorOptions?: any;
-}
+interface ValidationOptions extends CommonValidationOptions<boolean> { }
 
 const check: Check<boolean> = (value): value is boolean => {
   return typeof value === 'boolean';
@@ -25,15 +21,7 @@ const coerce: Coerce<boolean, CoerceOptions> = () => (next) => (value) => {
   return next(value);
 };
 
-const validate: Validate<boolean, ValidationOptions> = (value, options) => {
-  if (!options) return undefined;
-
-  const result: IssueResult = { issues: [] };
-  if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-    result.issues.push(Issue.from(value, 'validator'));
-  }
-  return result.issues.length ? result : undefined;
-};
+const validate: Validate<boolean, ValidationOptions> = (value, options) => basicValidation(value, options);
 
 export const isBoolean = createIsCheck('boolean', check, coerce, validate);
 export const maybeBoolean = createMaybeCheck('boolean', check, coerce, validate);
