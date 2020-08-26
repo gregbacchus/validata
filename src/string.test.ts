@@ -1,3 +1,4 @@
+import { dotCase } from 'change-case';
 import { DateTime } from 'luxon';
 import validator from 'validator';
 import { asString, isString, maybeAsString, maybeString } from './string';
@@ -55,6 +56,23 @@ describe('isString', () => {
     expectSuccess(fut, 'a');
     expectSuccess(fut, 's');
     expectIssue(fut, 'other', 'validator');
+  });
+
+  it('be transformed by single transform', () => {
+    const fut = isString({ transform: dotCase });
+    expectValue(fut, '', '');
+    expectValue(fut, 'a', 'a');
+    expectValue(fut, 'foo bar', 'foo.bar');
+    expectValue(fut, 'FooBar', 'foo.bar');
+  });
+
+  it('be transformed by single transform', () => {
+    const transform = (value: string) => value.replace(/o/g, '*');
+    const fut = isString({ transform: [dotCase, transform] });
+    expectValue(fut, '', '');
+    expectValue(fut, 'a', 'a');
+    expectValue(fut, 'foo bar', 'f**.bar');
+    expectValue(fut, 'FooBar', 'f**.bar');
   });
 });
 

@@ -1,5 +1,6 @@
 import { DateTime, Duration } from 'luxon';
 import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { StringFormatCheck } from './string-format';
 import { Issue, IssueResult } from './types';
 
 interface StringPadding {
@@ -7,14 +8,18 @@ interface StringPadding {
   padWith: string;
 }
 
+type StringTransform = (value: string) => string;
+
 interface CoerceOptions {
   limitLength?: number;
   padStart?: StringPadding;
   padEnd?: StringPadding;
+  transform?: StringTransform | StringTransform[];
   trim?: 'start' | 'end' | 'both' | 'none';
 }
 
 interface ValidationOptions {
+  format?: StringFormatCheck;
   regex?: RegExp;
   maxLength?: number;
   minLength?: number;
@@ -28,13 +33,13 @@ const check: Check<string> = (value): value is string => {
 
 const convert: Convert<string> = (value) => {
   if (value instanceof Date) {
-    return DateTime.fromJSDate(value).toUTC().toISO();
+    return DateTime.fromJSDate(value).toUTC().toISO() ?? undefined;
   }
   if (value instanceof DateTime) {
-    return value.toUTC().toISO();
+    return value.toUTC().toISO() ?? undefined;
   }
   if (value instanceof Duration) {
-    return value.toISO();
+    return value.toISO() ?? undefined;
   }
   return String(value);
 };
@@ -57,6 +62,13 @@ const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => 
       coerced = coerced.trim();
       break;
   }
+  if (options.transform) {
+    if (Array.isArray(options.transform)) {
+      coerced = options.transform.reduce((acc, transform) => transform(acc), coerced);
+    } else {
+      coerced = options.transform(coerced);
+    }
+  }
   if (options.padStart && coerced.length < options.padStart.length) {
     coerced = coerced.padStart(options.padStart.length, options.padStart.padWith);
   }
@@ -78,6 +90,12 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
   }
   if (options.regex !== undefined && !options.regex.test(value)) {
     result.issues.push(Issue.from(value, 'regex', { regex: options.regex.toString() }));
+  }
+  if (options.format !== undefined) {
+    const formatResult = options.format(value);
+    if (formatResult !== true) {
+      result.issues.push(Issue.from(value, 'incorrect-format', formatResult));
+    }
   }
   if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
     result.issues.push(Issue.from(value, 'validator'));

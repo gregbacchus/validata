@@ -7,8 +7,10 @@ export * from './number';
 export * from './object';
 export * from './record';
 export * from './string';
+export * from './string-format';
 export * from './tuple';
 export * from './types';
 export * from './url';
+export * from './validation-error';
 
 // intentionally left empty
