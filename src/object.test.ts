@@ -248,6 +248,14 @@ describe('maybeAsObject', () => {
     expectValue(fut, 'test', undefined);
   });
 
+  it('will fail invalid JSON string when parsing is strict', () => {
+    const fut = maybeAsObject({}, { strictParsing: true });
+    expectIssue(fut, 0, 'no-conversion');
+    expectIssue(fut, 'test', 'no-conversion');
+    expectIssue(fut, '{testing=12}', 'no-conversion');
+    expectIssue(fut, '{testing:12}', 'no-conversion');
+  });
+
   it('will accept object', () => {
     const fut = maybeAsObject();
     expectSuccess(fut, {});

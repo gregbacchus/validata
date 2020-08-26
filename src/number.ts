@@ -14,7 +14,7 @@ interface ValidationOptions {
 }
 
 export const empty: Empty = (value) => {
-  return value === null || value === undefined || typeof value === 'number' && Number.isNaN(value);
+  return value === '' || value === null || value === undefined || typeof value === 'number' && Number.isNaN(value);
 };
 
 const check: Check<number> = (value): value is number => {
