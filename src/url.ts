@@ -1,14 +1,12 @@
-import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
-import { Issue, IssueResult } from './types';
+import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { Issue } from './types';
 
 interface CoerceOptions {
   setProtocol?: string;
 }
 
-interface ValidationOptions {
+interface ValidationOptions extends CommonValidationOptions<URL> {
   protocol?: string;
-  validator?: (value: URL, options?: any) => boolean;
-  validatorOptions?: any;
 }
 
 const check: Check<URL> = (value): value is URL => {
@@ -40,16 +38,11 @@ const coerce: Coerce<URL, CoerceOptions> = (options) => (next) => (value) => {
 };
 
 const validate: Validate<URL, ValidationOptions> = (value, options) => {
-  if (!options) return undefined;
-
-  const result: IssueResult = { issues: [] };
+  const result = basicValidation(value, options);
   if (options.protocol && value.protocol.replace(/:\s*$/, '') !== options.protocol.replace(/:\s*$/, '')) {
     result.issues.push(Issue.from(value, 'invalid-protocol', { expectedProtocol: options.protocol }));
   }
-  if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-    result.issues.push(Issue.from(value, 'validator'));
-  }
-  return result.issues.length ? result : undefined;
+  return result;
 };
 
 export const isUrl = createIsCheck('url', check, coerce, validate);

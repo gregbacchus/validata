@@ -1,16 +1,14 @@
-import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
-import { isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
+import { basicValidation, Check, Coerce, CommonValidationOptions, createIsCheck, createMaybeCheck, Validate } from './common';
+import { isIssue, Issue, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<V> {
   check?: ValueProcessor<V>;
 }
 
-interface ValidationOptions<T> {
+interface ValidationOptions<T> extends CommonValidationOptions<T> {
   keyRegex?: RegExp;
   maxKeys?: number;
   minKeys?: number;
-  validator?: (value: T, options?: any) => boolean;
-  validatorOptions?: any;
 }
 
 class Generic<V> {
@@ -58,9 +56,7 @@ class Generic<V> {
   }
 
   public validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, options) => {
-    if (!options) return undefined;
-
-    const result: IssueResult = { issues: [] };
+    const result = basicValidation(value, options);
     const keyCount = Object.keys(value).length;
     const keyRegex = options.keyRegex;
     if (keyRegex !== undefined) {
@@ -79,10 +75,7 @@ class Generic<V> {
     if (options.maxKeys !== undefined && keyCount > options.maxKeys) {
       result.issues.push(Issue.from(value, 'max-keys', { keyCount, max: options.maxKeys }));
     }
-    if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-      result.issues.push(Issue.from(value, 'validator'));
-    }
-    return result.issues.length ? result : undefined;
+    return result;
   }
 }
 

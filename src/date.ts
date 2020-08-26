@@ -1,15 +1,13 @@
 import { DateTime, Duration } from 'luxon';
-import { Check, Coerce, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
-import { Issue, IssueResult } from './types';
+import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { Issue } from './types';
 
 interface CoerceOptions {
 }
 
-interface ValidationOptions {
+interface ValidationOptions extends CommonValidationOptions<Date> {
   maxFuture?: Duration;
   maxPast?: Duration;
-  validator?: (value: Date, options?: any) => boolean;
-  validatorOptions?: any;
 }
 
 const check: Check<Date> = (value): value is Date => {
@@ -39,9 +37,7 @@ const coerce: Coerce<Date, CoerceOptions> = () => (next) => (value) => {
 };
 
 const validate: Validate<Date, ValidationOptions> = (value, options) => {
-  if (!options) return undefined;
-
-  const result: IssueResult = { issues: [] };
+  const result = basicValidation(value, options);
   const dateTime = DateTime.fromJSDate(value);
   if (options.maxFuture) {
     const max = DateTime.utc().plus(options.maxFuture);
@@ -55,10 +51,7 @@ const validate: Validate<Date, ValidationOptions> = (value, options) => {
       result.issues.push(Issue.from(value, 'max-past', { min }));
     }
   }
-  if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-    result.issues.push(Issue.from(value, 'validator'));
-  }
-  return result.issues.length ? result : undefined;
+  return result;
 };
 
 export const isDate = createIsCheck('date', check, coerce, validate);

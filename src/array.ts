@@ -1,5 +1,5 @@
-import { Check, Coerce, createIsCheck, createMaybeCheck, Validate } from './common';
-import { isIssue, Issue, IssueResult, Result, ValueProcessor } from './types';
+import { basicValidation, Check, Coerce, CommonValidationOptions, createIsCheck, createMaybeCheck, Validate } from './common';
+import { isIssue, Issue, Result, ValueProcessor } from './types';
 
 interface ItemProcessor {
   coerceMaxLength?: number;
@@ -9,11 +9,9 @@ interface CoerceOptions<I> extends ItemProcessor {
   item?: ValueProcessor<I>;
 }
 
-interface ValidationOptions<I, T extends I[]> {
+interface ValidationOptions<I, T extends I[]> extends CommonValidationOptions<T> {
   maxLength?: number;
   minLength?: number;
-  validator?: (value: T, options?: any) => boolean;
-  validatorOptions?: any;
 }
 
 class Generic<I, T extends I[]> {
@@ -61,19 +59,14 @@ class Generic<I, T extends I[]> {
   }
 
   public validate: Validate<T, ValidationOptions<I, T>> = (value, options) => {
-    if (!options) return undefined;
-
-    const result: IssueResult = { issues: [] };
+    const result = basicValidation(value, options);
     if (options.minLength !== undefined && value.length < options.minLength) {
       result.issues.push(Issue.from(value, 'min-length', { length: value.length, min: options.minLength }));
     }
     if (options.maxLength !== undefined && value.length > options.maxLength) {
       result.issues.push(Issue.from(value, 'max-length', { length: value.length, max: options.maxLength }));
     }
-    if (options.validator !== undefined && !options.validator(value, options.validatorOptions)) {
-      result.issues.push(Issue.from(value, 'validator'));
-    }
-    return result.issues.length ? result : undefined;
+    return result;
   }
 }
 
