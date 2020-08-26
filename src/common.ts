@@ -6,6 +6,7 @@ export interface WithDefault<T> {
 
 export interface MaybeOptions {
   incorrectTypeToUndefined?: boolean;
+  strictParsing?: boolean;
 }
 
 export type UndefinedHandler<T> = () => Result<T> | undefined;
@@ -50,6 +51,7 @@ export const maybe = <T>(empty: Empty, check: Check<T>, options?: MaybeOptions, 
 
   const result = next(value);
   if (isIssue(result) && result.issues.length === 1 && result.issues[0].reason === 'no-conversion') {
+    if (options?.strictParsing) return result;
     return { value: undefined };
   }
   return result;
