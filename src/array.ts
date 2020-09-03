@@ -1,4 +1,4 @@
-import { basicValidation, Check, Coerce, CommonValidationOptions, createIsCheck, createMaybeCheck, Validate } from './common';
+import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 import { isIssue, Issue, Result, ValueProcessor } from './types';
 
 interface ItemProcessor {
@@ -18,6 +18,12 @@ class Generic<I, T extends I[]> {
   public check: Check<T> = (value: unknown): value is T => {
     return Array.isArray(value); // TODO check generic
   }
+
+  public convert: Convert<T> = (value): T | undefined => {
+    if (this.check(value)) return value;
+    if (value === null && value === undefined) return undefined;
+    return [value] as T;
+  };
 
   public process = (check: ValueProcessor<I>, target: T): Result<T> => {
     const issues: Issue[] = [];
@@ -80,4 +86,14 @@ export const isArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: Ar
 export const maybeArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<I, T>();
   return createMaybeCheck('array', generic.check, generic.coerce, generic.validate)({ ...options, item });
+};
+
+export const asArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
+  const generic = new Generic<I, T>();
+  return createAsCheck('array', generic.convert, generic.coerce, generic.validate)({ ...options, item });
+};
+
+export const maybeAsArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T | undefined> => {
+  const generic = new Generic<I, T>();
+  return createMaybeAsCheck('array', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, item });
 };
