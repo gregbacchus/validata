@@ -81,7 +81,7 @@ describe('maybeArray', () => {
 });
 
 describe('asArray', () => {
-  it('will not convert null or undefined', () => {
+  it('will fail non-array', () => {
     const fut = asArray();
     expectIssue(fut, null, 'not-defined');
     expectIssue(fut, undefined, 'not-defined');
@@ -124,7 +124,7 @@ describe('asArray', () => {
 });
 
 describe('maybeAsArray', () => {
-  it('will fail non-array', () => {
+  it('will not convert null or undefined', () => {
     const fut = maybeAsArray();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);

@@ -19,10 +19,8 @@ class Generic<I, T extends I[]> {
     return Array.isArray(value); // TODO check generic
   }
 
-  public convert: Convert<T> = (value): T | undefined => {
-    if (this.check(value)) return value;
-    if (value === null && value === undefined) return undefined;
-    return [value] as T;
+  public convert: Convert<T> = (value): T => {
+    return this.check(value) ? value : [value] as T;
   };
 
   public process = (check: ValueProcessor<I>, target: T): Result<T> => {
