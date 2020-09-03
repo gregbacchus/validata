@@ -57,6 +57,8 @@ Checks:
 * Array
   * isArray
   * maybeArray
+  * asArray
+  * maybeAsArray
 * Date
   * isDate
   * maybeDate
@@ -150,13 +152,15 @@ interface IssueResult {
 
 ## Checks
 
-### `isArray`, `maybeArray`
+### `isArray`, `maybeArray`, `asArray`, `maybeAsArray`
 
 Usage:
 
 ```typescript
 isArray(itemProcessor, options);
 maybeArray(itemProcessor, options);
+asArray(itemProcessor, options);
+maybeAsArray(itemProcessor, options);
 ```
 
 Options:
