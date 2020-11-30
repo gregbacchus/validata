@@ -63,10 +63,7 @@ export const is = <T>(check: Check<T>, typeName: string): IsAs<T> => (next) => (
 export const as = <T, O extends CommonConvertOptions<T>>(check: Check<T>, convert: Convert<T, O>, typeName: string, undefinedHandler?: UndefinedHandler<T>, options?: O): IsAs<T> => (next) => (value) => {
   if (check(value)) return next(value);
 
-  // const converted = options?.converter
-  //   ? options.converter(value, options.convertOptions)
-  //   : convert(value);
-  const converted = options?.converter?.(value, options.convertOptions) ?? convert(value);
+  const converted = options?.converter?.(value, options.convertOptions) ?? convert(value, options);
   if (converted === undefined || converted === null) {
     return undefinedHandler?.() ?? { issues: [Issue.from(value, 'no-conversion', { toType: typeName })] };
   }

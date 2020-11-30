@@ -101,6 +101,12 @@ describe('asDate', () => {
     expectSuccess(fut, new Date());
   });
 
+  it('will use format for convert', () => {
+    const fut = asDate({ format: 'dd/MM/yyyy HH:mm:ss' });
+    expectSuccess(fut, '27/05/2020 14:06:39');
+    expectSuccess(fut, new Date());
+  });
+
   it('will run custom converter', () => {
     const fut = asDate({
       converter: (value, options: { format: string }) => DateTime.fromFormat(value as string, options.format).toJSDate(),
