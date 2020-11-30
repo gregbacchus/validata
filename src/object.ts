@@ -19,8 +19,6 @@ class Generic<T extends object> {
   }
 
   public convert: Convert<T> = (value) => {
-    if (this.check(value)) return value;
-
     if (typeof value === 'string' && value[0] === '{' && value[value.length - 1] === '}') {
       try {
         return JSON.parse(value) as T;
@@ -104,7 +102,7 @@ export const maybeObject = <T extends object>(contract?: Contract<T>, options?: 
 
 export const asObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
-  return createAsCheck('object', generic.convert, generic.coerce, generic.validate)({ ...options, contract });
+  return createAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
 };
 
 export const maybeAsObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T> & MaybeOptions): ValueProcessor<T | undefined> => {

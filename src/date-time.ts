@@ -15,8 +15,6 @@ const check: Check<DateTime> = (value): value is DateTime => {
 };
 
 const convert: Convert<DateTime> = (value) => {
-  if (check(value)) return value;
-
   if (value instanceof Date) {
     const utc = DateTime.fromJSDate(value, { zone: 'utc' });
     if (!utc.isValid) return undefined;
@@ -61,5 +59,5 @@ const validate: Validate<DateTime, ValidationOptions> = (value, options) => {
 
 export const isDateTime = createIsCheck('date', check, coerce, validate);
 export const maybeDateTime = createMaybeCheck('date', check, coerce, validate);
-export const asDateTime = createAsCheck('date', convert, coerce, validate);
+export const asDateTime = createAsCheck('date', check, convert, coerce, validate);
 export const maybeAsDateTime = createMaybeAsCheck('date', check, convert, coerce, validate);

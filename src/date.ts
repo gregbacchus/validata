@@ -8,6 +8,7 @@ interface CoerceOptions {
 interface ValidationOptions extends CommonValidationOptions<Date> {
   maxFuture?: Duration;
   maxPast?: Duration;
+  format?: string;
 }
 
 const check: Check<Date> = (value): value is Date => {
@@ -15,8 +16,6 @@ const check: Check<Date> = (value): value is Date => {
 };
 
 const convert: Convert<Date> = (value) => {
-  if (check(value)) return value;
-
   if (typeof value === 'number' && !Number.isNaN(value)) {
     const utc = DateTime.fromMillis(value, { zone: 'utc' });
     if (!utc.isValid) return undefined;
@@ -56,5 +55,5 @@ const validate: Validate<Date, ValidationOptions> = (value, options) => {
 
 export const isDate = createIsCheck('date', check, coerce, validate);
 export const maybeDate = createMaybeCheck('date', check, coerce, validate);
-export const asDate = createAsCheck('date', convert, coerce, validate);
+export const asDate = createAsCheck('date', check, convert, coerce, validate);
 export const maybeAsDate = createMaybeAsCheck('date', check, convert, coerce, validate);

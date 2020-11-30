@@ -14,9 +14,6 @@ const check: Check<URL> = (value): value is URL => {
 };
 
 const convert: Convert<URL> = (value) => {
-  if (check(value)) {
-    return value;
-  }
   if (typeof value === 'string') {
     try {
       return new URL(value);
@@ -47,5 +44,5 @@ const validate: Validate<URL, ValidationOptions> = (value, options) => {
 
 export const isUrl = createIsCheck('url', check, coerce, validate);
 export const maybeUrl = createMaybeCheck('url', check, coerce, validate);
-export const asUrl = createAsCheck('url', convert, coerce, validate);
+export const asUrl = createAsCheck('url', check, convert, coerce, validate);
 export const maybeAsUrl = createMaybeAsCheck('url', check, convert, coerce, validate);
