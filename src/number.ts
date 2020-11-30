@@ -53,5 +53,5 @@ const validate: Validate<number, ValidationOptions> = (value, options) => {
 
 export const isNumber = createIsCheck('number', check, coerce, validate);
 export const maybeNumber = createMaybeCheck('number', check, coerce, validate, empty);
-export const asNumber = createAsCheck('number', convert, coerce, validate);
+export const asNumber = createAsCheck('number', check, convert, coerce, validate);
 export const maybeAsNumber = createMaybeAsCheck('number', check, convert, coerce, validate, empty);

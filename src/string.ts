@@ -98,5 +98,5 @@ const validate: Validate<string, ValidationOptions> = (value, options) => {
 
 export const isString = createIsCheck('string', check, coerce, validate);
 export const maybeString = createMaybeCheck('string', check, coerce, validate);
-export const asString = createAsCheck('string', convert, coerce, validate);
+export const asString = createAsCheck('string', check, convert, coerce, validate);
 export const maybeAsString = createMaybeAsCheck('string', check, convert, coerce, validate);

@@ -15,7 +15,7 @@ export type IsAs<T> = (next: Next<T, T>) => (value: unknown) => Result<T>;
 export type Maybe<T> = (next: Next<unknown, T>) => (value: unknown) => Result<T | undefined>;
 export type Empty = (value: unknown) => boolean;
 export type Check<T> = (value: unknown) => value is T;
-export type Convert<T> = (value: unknown) => T | undefined;
+export type Convert<T, O = CommonConvertOptions<T>> = (value: unknown, options?: O) => T | undefined;
 export type Coerce<T, O> = (options?: O) => (next: Next<T, T>) => (value: T) => Result<T>;
 export type Validate<T, O> = (value: T, options: O) => IssueResult;
 
@@ -60,8 +60,10 @@ export const is = <T>(check: Check<T>, typeName: string): IsAs<T> => (next) => (
   return next(value);
 };
 
-export const as = <T>(convert: Convert<T>, typeName: string, undefinedHandler?: UndefinedHandler<T>): IsAs<T> => (next) => (value) => {
-  const converted = convert(value);
+export const as = <T, O extends CommonConvertOptions<T>>(check: Check<T>, convert: Convert<T, O>, typeName: string, undefinedHandler?: UndefinedHandler<T>, options?: O): IsAs<T> => (next) => (value) => {
+  if (check(value)) return next(value);
+
+  const converted = options?.converter?.(value, options.convertOptions) ?? convert(value, options);
   if (converted === undefined || converted === null) {
     return undefinedHandler?.() ?? { issues: [Issue.from(value, 'no-conversion', { toType: typeName })] };
   }
@@ -77,6 +79,11 @@ const getResultOrValidationIssues = <T, O extends CommonValidationOptions<T>>(va
 export interface CommonValidationOptions<T> {
   validator?: (value: T, options?: any) => boolean;
   validatorOptions?: any;
+}
+
+export interface CommonConvertOptions<T> {
+  converter?: (value: unknown, options?: any) => T | undefined;
+  convertOptions?: any;
 }
 
 export const createIsCheck = <T, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
@@ -102,28 +109,29 @@ export const createMaybeCheck = <T, TCoerceOptions, TValidationOptions extends C
   };
 };
 
-export const createAsCheck = <T, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
+export const createAsCheck = <T, TConvertOptions extends CommonConvertOptions<T>, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
   typeName: string,
-  convert: Convert<T>,
+  check: Check<T>,
+  convert: Convert<T, TConvertOptions>,
   coerce: Coerce<T, TCoerceOptions>,
   validate: Validate<T, TValidationOptions>,
-) => (options?: WithDefault<T> & TCoerceOptions & TValidationOptions): ValueProcessor<T> => {
+) => (options?: WithDefault<T> & TConvertOptions & TCoerceOptions & TValidationOptions): ValueProcessor<T> => {
   return {
-    process: definitely<T>(withDefault(options))(as(convert, typeName, withDefault(options))(coerce(options)((value) => getResultOrValidationIssues(validate, value, options)))),
+    process: definitely<T>(withDefault(options))(as(check, convert, typeName, withDefault(options), options)(coerce(options)((value) => getResultOrValidationIssues(validate, value, options)))),
   };
 };
 
-export const createMaybeAsCheck = <T, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
+export const createMaybeAsCheck = <T, TConvertOptions extends CommonConvertOptions<T>, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
   typeName: string,
   check: Check<T>,
-  convert: Convert<T>,
+  convert: Convert<T, TConvertOptions>,
   coerce: Coerce<T, TCoerceOptions>,
   validate: Validate<T, TValidationOptions>,
   empty = nullOrUndefined,
-) => (options?: MaybeOptions & WithDefault<T> & TCoerceOptions & TValidationOptions): ValueProcessor<T | undefined> => {
+) => (options?: MaybeOptions & WithDefault<T> & TConvertOptions & TCoerceOptions & TValidationOptions): ValueProcessor<T | undefined> => {
   return {
     process: maybe(empty, check, options, withDefault(options))(
-      as(convert, typeName, withDefault(options))(coerce(options)((value) => getResultOrValidationIssues(validate, value, options))),
+      as(check, convert, typeName, withDefault(options))(coerce(options)((value) => getResultOrValidationIssues(validate, value, options))),
     ),
   };
 };

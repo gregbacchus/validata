@@ -1,6 +1,10 @@
 import { DateTime, Duration } from 'luxon';
-import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
 import { Issue } from './types';
+
+interface ConvertOptions extends CommonConvertOptions<Date> {
+  format?: string;
+}
 
 interface CoerceOptions {
 }
@@ -14,9 +18,7 @@ const check: Check<Date> = (value): value is Date => {
   return value instanceof Date;
 };
 
-const convert: Convert<Date> = (value) => {
-  if (check(value)) return value;
-
+const convert: Convert<Date, ConvertOptions> = (value, options) => {
   if (typeof value === 'number' && !Number.isNaN(value)) {
     const utc = DateTime.fromMillis(value, { zone: 'utc' });
     if (!utc.isValid) return undefined;
@@ -24,6 +26,11 @@ const convert: Convert<Date> = (value) => {
   }
 
   if (typeof value === 'string' && value) {
+    if (options?.format) {
+      const utc = DateTime.fromFormat(value, options.format, { zone: 'utc' });
+      if (!utc.isValid) return undefined;
+      return utc.toJSDate();
+    }
     const utc = DateTime.fromISO(value, { zone: 'utc' });
     if (!utc.isValid) return undefined;
     return utc.toJSDate();
@@ -56,5 +63,5 @@ const validate: Validate<Date, ValidationOptions> = (value, options) => {
 
 export const isDate = createIsCheck('date', check, coerce, validate);
 export const maybeDate = createMaybeCheck('date', check, coerce, validate);
-export const asDate = createAsCheck('date', convert, coerce, validate);
+export const asDate = createAsCheck('date', check, convert, coerce, validate);
 export const maybeAsDate = createMaybeAsCheck('date', check, convert, coerce, validate);

@@ -1,4 +1,4 @@
-import { Duration } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { asDate, isDate, maybeAsDate, maybeDate } from './date';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 
@@ -99,6 +99,29 @@ describe('asDate', () => {
     expectSuccess(fut, 123);
     expectSuccess(fut, '2013-02-12T08:34:32.120Z');
     expectSuccess(fut, new Date());
+  });
+
+  it('will use format for convert', () => {
+    const fut = asDate({ format: 'dd/MM/yyyy HH:mm:ss' });
+    expectSuccess(fut, '27/05/2020 14:06:39');
+    expectSuccess(fut, new Date());
+  });
+
+  it('will run custom converter', () => {
+    const fut = asDate({
+      converter: (value, options: { format: string }) => DateTime.fromFormat(value as string, options.format).toJSDate(),
+      convertOptions: { format: 'dd/MM/yyyy HH:mm:ss' },
+    });
+    expectSuccess(fut, '27/05/2020 14:06:39');
+    expectSuccess(fut, new Date());
+  });
+
+  it('will fall back to built-in converter', () => {
+    const fut = asDate({
+      converter: (value, options: { format: string }) => DateTime.fromFormat(value as string, options.format).toJSDate(),
+      convertOptions: { format: 'dd/MM/yyyy HH:mm:ss' },
+    });
+    expectSuccess(fut, '2013-02-12T08:34:32.120Z');
   });
 
   it('will check custom validator', () => {
