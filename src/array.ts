@@ -88,7 +88,7 @@ export const maybeArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?:
 
 export const asArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
   const generic = new Generic<I, T>();
-  return createAsCheck('array', generic.convert, generic.coerce, generic.validate)({ ...options, item });
+  return createAsCheck('array', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, item });
 };
 
 export const maybeAsArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T | undefined> => {
