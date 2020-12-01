@@ -4,7 +4,7 @@ interface ValidationOptions extends CommonValidationOptions<any> { }
 
 const check: Check<any> = (value): value is any => !value || !!value;
 
-const coerce: Coerce<any, undefined> = () => (next) => (value) => next(value);
+const coerce: Coerce<any, any> = () => (next) => (value) => next(value);
 
 const validate: Validate<any, ValidationOptions> = (value, options) => basicValidation(value, options);
 
