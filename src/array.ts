@@ -1,4 +1,4 @@
-import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate } from './common';
 import { isIssue, Issue, Result, ValueProcessor } from './types';
 
 interface ItemProcessor {
@@ -81,17 +81,17 @@ export const isArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: Ar
   return createIsCheck('array', generic.check, generic.coerce, generic.validate)({ ...options, item });
 };
 
-export const maybeArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T | undefined> => {
+export const maybeArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T> & MaybeOptions): ValueProcessor<T | undefined> => {
   const generic = new Generic<I, T>();
   return createMaybeCheck('array', generic.check, generic.coerce, generic.validate)({ ...options, item });
 };
 
-export const asArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
+export const asArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T> & CommonConvertOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<I, T>();
   return createAsCheck('array', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, item });
 };
 
-export const maybeAsArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T | undefined> => {
+export const maybeAsArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T> & MaybeOptions & CommonConvertOptions<T>): ValueProcessor<T | undefined> => {
   const generic = new Generic<I, T>();
   return createMaybeAsCheck('array', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, item });
 };
