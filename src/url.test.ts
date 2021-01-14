@@ -86,6 +86,12 @@ describe('asUrl', () => {
     expectIssue(fut, {}, 'no-conversion');
   });
 
+  it('will custom convert urls', () => {
+    const fut = asUrl({ converter: (value) => value === 'http://127.0.0.1' ? new URL('http://localhost') : undefined });
+    expectValue(fut, 'http://127.0.0.1', new URL('http://localhost'));
+    expectIssue(fut, 'hello world', 'no-conversion');
+  });
+
   it('will handle urls', () => {
     const fut = asUrl();
     expectSuccess(fut, new URL('https://google.com'));
@@ -104,16 +110,14 @@ describe('maybeAsUrl', () => {
     expectValue(fut, {}, undefined);
   });
 
-  // it('will handle non-url, incorrectTypeToUndefined: false', () => {
-  //   const fut = maybeAsUrl({ incorrectTypeToUndefined: false });
-  //   expectValue(fut, null, undefined);
-  //   expectValue(fut, undefined, undefined);
-  //   expectIssue(fut, 'hello world', 'no-conversion');
-  //   expectIssue(fut, 0, 'no-conversion');
-  //   expectIssue(fut, new Date(), 'no-conversion');
-  //   expectIssue(fut, [], 'no-conversion');
-  //   expectIssue(fut, {}, 'no-conversion');
-  // });
+  it('will accept non-url as undefined', () => {
+    const fut = maybeAsUrl({ incorrectTypeToUndefined: true });
+    expectValue(fut, 'hello world', undefined);
+    expectValue(fut, 0, undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, {}, undefined);
+  });
 
   it('will handle urls', () => {
     const fut = maybeAsUrl();

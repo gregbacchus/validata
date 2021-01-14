@@ -49,6 +49,14 @@ describe('maybeDate', () => {
     expectIssue(fut, {}, 'incorrect-type');
   });
 
+  it('incorrect type will not cause issue if muted', () => {
+    const fut = maybeDate({ incorrectTypeToUndefined: true });
+    expectValue(fut, 'test', undefined);
+    expectValue(fut, 123, undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, {}, undefined);
+  });
+
   it('null, undefined or NaN will be coerced to undefined', () => {
     const fut = maybeDate();
     expectValue(fut, null, undefined);
@@ -142,6 +150,15 @@ describe('maybeAsDate', () => {
     expectValue(fut, NaN, undefined);
   });
 
+  it('incorrect type will be converted to undefined', () => {
+    const fut = maybeAsDate({ strictParsing: true });
+    expectIssue(fut, 'test', 'no-conversion');
+    expectIssue(fut, [], 'no-conversion');
+    expectIssue(fut, ['test'], 'no-conversion');
+    expectIssue(fut, {}, 'no-conversion');
+    expectIssue(fut, NaN, 'no-conversion');
+  });
+
   it('Date will be converted to date', () => {
     const fut = maybeAsDate();
     expectValue(fut, 1562057445845, new Date(1562057445845));
@@ -159,6 +176,29 @@ describe('maybeAsDate', () => {
     expectSuccess(fut, 123);
     expectSuccess(fut, '2013-02-12T08:34:32.120Z');
     expectSuccess(fut, new Date());
+  });
+
+  it('will use format for convert', () => {
+    const fut = maybeAsDate({ format: 'dd/MM/yyyy HH:mm:ss' });
+    expectSuccess(fut, '27/05/2020 14:06:39');
+    expectSuccess(fut, new Date());
+  });
+
+  it('will run custom converter', () => {
+    const fut = maybeAsDate({
+      converter: (value, options: { format: string }) => DateTime.fromFormat(value as string, options.format).toJSDate(),
+      convertOptions: { format: 'dd/MM/yyyy HH:mm:ss' },
+    });
+    expectSuccess(fut, '27/05/2020 14:06:39');
+    expectSuccess(fut, new Date());
+  });
+
+  it('will fall back to built-in converter', () => {
+    const fut = maybeAsDate({
+      converter: (value, options: { format: string }) => DateTime.fromFormat(value as string, options.format).toJSDate(),
+      convertOptions: { format: 'dd/MM/yyyy HH:mm:ss' },
+    });
+    expectSuccess(fut, '2013-02-12T08:34:32.120Z');
   });
 
   it('will validate future limit', () => {

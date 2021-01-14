@@ -45,6 +45,15 @@ describe('maybeBoolean', () => {
     expectIssue(fut, {}, 'incorrect-type');
   });
 
+  it('incorrect type will not cause issue', () => {
+    const fut = maybeBoolean({ incorrectTypeToUndefined: true });
+    expectValue(fut, 'test', undefined);
+    expectValue(fut, 123, undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, {}, undefined);
+  });
+
   it('null, undefined will be coerced to undefined', () => {
     const fut = maybeBoolean();
     expectValue(fut, null, undefined);
@@ -90,6 +99,13 @@ describe('asBoolean', () => {
     expectValue(fut, 1, true);
     expectValue(fut, 123, true);
     expectValue(fut, -123, true);
+  });
+
+  it('Custom values will be converted by custom converter', () => {
+    const fut = asBoolean({ converter: (value) => value === 'yes' ? true : value === 'no' ? false : undefined });
+    expectValue(fut, 'yes', true);
+    expectValue(fut, 'no', false);
+    expectIssue(fut, 'maybe', 'no-conversion');
   });
 
   it('incorrect type that cannot be converted will have default used', () => {
@@ -139,6 +155,13 @@ describe('maybeAsBoolean', () => {
     expectValue(fut, 1, true);
     expectValue(fut, 123, true);
     expectValue(fut, -123, true);
+  });
+
+  it('Custom values will be converted by custom converter', () => {
+    const fut = maybeAsBoolean({ converter: (value) => value === 'yes' ? true : value === 'no' ? false : undefined });
+    expectValue(fut, 'yes', true);
+    expectValue(fut, 'no', false);
+    expectValue(fut, 'maybe', undefined);
   });
 
   it('null or undefined will be converted to undefined', () => {

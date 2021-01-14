@@ -249,6 +249,12 @@ describe('asString', () => {
     expectSuccess(fut, 's');
     expectIssue(fut, 'other', 'validator');
   });
+
+  it('will use custom converter', () => {
+    const fut = asString({ converter: (value) => value === 1 ? 'one' : undefined });
+    expectValue(fut, 1, 'one');
+    expectValue(fut, 2, '2');
+  });
 });
 
 describe('maybeAsString', () => {
@@ -317,5 +323,11 @@ describe('maybeAsString', () => {
     expectSuccess(fut, 'a');
     expectSuccess(fut, 's');
     expectIssue(fut, 'other', 'validator');
+  });
+
+  it('will use custom converter', () => {
+    const fut = maybeAsString({ converter: (value) => value === 1 ? 'one' : undefined });
+    expectValue(fut, 1, 'one');
+    expectValue(fut, 2, '2');
   });
 });
