@@ -131,7 +131,7 @@ export const createMaybeAsCheck = <T, TConvertOptions extends CommonConvertOptio
 ) => (options?: MaybeOptions & WithDefault<T> & TConvertOptions & TCoerceOptions & TValidationOptions): ValueProcessor<T | undefined> => {
   return {
     process: maybe(empty, check, options, withDefault(options))(
-      as(check, convert, typeName, withDefault(options))(coerce(options)((value) => getResultOrValidationIssues(validate, value, options))),
+      as(check, convert, typeName, withDefault(options), options)(coerce(options)((value) => getResultOrValidationIssues(validate, value, options))),
     ),
   };
 };

@@ -1,17 +1,7 @@
 import { asArray, isArray, maybeArray, maybeAsArray } from './array';
 import { isNumber } from './number';
-// import { AsString, IsString } from './string';
+import { isString } from './string';
 import { expectIssue, expectSuccess, expectValue } from './test-helpers';
-
-// interface MyObject {
-//   a: number;
-//   b: string;
-// }
-
-// interface ParentObject {
-//   o: MyObject;
-//   s: string;
-// }
 
 describe('isArray', () => {
   it('will fail non-array', () => {
@@ -60,6 +50,14 @@ describe('maybeArray', () => {
     expectIssue(fut, new Date(), 'incorrect-type');
     expectIssue(fut, {}, 'incorrect-type');
     expectIssue(fut, 'test', 'incorrect-type');
+  });
+
+  it('will accept non-array with undefined if requested', () => {
+    const fut = maybeArray(undefined, { incorrectTypeToUndefined: true });
+    expectValue(fut, 0, undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, {}, undefined);
+    expectValue(fut, 'test', undefined);
   });
 
   it('will accept array', () => {
@@ -137,6 +135,12 @@ describe('maybeAsArray', () => {
     expectValue(fut, date, [date]);
     expectValue(fut, {}, [{}]);
     expectValue(fut, 'test', ['test']);
+  });
+
+  it('will use custom converter', () => {
+    const fut = maybeAsArray(isString(), { converter: (value) => value === 'one and two' ? ['1', '2'] : undefined });
+    expectValue(fut, 'one and two', ['1', '2']);
+    expectValue(fut, 'three', ['three']);
   });
 
   it('will accept array', () => {

@@ -59,7 +59,8 @@
         "--nolazy"
       ],
       "console": "internalConsole",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outputCapture": "std"
     }
   ]
 }

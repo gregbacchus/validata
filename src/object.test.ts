@@ -1,7 +1,10 @@
+import { jsonDateParser } from 'json-date-parser';
+import { isDate } from './date';
 import { asNumber, isNumber } from './number';
 import { asObject, isObject, maybeAsObject, maybeObject } from './object';
 import { asString, isString } from './string';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
+import { isIssue } from './types';
 
 interface MyObject {
   a: number;
@@ -110,6 +113,14 @@ describe('maybeObject', () => {
     expectIssue(fut, new Date(), 'incorrect-type');
     expectIssue(fut, [], 'incorrect-type');
     expectIssue(fut, 'test', 'incorrect-type');
+  });
+
+  it('will accept non-object if requested', () => {
+    const fut = maybeObject({}, { incorrectTypeToUndefined: true });
+    expectValue(fut, 0, undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, 'test', undefined);
   });
 
   it('will accept object', () => {
@@ -256,6 +267,14 @@ describe('maybeAsObject', () => {
     expectIssue(fut, '{testing:12}', 'no-conversion');
   });
 
+  it('will accept non-object if requested', () => {
+    const fut = maybeAsObject({}, { incorrectTypeToUndefined: true });
+    expectValue(fut, 0, undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, 'test', undefined);
+  });
+
   it('will accept object', () => {
     const fut = maybeAsObject();
     expectSuccess(fut, {});
@@ -279,6 +298,24 @@ describe('maybeAsObject', () => {
     it('will convert invalid JSON string to undefined', () => {
       expectValue(fut, '{testing=12}', undefined);
       expectValue(fut, '{testing:12}', undefined);
+    });
+
+    it('will use custom converter', () => {
+      type TestDateType = { d: Date };
+      const fut = asObject<TestDateType>(
+        { d: isDate() },
+        { converter: (value) => typeof value !== 'string' ? undefined : JSON.parse(value, jsonDateParser) as TestDateType }
+      );
+      expectIssue(fut, '{"d":12}', 'incorrect-type', ['d']);
+
+      const date = '2021-01-13T20:23:36.164Z';
+      const r = fut.process(`{"d":"${date}"}`);
+      expect(r).toBeDefined();
+      if (isIssue(r)) {
+        fail(`Unexpected issue: ${JSON.stringify(r)}`);
+      }
+      expect(r.value.d.constructor.name).toEqual('Date');
+      expect(r.value.d.getTime()).toEqual(new Date(date).getTime());
     });
 
     it('will parse valid JSON string that matches requirements', () => {

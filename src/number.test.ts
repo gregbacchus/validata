@@ -52,6 +52,14 @@ describe('maybeNumber', () => {
     expectIssue(fut, {}, 'incorrect-type');
   });
 
+  it('incorrect type will not cause issue', () => {
+    const fut = maybeNumber({ incorrectTypeToUndefined: true });
+    expectValue(fut, 'test', undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, {}, undefined);
+  });
+
   it('null, undefined or NaN will be coerced to undefined', () => {
     const fut = maybeNumber();
     expectValue(fut, null, undefined);
@@ -99,6 +107,16 @@ describe('asNumber', () => {
   it('Date will be converted', () => {
     const fut = asNumber();
     expectValue(fut, new Date(1562057445845), 1562057445845);
+  });
+
+  it('Custom values will be converted by custom converter', () => {
+    const fut = asNumber({
+      converter: (value, options) => (options as string[]).indexOf(value as string) + 1 || undefined,
+      convertOptions: ['one', 'two'],
+    });
+    expectValue(fut, 'one', 1);
+    expectValue(fut, 'two', 2);
+    expectIssue(fut, 'infinity', 'no-conversion');
   });
 
   it('incorrect type that cannot be converted will have default used', () => {
@@ -149,6 +167,16 @@ describe('maybeAsNumber', () => {
   it('Date will be converted to number', () => {
     const fut = maybeAsNumber();
     expectValue(fut, new Date(1562057445845), 1562057445845);
+  });
+
+  it('Custom values will be converted by custom converter', () => {
+    const fut = maybeAsNumber({
+      converter: (value, options) => (options as string[]).indexOf(value as string) + 1 || undefined,
+      convertOptions: ['one', 'two'],
+    });
+    expectValue(fut, 'one', 1);
+    expectValue(fut, 'two', 2);
+    expectValue(fut, 'infinity', undefined);
   });
 
   it('null or undefined or empty string will be converted to undefined', () => {

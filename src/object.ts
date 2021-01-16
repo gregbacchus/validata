@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
-import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate } from './common';
+import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate } from './common';
 import { Contract, isIssue, Issue, Result, ValueProcessor } from './types';
 
 interface AdditionalOptions {
@@ -13,7 +11,7 @@ interface CoerceOptions<T> extends AdditionalOptions {
 
 interface ValidationOptions<T> extends CommonValidationOptions<T> { }
 
-class Generic<T extends object> {
+class Generic<T extends { [key: string]: any; }> {
   public check: Check<T> = (value: unknown): value is T => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
   }
@@ -90,22 +88,22 @@ class Generic<T extends object> {
 
 export type ObjectOptions<T> = ValidationOptions<T> & AdditionalOptions;
 
-export const isObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
+export const isObject = <T extends { [key: string]: any; }>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
   return createIsCheck('object', generic.check, generic.coerce, generic.validate)({ ...options, contract });
 };
 
-export const maybeObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T | undefined> => {
+export const maybeObject = <T extends { [key: string]: any; }>(contract?: Contract<T>, options?: ObjectOptions<T> & MaybeOptions): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
   return createMaybeCheck('object', generic.check, generic.coerce, generic.validate)({ ...options, contract });
 };
 
-export const asObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T>): ValueProcessor<T> => {
+export const asObject = <T extends { [key: string]: any; }>(contract?: Contract<T>, options?: ObjectOptions<T> & CommonConvertOptions<T>): ValueProcessor<T> => {
   const generic = new Generic<T>();
   return createAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
 };
 
-export const maybeAsObject = <T extends object>(contract?: Contract<T>, options?: ObjectOptions<T> & MaybeOptions): ValueProcessor<T | undefined> => {
+export const maybeAsObject = <T extends { [key: string]: any; }>(contract?: Contract<T>, options?: ObjectOptions<T> & CommonConvertOptions<T> & MaybeOptions): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
   return createMaybeAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
 };

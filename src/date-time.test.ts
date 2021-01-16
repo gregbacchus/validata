@@ -49,6 +49,14 @@ describe('maybeDateTime', () => {
     expectIssue(fut, {}, 'incorrect-type');
   });
 
+  it('incorrect type will not cause issue if muted', () => {
+    const fut = maybeDateTime({ incorrectTypeToUndefined: true });
+    expectValue(fut, 'test', undefined);
+    expectValue(fut, 123, undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, {}, undefined);
+  });
+
   it('null, undefined or NaN will be coerced to undefined', () => {
     const fut = maybeDateTime();
     expectValue(fut, null, undefined);
@@ -94,6 +102,12 @@ describe('asDateTime', () => {
     expectValue(fut, date.toMillis(), date);
   });
 
+  it('Date will be converted with custom converter', () => {
+    const fut = asDateTime({ converter: (value) => value === 'now' ? DateTime.utc() : undefined });
+    expectSuccess(fut, 'now');
+    expectIssue(fut, 'test', 'no-conversion');
+  });
+
   it('will handle date', () => {
     const fut = asDateTime();
     expectSuccess(fut, 123);
@@ -117,6 +131,15 @@ describe('maybeAsDateTime', () => {
     expectValue(fut, ['test'], undefined);
     expectValue(fut, {}, undefined);
     expectValue(fut, NaN, undefined);
+  });
+
+  it('incorrect type will result in issue when parsing is strict', () => {
+    const fut = maybeAsDateTime({ strictParsing: true });
+    expectIssue(fut, 'test', 'no-conversion');
+    expectIssue(fut, [], 'no-conversion');
+    expectIssue(fut, ['test'], 'no-conversion');
+    expectIssue(fut, {}, 'no-conversion');
+    expectIssue(fut, NaN, 'no-conversion');
   });
 
   it('Date will be converted to date', () => {
