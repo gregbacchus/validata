@@ -2,7 +2,10 @@
 
 Type safe data validation and sanitization.
 
-See [validata-koa](https://www.npmjs.com/package/validata-koa) for more usage in [Koa](https://www.npmjs.com/package/koa).
+See also
+
+- [validata-koa](https://www.npmjs.com/package/validata-koa) for more usage in [Koa](https://www.npmjs.com/package/koa)
+- [validata-express](https://www.npmjs.com/package/validata-koexpressa) for more usage in [Express](https://www.npmjs.com/package/express)
 
 ## Getting started
 
