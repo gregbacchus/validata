@@ -51,6 +51,8 @@ class Generic<T extends { [key: string]: any; }> {
         });
         return;
       }
+      if (childResult.value === undefined && !(key in target)) return;
+
       if (childResult) {
         output[key] = childResult.value;
       } else {
