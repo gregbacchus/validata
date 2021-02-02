@@ -6,6 +6,7 @@ import { isRecord } from '../record';
 import { asString, isString, maybeString } from '../string';
 import { isTuple } from '../tuple';
 import { isIssue } from '../types';
+import { nullOr } from './../common';
 
 interface Sample {
   myString: string;
@@ -68,3 +69,8 @@ const sample5 = isRecord(asNumber());
 console.log(JSON.stringify(sample5.process({ foo: 'bar' })));
 console.log(sample5.process({ foo: '123' }));
 console.log(sample5.process({ foo: 123 })); // same as above because of asNumber
+
+const sample6 = nullOr(isString)();
+
+console.log(sample6.process(null));
+console.log(sample6.process('asd'));
