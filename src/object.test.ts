@@ -2,7 +2,7 @@ import { jsonDateParser } from 'json-date-parser';
 import { isDate } from './date';
 import { asNumber, isNumber } from './number';
 import { asObject, isObject, maybeAsObject, maybeObject } from './object';
-import { asString, isString } from './string';
+import { asString, isString, maybeString } from './string';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
 import { isIssue } from './types';
 
@@ -81,6 +81,29 @@ describe('isObject', () => {
     expectIssue(fut, { a: 47, b: 'asd', c: 234 }, 'unexpected-property', ['c']);
     expectIssue(fut, {}, 'not-defined', ['a']);
     expectIssue(fut, {}, 'not-defined', ['b']);
+  });
+
+  it('will handle optional property', () => {
+    const fut = isObject<{ a: number, b?: string }>({
+      a: isNumber(),
+      b: maybeString(),
+    });
+    expectIssue(fut, {}, 'not-defined', ['a']);
+    expectIssue(fut, { b: 'asd' }, 'not-defined', ['a']);
+    {
+      const result = expectSuccess(fut, { a: 42 });
+      expect(result.value).not.toHaveProperty('b');
+    }
+    {
+      const result = expectSuccess(fut, { a: 42, b: undefined });
+      expect(result.value).toHaveProperty('b');
+      expect(result.value.b).toEqual(undefined);
+    }
+    {
+      const result = expectSuccess(fut, { a: 42, b: null });
+      expect(result.value).toHaveProperty('b');
+      expect(result.value.b).toEqual(undefined);
+    }
   });
 
   it('will error on unexpected properties', () => {

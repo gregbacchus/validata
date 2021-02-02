@@ -1,4 +1,4 @@
-import { isIssue, Path, ValueProcessor } from './types';
+import { isIssue, Path, ValueProcessor, ValueResult } from './types';
 
 export interface TestIssue {
   path?: Path[];
@@ -42,7 +42,6 @@ export const runTests = <T>(fut: ValueProcessor<T>, ...tests: Array<TestDefiniti
 export const expectIssue = <T>(fut: ValueProcessor<T>, value: unknown, reason: string, path: Path[] = []): void => {
   const result = fut.process(value);
   if (!isIssue(result)) {
-    // eslint-disable-next-line no-undef
     fail('no issue');
   }
   expect(result.issues).toEqual(
@@ -55,20 +54,19 @@ export const expectIssue = <T>(fut: ValueProcessor<T>, value: unknown, reason: s
   );
 };
 
-export const expectSuccess = <T>(fut: ValueProcessor<T>, value: unknown): void => {
+export const expectSuccess = <T>(fut: ValueProcessor<T>, value: unknown): ValueResult<T> => {
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
-    // eslint-disable-next-line no-undef
     fail(`Unexpected issue: ${JSON.stringify(result)}`);
   }
+  return result;
 };
 
 export const expectValue = <T>(fut: ValueProcessor<T>, value: unknown, coerced: T): void => {
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
-    // eslint-disable-next-line no-undef
     fail(`Unexpected issue: ${JSON.stringify(result)}`);
   }
   if (result) {

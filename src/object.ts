@@ -51,6 +51,8 @@ class Generic<T extends { [key: string]: any; }> {
         });
         return;
       }
+      if (childResult.value === undefined && !(key in target)) return;
+
       if (childResult) {
         output[key] = childResult.value;
       } else {
@@ -64,21 +66,20 @@ class Generic<T extends { [key: string]: any; }> {
     if (!options) return next(value);
 
     let coerced = { ...value };
-    if (options.contract) {
-      if (options.stripExtraProperties) {
-        const allowedProperties = new Set(Object.keys(options.contract));
-        (Object.keys(coerced) as (keyof T)[]).forEach((key) => {
-          if (allowedProperties.has(key as string)) return;
-          delete coerced[key];
-        });
-      }
-      const result = this.process(options.contract, coerced);
-      if (isIssue(result)) {
-        return result;
-      }
-      if (result) {
-        coerced = result.value;
-      }
+    if (!options.contract) return next(coerced);
+
+    if (options.stripExtraProperties) {
+      const allowedProperties = new Set(Object.keys(options.contract));
+      (Object.keys(coerced) as (keyof T)[]).forEach((key) => {
+        if (allowedProperties.has(key as string)) return;
+        delete coerced[key];
+      });
+    }
+    const result = this.process(options.contract, coerced);
+    if (isIssue(result)) return result;
+
+    if (result) {
+      coerced = result.value;
     }
     return next(coerced);
   }
