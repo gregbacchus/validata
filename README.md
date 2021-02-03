@@ -98,7 +98,7 @@ Checks:
   * maybeUrl
   * asUrl
   * maybeAsUrl
- * nullOr
+* nullOr
 
 Work is done by a typed `ValueProcessor`, as returned by`isObject<T>()` or `asNumber()`.
 
