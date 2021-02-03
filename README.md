@@ -98,6 +98,7 @@ Checks:
   * maybeUrl
   * asUrl
   * maybeAsUrl
+* nullOr
 
 Work is done by a typed `ValueProcessor`, as returned by`isObject<T>()` or `asNumber()`.
 
@@ -432,4 +433,14 @@ Example:
 const check = asUrl({
   protocol: 'https',
 });
+```
+
+### `nullOr`
+
+Any other check can be wrapped into `nullOr` to accept `null`.
+
+Example:
+
+```typescript
+const check = nullOr(isString)({ min: 3 });
 ```

@@ -86,12 +86,24 @@ export interface CommonConvertOptions<T> {
   convertOptions?: any;
 }
 
+export type ValueProcessorFactory<T, O> = (options?: O) => ValueProcessor<T>;
+
+export const nullable = <T>(processor: ValueProcessor<T>): ValueProcessor<T | null> => ({
+  process: (value: unknown): Result<T | null> => {
+    if (value === null) return { value: null };
+
+    return processor.process(value);
+  },
+});
+
+export const nullOr = <T, O>(factory: ValueProcessorFactory<T, O>): ValueProcessorFactory<T | null, O> => (options) => nullable(factory(options));
+
 export const createIsCheck = <T, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
   typeName: string,
   check: Check<T>,
   coerce: Coerce<T, TCoerceOptions>,
   validate: Validate<T, TValidationOptions>,
-) => (options?: TCoerceOptions & TValidationOptions): ValueProcessor<T> => {
+): ValueProcessorFactory<T, TCoerceOptions & TValidationOptions> => (options) => {
   return {
     process: definitely<T>()(is(check, typeName)(coerce(options)((value) => getResultOrValidationIssues(validate, value, options)))),
   };
@@ -103,7 +115,7 @@ export const createMaybeCheck = <T, TCoerceOptions, TValidationOptions extends C
   coerce: Coerce<T, TCoerceOptions>,
   validate: Validate<T, TValidationOptions>,
   empty = nullOrUndefined,
-) => (options?: MaybeOptions & TCoerceOptions & TValidationOptions): ValueProcessor<T | undefined> => {
+): ValueProcessorFactory<T | undefined, MaybeOptions & TCoerceOptions & TValidationOptions> => (options) => {
   return {
     process: maybe(empty, check, options)(is(check, typeName)(coerce(options)((value) => getResultOrValidationIssues(validate, value, options)))),
   };
@@ -115,7 +127,7 @@ export const createAsCheck = <T, TConvertOptions extends CommonConvertOptions<T>
   convert: Convert<T, TConvertOptions>,
   coerce: Coerce<T, TCoerceOptions>,
   validate: Validate<T, TValidationOptions>,
-) => (options?: WithDefault<T> & TConvertOptions & TCoerceOptions & TValidationOptions): ValueProcessor<T> => {
+): ValueProcessorFactory<T, WithDefault<T> & TConvertOptions & TCoerceOptions & TValidationOptions> => (options) => {
   return {
     process: definitely<T>(withDefault(options))(as(check, convert, typeName, withDefault(options), options)(coerce(options)((value) => getResultOrValidationIssues(validate, value, options)))),
   };
@@ -128,7 +140,7 @@ export const createMaybeAsCheck = <T, TConvertOptions extends CommonConvertOptio
   coerce: Coerce<T, TCoerceOptions>,
   validate: Validate<T, TValidationOptions>,
   empty = nullOrUndefined,
-) => (options?: MaybeOptions & WithDefault<T> & TConvertOptions & TCoerceOptions & TValidationOptions): ValueProcessor<T | undefined> => {
+): ValueProcessorFactory<T | undefined, MaybeOptions & WithDefault<T> & TConvertOptions & TCoerceOptions & TValidationOptions> => (options) => {
   return {
     process: maybe(empty, check, options, withDefault(options))(
       as(check, convert, typeName, withDefault(options), options)(coerce(options)((value) => getResultOrValidationIssues(validate, value, options))),
