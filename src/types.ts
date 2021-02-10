@@ -60,3 +60,6 @@ export interface ValueProcessor<T> {
 }
 
 export type Next<T, R> = (value: T) => Result<R>;
+
+export type TypeOf<T extends ValueProcessor<V> | Contract<V>, V = unknown> =
+  T extends ValueProcessor<infer Type> ? Type : { [K in keyof T]: T[K] extends ValueProcessor<infer Type> ? Type : never };

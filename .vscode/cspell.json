@@ -17,6 +17,7 @@
         "npmignore",
         "npmrc",
         "releaserc",
+        "typeof",
         "ULID",
         "validata"
     ]
