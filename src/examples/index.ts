@@ -7,18 +7,23 @@ import { asString, isString, maybeString } from '../string';
 import { isTuple } from '../tuple';
 import { isIssue } from '../types';
 import { nullOr } from './../common';
+import { TypeOf } from './../types';
 
-interface Sample {
-  myString: string;
-  maybeString: string | undefined;
-  numericString: string;
-}
-
-const sample = isObject<Sample>({
+const sampleContract = {
   maybeString: maybeString(),
   myString: isString(),
   numericString: asString(),
-});
+};
+const sample = isObject(sampleContract);
+
+// both are same as
+export type SampleContract = TypeOf<typeof sample>;
+export type Sample = TypeOf<typeof sample>;
+// interface Sample {
+//   myString: string;
+//   maybeString: string | undefined;
+//   numericString: string;
+// }
 
 console.log(JSON.stringify(sample.process({
   maybeString: 123,

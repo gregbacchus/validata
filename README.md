@@ -100,6 +100,10 @@ Checks:
   * maybeAsUrl
 * nullOr
 
+Types
+
+* TypeOf
+
 Work is done by a typed `ValueProcessor`, as returned by`isObject<T>()` or `asNumber()`.
 
 ```typescript
@@ -443,4 +447,26 @@ Example:
 
 ```typescript
 const check = nullOr(isString)({ min: 3 });
+```
+
+## Types
+
+Types can be extracted from a `ValueProcessor` or a `Contract`-like pure object.
+
+```typescript
+const sampleContract = {
+  maybeString: maybeString(),
+  myString: isString(),
+  numericString: asString(),
+};
+const sample = isObject(sampleContract);
+
+// both are same as
+export type SampleContract = TypeOf<typeof sample>;
+export type Sample = TypeOf<typeof sample>;
+// interface Sample {
+//   myString: string;
+//   maybeString: string | undefined;
+//   numericString: string;
+// }
 ```
