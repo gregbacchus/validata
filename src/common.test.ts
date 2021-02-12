@@ -14,6 +14,10 @@ import { ValueProcessor } from './types';
 import { asUrl, isUrl, maybeAsUrl, maybeUrl } from './url';
 
 describe('createNullableCheck', () => {
+  const dateTime = DateTime.local();
+  const date = new Date();
+  const url = new URL('http://localhost');
+
   it.each([
     [isArray, ['a', 'b']],
     [maybeArray, undefined],
@@ -25,14 +29,14 @@ describe('createNullableCheck', () => {
     [asBoolean, 'false'],
     [maybeAsBoolean, undefined],
 
-    [isDateTime, DateTime.local()],
+    [isDateTime, dateTime],
     [maybeDateTime, undefined],
-    [asDateTime, DateTime.local().toISO()],
+    [asDateTime, dateTime.toISO()],
     [maybeAsDateTime, undefined],
 
-    [isDate, new Date()],
+    [isDate, date],
     [maybeDate, undefined],
-    [asDate, new Date().toISOString()],
+    [asDate, date.toISOString()],
     [maybeAsDate, undefined],
 
     [isNumber, 5],
@@ -56,9 +60,9 @@ describe('createNullableCheck', () => {
     [isTuple, [2], [isNumber()]],
     [maybeTuple, undefined],
 
-    [isUrl, new URL('http://localhost')],
+    [isUrl, url],
     [maybeUrl, undefined],
-    [asUrl, new URL('http://localhost').toString()],
+    [asUrl, url.toString()],
     [maybeAsUrl, undefined],
   ])('createNullableCheck %#', (check: (...args: any[]) => ValueProcessor<unknown>, value: unknown, contract: unknown = undefined) => {
     const fut = check(contract);
@@ -68,36 +72,77 @@ describe('createNullableCheck', () => {
   });
 
   it.each([
-    [maybeArray, undefined],
-    [maybeAsArray, undefined],
+    [maybeArray],
+    [maybeArray, undefined, [1, 2, 3]],
+    [maybeArray, [1, 2, 3], null, [1, 2, 3]],
 
-    [maybeBoolean, undefined],
-    [maybeAsBoolean, undefined],
+    [maybeAsArray],
+    [maybeAsArray, undefined, [1, 2, 3]],
+    [maybeAsArray, [1, 2, 3], null, [1, 2, 3]],
 
-    [maybeDateTime, undefined],
-    [maybeAsDateTime, undefined],
+    [maybeBoolean],
+    [maybeBoolean, undefined, true],
+    [maybeBoolean, true, null, true],
+    [maybeAsBoolean],
+    [maybeAsBoolean, undefined, true],
+    [maybeAsBoolean, 'true', null, true],
 
-    [maybeDate, undefined],
-    [maybeAsDate, undefined],
+    [maybeDateTime],
+    [maybeDateTime, undefined, dateTime],
+    [maybeDateTime, dateTime, null, dateTime],
+    [maybeAsDateTime],
+    [maybeAsDateTime, undefined, dateTime],
+    [maybeAsDateTime, dateTime, null, dateTime],
 
-    [maybeNumber, undefined],
-    [maybeAsNumber, undefined],
+    [maybeDate],
+    [maybeDate, undefined, date],
+    [maybeDate, date, null, date],
+    [maybeAsDate],
+    [maybeAsDate, undefined, date],
+    [maybeAsDate, date.toISOString(), null, date],
 
-    [maybeObject, undefined],
-    [maybeAsObject, undefined],
+    [maybeNumber],
+    [maybeNumber, undefined, 5],
+    [maybeNumber, 5, null, 5],
+    [maybeAsNumber],
+    [maybeAsNumber, undefined, 5],
+    [maybeAsNumber, '5', null, 5],
 
-    [maybeRecord, undefined],
+    [maybeObject],
+    [maybeObject, undefined, { key: 'value' }],
+    [maybeObject, { key: 'value' }, null, { key: 'value' }],
+    [maybeAsObject],
+    [maybeAsObject, undefined, { key: 'value' }],
+    [maybeAsObject, { key: 'value' }, null, { key: 'value' }],
 
-    [maybeString, undefined],
-    [maybeAsString, undefined],
+    [maybeRecord],
+    [maybeRecord, undefined, { key: 'value' }],
+    [maybeRecord, { key: 'value' }, null, { key: 'value' }],
 
-    [maybeTuple, undefined],
+    [maybeString],
+    [maybeString, undefined, 'string'],
+    [maybeString, 'string', null, 'string'],
+    [maybeAsString],
+    [maybeAsString, undefined, 'string'],
+    [maybeAsString, 'string', null, 'string'],
 
-    [maybeUrl, undefined],
-    [maybeAsUrl, undefined],
-  ])('createNullableCheck %#', (check: (...args: any[]) => ValueProcessor<unknown>, value: unknown, contract: unknown = undefined) => {
-    const futNull = nullOrAs(check(contract), { default: null });
-    expectValue(futNull, null, null);
-    expect(futNull.process(value)).toEqual({ value: null });
+    [maybeTuple],
+    [maybeTuple, undefined, [1, 'text'], [1, 'text'], [isNumber(), isString()]],
+    [maybeTuple, [1, 'text'], null, [1, 'text'], [isNumber(), isString()]],
+
+    [maybeUrl],
+    [maybeUrl, undefined, url],
+    [maybeUrl, url, null, url],
+    [maybeAsUrl],
+    [maybeAsUrl, undefined, url],
+    [maybeAsUrl, url.toString(), null, url],
+  ])('createNullableCheck %#', (
+    check: (...args: any[]) => ValueProcessor<unknown>,
+    value: unknown = undefined,
+    defaultValue: unknown = null,
+    expectedValue: unknown = defaultValue,
+    contract: unknown = undefined) => {
+    const futNull = nullOrAs(check(contract), { default: defaultValue });
+    expect(futNull.process(value)).toEqual({ value: expectedValue });
   });
 });
