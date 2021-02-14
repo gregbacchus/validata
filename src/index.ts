@@ -2,7 +2,7 @@ export * from './any';
 export * from './array';
 export * from './boolean';
 export * from './check';
-export { nullOr, nullOrAs } from './common';
+export { asNullOr, nullOr } from './common';
 export * from './date';
 export * from './date-time';
 export * from './number';

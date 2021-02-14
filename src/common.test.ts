@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { asArray, isArray, maybeArray, maybeAsArray } from './array';
 import { asBoolean, isBoolean, maybeAsBoolean, maybeBoolean } from './boolean';
-import { nullOr, nullOrAs } from './common';
+import { asNullOr, nullOr } from './common';
 import { asDate, isDate, maybeAsDate, maybeDate } from './date';
 import { asDateTime, isDateTime, maybeAsDateTime, maybeDateTime } from './date-time';
 import { asNumber, isNumber, maybeAsNumber, maybeNumber } from './number';
@@ -142,7 +142,7 @@ describe('createNullableCheck', () => {
     defaultValue: unknown = null,
     expectedValue: unknown = defaultValue,
     contract: unknown = undefined) => {
-    const futNull = nullOrAs(check(contract), { default: defaultValue });
+    const futNull = asNullOr(check(contract), { default: defaultValue });
     expect(futNull.process(value)).toEqual({ value: expectedValue });
   });
 });

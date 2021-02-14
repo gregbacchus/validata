@@ -96,7 +96,7 @@ export const nullable = <T>(processor: ValueProcessor<T>): ValueProcessor<T | nu
 
 export const nullOr = <T>(processor: ValueProcessor<T>): ValueProcessor<T | null> => nullable(processor);
 
-export const nullableAs = <T>(processor: ValueProcessor<T>, options?: WithDefault<T | null>): ValueProcessor<Exclude<T, undefined> | null> => ({
+export const asNullable = <T>(processor: ValueProcessor<T>, options?: WithDefault<T | null>): ValueProcessor<Exclude<T, undefined> | null> => ({
   process: (value: unknown): Result<Exclude<T, undefined> | null> => {
     if (value === null) return { value: null };
 
@@ -106,7 +106,7 @@ export const nullableAs = <T>(processor: ValueProcessor<T>, options?: WithDefaul
   },
 });
 
-export const nullOrAs = <T>(processor: ValueProcessor<T>, options?: WithDefault<T | null>): ValueProcessor<Exclude<T, undefined> | null> => nullableAs(processor, options);
+export const asNullOr = <T>(processor: ValueProcessor<T>, options?: WithDefault<T | null>): ValueProcessor<Exclude<T, undefined> | null> => asNullable(processor, options);
 
 export const createIsCheck = <T, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
   typeName: string,
