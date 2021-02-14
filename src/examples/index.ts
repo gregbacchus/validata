@@ -6,7 +6,7 @@ import { isRecord } from '../record';
 import { asString, isString, maybeString } from '../string';
 import { isTuple } from '../tuple';
 import { isIssue } from '../types';
-import { nullOr } from './../common';
+import { asNullable, isNullable } from './../common';
 import { TypeOf } from './../types';
 
 const sampleContract = {
@@ -75,7 +75,13 @@ console.log(JSON.stringify(sample5.process({ foo: 'bar' })));
 console.log(sample5.process({ foo: '123' }));
 console.log(sample5.process({ foo: 123 })); // same as above because of asNumber
 
-const sample6 = nullOr(isString());
+const sample6 = isNullable(isString());
 
 console.log(sample6.process(null));
 console.log(sample6.process('asd'));
+
+const sample7 = asNullable(isString(), { default: null });
+
+console.log(sample7.process(null));
+console.log(sample7.process('asd'));
+console.log(sample7.process(undefined));

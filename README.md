@@ -98,7 +98,8 @@ Checks:
   * maybeUrl
   * asUrl
   * maybeAsUrl
-* nullOr
+* isNullable
+* asNullable
 
 Types
 
@@ -439,31 +440,30 @@ const check = asUrl({
 });
 ```
 
-### `nullOr`
+### `isNullable`
 
-Any other check can be wrapped into `nullOr` to accept `null`.
+Any other check can be wrapped into `isNullable` to accept `null`.
 
 Example:
 
 ```typescript
-const check = nullOr(isString({ min: 3 }));
+const check = isNullable(isString({ min: 3 }));
 ```
 
-### `nullOrAs`
+### `asNullable`
 
-Any other check can be wrapped into `nullOrAs` to accept `null`.
+Any other check can be wrapped into `asNullable` to accept `null`.
 
 Options:
 
 * `default` - can be `null` or return type of the wrapped check
 
-
 Example:
 
 ```typescript
-const check = nullOrAs(isString({ min: 3 }));
-const check = nullOrAs(isString({ min: 3 }), { default: null });
-const check = nullOrAs(isString({ min: 3 }), { default: 'text' });
+const check = asNullable(isString({ min: 3 }));
+const check = asNullable(isString({ min: 3 }), { default: null });
+const check = asNullable(isString({ min: 3 }), { default: 'text' });
 ```
 
 ## Types

@@ -86,7 +86,7 @@ export interface CommonConvertOptions<T> {
   convertOptions?: any;
 }
 
-export const nullable = <T>(processor: ValueProcessor<T>): ValueProcessor<T | null> => ({
+export const isNullable = <T>(processor: ValueProcessor<T>): ValueProcessor<T | null> => ({
   process: (value: unknown): Result<T | null> => {
     if (value === null) return { value: null };
 
@@ -94,19 +94,18 @@ export const nullable = <T>(processor: ValueProcessor<T>): ValueProcessor<T | nu
   },
 });
 
-export const nullOr = <T>(processor: ValueProcessor<T>): ValueProcessor<T | null> => nullable(processor);
-
-export const asNullable = <T>(processor: ValueProcessor<T>, options?: WithDefault<T | null>): ValueProcessor<Exclude<T, undefined> | null> => ({
+export const asNullable = <T>(processor: ValueProcessor<T>, options?: WithDefault<Exclude<T, undefined> | null>): ValueProcessor<Exclude<T, undefined> | null> => ({
   process: (value: unknown): Result<Exclude<T, undefined> | null> => {
     if (value === null) return { value: null };
 
     const result = processor.process(value);
-    if (options?.default !== undefined && !isIssue(result) && result.value === undefined) return { value: options.default as Exclude<T, undefined> | null };
+    if (!isIssue(result) && result.value === undefined) {
+      const defaultValue = options?.default === undefined ? null : options.default;
+      return { value: defaultValue };
+    }
     return result as Result<Exclude<T, undefined>>;
   },
 });
-
-export const asNullOr = <T>(processor: ValueProcessor<T>, options?: WithDefault<T | null>): ValueProcessor<Exclude<T, undefined> | null> => asNullable(processor, options);
 
 export const createIsCheck = <T, TCoerceOptions, TValidationOptions extends CommonValidationOptions<T>>(
   typeName: string,
