@@ -1,7 +1,7 @@
 import { isAny } from './any';
 import { asNumber, isNumber } from './number';
 import { isObject } from './object';
-import { isRecord, maybeRecord } from './record';
+import { asRecord, isRecord, maybeAsRecord, maybeRecord } from './record';
 import { asString } from './string';
 import { expectIssue, expectSuccess, expectValue } from './test-helpers';
 
@@ -76,9 +76,53 @@ describe('maybeRecord', () => {
     expectIssue(fut, 'test', 'incorrect-type');
   });
 
+  it('will be graceful with non-object', () => {
+    const fut = maybeRecord(isNumber(), { incorrectTypeToUndefined: true });
+    expectValue(fut, 0, undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, 'test', undefined);
+  });
+
   it('will accept record', () => {
     const fut = maybeRecord(isNumber());
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });
+  });
+});
+
+describe('asRecord', () => {
+  it('will fail null or undefined', () => {
+    const fut = asRecord(isNumber());
+    expectIssue(fut, null, 'not-defined');
+    expectIssue(fut, undefined, 'not-defined');
+  });
+
+  it('will use default', () => {
+    const fut = asRecord(isNumber(), { default: { a: 47 } });
+    expectValue(fut, null, { a: 47 });
+    expectValue(fut, undefined, { a: 47 });
+  });
+});
+
+describe('maybeAsRecord', () => {
+  it('will coerce null and undefined', () => {
+    const fut = maybeAsRecord();
+    expectValue(fut, null, undefined);
+    expectValue(fut, undefined, undefined);
+  });
+
+  it('will use default', () => {
+    const fut = maybeAsRecord(asNumber(), { default: { a: 47 } });
+    expectValue(fut, null, { a: 47 });
+    expectValue(fut, undefined, { a: 47 });
+  });
+
+  it('will convert non-object to undefined', () => {
+    const fut = maybeAsRecord();
+    expectValue(fut, 0, undefined);
+    expectValue(fut, new Date(), undefined);
+    expectValue(fut, [], undefined);
+    expectValue(fut, 'test', undefined);
   });
 });
