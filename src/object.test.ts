@@ -164,6 +164,15 @@ describe('asObject', () => {
     expectIssue(fut, 'test', 'no-conversion');
   });
 
+  it('will use default', () => {
+    const fut = asObject<MyObject>({
+      a: asNumber(),
+      b: asString(),
+    }, { default: { a: 47, b: 'default' } });
+    expectValue(fut, null, { a: 47, b: 'default' });
+    expectValue(fut, undefined, { a: 47, b: 'default' });
+  });
+
   it('will accept object', () => {
     const fut = asObject();
     expectSuccess(fut, {});
@@ -272,6 +281,15 @@ describe('maybeAsObject', () => {
     const fut = maybeAsObject();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
+  });
+
+  it('will use default', () => {
+    const fut = maybeAsObject<MyObject>({
+      a: asNumber(),
+      b: asString(),
+    }, { default: { a: 47, b: 'default' } });
+    expectValue(fut, null, { a: 47, b: 'default' });
+    expectValue(fut, undefined, { a: 47, b: 'default' });
   });
 
   it('will convert non-object to undefined', () => {

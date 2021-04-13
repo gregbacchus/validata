@@ -1,3 +1,4 @@
+import { isAny } from './any';
 import { asArray, isArray, maybeArray, maybeAsArray } from './array';
 import { isNumber } from './number';
 import { isString } from './string';
@@ -85,6 +86,12 @@ describe('asArray', () => {
     expectIssue(fut, undefined, 'not-defined');
   });
 
+  it('will use default', () => {
+    const fut = asArray(isAny(), { default: ['default'] });
+    expectValue(fut, null, ['default']);
+    expectValue(fut, undefined, ['default']);
+  });
+
   it('will convert non-array', () => {
     const fut = asArray();
     const date = new Date();
@@ -126,6 +133,12 @@ describe('maybeAsArray', () => {
     const fut = maybeAsArray();
     expectValue(fut, null, undefined);
     expectValue(fut, undefined, undefined);
+  });
+
+  it('will use default', () => {
+    const fut = maybeAsArray(isAny(), { default: ['default'] });
+    expectValue(fut, null, ['default']);
+    expectValue(fut, undefined, ['default']);
   });
 
   it('will convert non-array', () => {
