@@ -1,4 +1,4 @@
-import { basicValidation, Check, Coerce, CommonValidationOptions, createIsCheck, createMaybeCheck, Validate } from './common';
+import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate, WithDefault } from './common';
 import { isIssue, Issue, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<V> {
@@ -15,6 +15,10 @@ class Generic<V> {
   public check: Check<Record<string, V>> = (value: unknown): value is Record<string, V> => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
   }
+
+  public convert: Convert<Record<string, V>> = (value): Record<string, V> | undefined => {
+    return this.check(value) ? value : undefined;
+  };
 
   public process = (check: ValueProcessor<V>, target: Record<string, V>): Result<Record<string, V>> => {
     const issues: Issue[] = [];
@@ -86,7 +90,26 @@ export const isRecord = <V>(check?: ValueProcessor<V>, options?: RecordOptions<R
   return createIsCheck('record', generic.check, generic.coerce, generic.validate)({ ...options, check });
 };
 
-export const maybeRecord = <V>(check?: ValueProcessor<V>, options?: RecordOptions<Record<string, V>>): ValueProcessor<Record<string, V> | undefined> => {
+export const maybeRecord = <V>(
+  check?: ValueProcessor<V>,
+  options?: RecordOptions<Record<string, V>> & MaybeOptions
+): ValueProcessor<Record<string, V> | undefined> => {
   const generic = new Generic<V>();
   return createMaybeCheck('record', generic.check, generic.coerce, generic.validate)({ ...options, check });
+};
+
+export const asRecord = <V>(
+  check?: ValueProcessor<V>,
+  options?: RecordOptions<Record<string, V>> & WithDefault<Record<string, V>> & CommonConvertOptions<Record<string, V>>
+): ValueProcessor<Record<string, V>> => {
+  const generic = new Generic<V>();
+  return createAsCheck('record', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, check });
+};
+
+export const maybeAsRecord = <V>(
+  check?: ValueProcessor<V>,
+  options?: RecordOptions<Record<string, V>> & MaybeOptions & WithDefault<Record<string, V>> & CommonConvertOptions<Record<string, V>>
+): ValueProcessor<Record<string, V> | undefined> => {
+  const generic = new Generic<V>();
+  return createMaybeAsCheck('record', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, check });
 };

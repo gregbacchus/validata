@@ -85,6 +85,8 @@ Checks:
 * Record
   * isRecord
   * maybeRecord
+  * asRecord
+  * maybeAsRecord
 * String
   * isString
   * maybeString
@@ -284,13 +286,15 @@ const check = isObject<Sample>({
 });
 ```
 
-### `isRecord`, `maybeRecord`
+### `isRecord`, `maybeRecord`, `asRecord`, `maybeAsRecord`
 
 Usage:
 
 ```typescript
 isRecord<V>(check, options);
 maybeRecord<V>(check, options);
+asRecord<V>(check, options);
+maybeAsRecord<V>(check, options);
 // where `check` is ValueProcessor<V>, and Record<string, V> is the type to be processed
 ```
 
