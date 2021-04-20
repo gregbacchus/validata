@@ -61,5 +61,19 @@ export interface ValueProcessor<T> {
 
 export type Next<T, R> = (value: T) => Result<R>;
 
+export interface NotPrimitive { [key: string]: any; }
+
+export type KeysOfType<T, U> = { [K in keyof T]: T[K] extends U ? K : never }[keyof T];
+
+export type RequiredKeys<T> = Exclude<KeysOfType<T, Exclude<T[keyof T], undefined>>, undefined>;
+
+export type OptionalKeys<T> = Exclude<keyof T, RequiredKeys<T>>;
+
+export type OptionalProperties<T extends NotPrimitive> = Pick<T, OptionalKeys<T>>;
+
+export type RequiredProperties<T extends NotPrimitive> = Omit<T, OptionalKeys<T>>;
+
+export type AllProperties<T extends NotPrimitive> = RequiredProperties<T> & Partial<OptionalProperties<T>>;
+
 export type TypeOf<T extends ValueProcessor<V> | Contract<V>, V = unknown> =
-  T extends ValueProcessor<infer Type> ? Type : { [K in keyof T]: T[K] extends ValueProcessor<infer Type> ? Type : never };
+  T extends ValueProcessor<infer Type> ? AllProperties<Type> : { [K in keyof T]: T[K] extends ValueProcessor<infer Type> ? AllProperties<Type> : never };
