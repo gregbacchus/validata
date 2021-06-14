@@ -9,12 +9,12 @@ interface CoerceOptions<I> extends ItemProcessor {
   item?: ValueProcessor<I>;
 }
 
-interface ValidationOptions<I, T extends I[]> extends CommonValidationOptions<T> {
+interface ValidationOptions<I, T extends I[] = I[]> extends CommonValidationOptions<T> {
   maxLength?: number;
   minLength?: number;
 }
 
-class Generic<I, T extends I[]> {
+class Generic<I, T extends I[] = I[]> {
   public check: Check<T> = (value: unknown): value is T => {
     return Array.isArray(value); // TODO check generic
   }
@@ -74,19 +74,19 @@ class Generic<I, T extends I[]> {
   }
 }
 
-export type ArrayOptions<I, T extends I[]> = ItemProcessor & ValidationOptions<I, T>;
+export type ArrayOptions<I, T extends I[] = I[]> = ItemProcessor & ValidationOptions<I, T>;
 
-export const isArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
+export const isArray = <I, T extends I[] = I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T>): ValueProcessor<T> => {
   const generic = new Generic<I, T>();
   return createIsCheck('array', generic.check, generic.coerce, generic.validate)({ ...options, item });
 };
 
-export const maybeArray = <I, T extends I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T> & MaybeOptions): ValueProcessor<T | undefined> => {
+export const maybeArray = <I, T extends I[] = I[]>(item?: ValueProcessor<I>, options?: ArrayOptions<I, T> & MaybeOptions): ValueProcessor<T | undefined> => {
   const generic = new Generic<I, T>();
   return createMaybeCheck('array', generic.check, generic.coerce, generic.validate)({ ...options, item });
 };
 
-export const asArray = <I, T extends I[]>(
+export const asArray = <I, T extends I[] = I[]>(
   item?: ValueProcessor<I>,
   options?: ArrayOptions<I, T> & WithDefault<T> & CommonConvertOptions<T>
 ): ValueProcessor<T> => {
@@ -94,7 +94,7 @@ export const asArray = <I, T extends I[]>(
   return createAsCheck('array', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, item });
 };
 
-export const maybeAsArray = <I, T extends I[]>(
+export const maybeAsArray = <I, T extends I[] = I[]>(
   item?: ValueProcessor<I>,
   options?: ArrayOptions<I, T> & MaybeOptions & WithDefault<T> & CommonConvertOptions<T>
 ): ValueProcessor<T | undefined> => {
