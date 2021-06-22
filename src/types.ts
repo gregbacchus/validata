@@ -49,6 +49,18 @@ export class Issue {
       this.info,
     );
   }
+
+  /**
+   * ARROW FUNCTION
+   */
+  public nestSwap = (parent: Path): Issue => {
+    return new Issue(
+      [parent, ...this.path.slice(1)],
+      this.value,
+      this.reason,
+      this.info,
+    );
+  }
 }
 
 export interface IssueResult {
