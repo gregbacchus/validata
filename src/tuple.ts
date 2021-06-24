@@ -18,7 +18,7 @@ class Generic<T extends unknown[]> {
     const output: T = [] as any;
     check.forEach((c, i) => {
       if (i >= target.length) {
-        issues.push(Issue.fromChild(i, undefined, 'expected-item'));
+        issues.push(Issue.forPath(i, undefined, 'expected-item'));
         return;
       }
       const value = i < target.length ? target[i] : undefined;
@@ -38,7 +38,7 @@ class Generic<T extends unknown[]> {
     if (target.length > check.length) {
       for (let i = check.length; i < target.length; i++) {
         const value = target[i];
-        issues.push(Issue.fromChild(i, value, 'unexpected-item'));
+        issues.push(Issue.forPath(i, value, 'unexpected-item'));
       }
     }
     return issues.length ? { issues } : { value: output };

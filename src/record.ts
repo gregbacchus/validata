@@ -67,17 +67,17 @@ class Generic<V> {
       result.issues.push(
         ...Object.keys(value).reduce((acc, key) => {
           if (!keyRegex.test(key)) {
-            acc.push(Issue.fromChild(path, value, 'key-regex', { key, regex: keyRegex.toString() }));
+            acc.push(Issue.forPath(path, value, 'key-regex', { key, regex: keyRegex.toString() }));
           }
           return acc;
         }, [] as Issue[])
       );
     }
     if (options.minKeys !== undefined && keyCount < options.minKeys) {
-      result.issues.push(Issue.fromChild(path, value, 'min-keys', { keyCount, min: options.minKeys }));
+      result.issues.push(Issue.forPath(path, value, 'min-keys', { keyCount, min: options.minKeys }));
     }
     if (options.maxKeys !== undefined && keyCount > options.maxKeys) {
-      result.issues.push(Issue.fromChild(path, value, 'max-keys', { keyCount, max: options.maxKeys }));
+      result.issues.push(Issue.forPath(path, value, 'max-keys', { keyCount, max: options.maxKeys }));
     }
     return result;
   }

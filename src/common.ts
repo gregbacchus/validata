@@ -25,7 +25,7 @@ export const withDefault = <T>(options?: WithDefault<T>): UndefinedHandler<T> =>
 
 export const definitely = <T>(undefinedHandler?: UndefinedHandler<T>): Definitely<T> => (next) => (value, path = []) => {
   if (value === null || value === undefined) {
-    return undefinedHandler?.() ?? { issues: [Issue.fromChild(path, value, 'not-defined')] };
+    return undefinedHandler?.() ?? { issues: [Issue.forPath(path, value, 'not-defined')] };
   }
   return next(value, path);
 };
@@ -55,7 +55,7 @@ export const maybe = <T>(empty: Empty, check: Check<T>, options?: MaybeOptions, 
 
 export const is = <T>(check: Check<T>, typeName: string): IsAs<T> => (next) => (value, path = []) => {
   if (!check(value)) {
-    return { issues: [Issue.fromChild(path, value, 'incorrect-type', { expectedType: typeName })] };
+    return { issues: [Issue.forPath(path, value, 'incorrect-type', { expectedType: typeName })] };
   }
   return next(value, path);
 };
@@ -65,7 +65,7 @@ export const as = <T, O extends CommonConvertOptions<T>>(check: Check<T>, conver
 
   const converted = options?.converter?.(value, options.convertOptions) ?? convert(value, options);
   if (converted === undefined || converted === null) {
-    return undefinedHandler?.() ?? { issues: [Issue.fromChild(path, value, 'no-conversion', { toType: typeName })] };
+    return undefinedHandler?.() ?? { issues: [Issue.forPath(path, value, 'no-conversion', { toType: typeName })] };
   }
   return next(converted, path);
 };
@@ -182,7 +182,7 @@ export const createMaybeAsCheck = <T, TConvertOptions extends CommonConvertOptio
 export const basicValidation = <T>(value: T, path: Path[], options: CommonValidationOptions<T>): IssueResult => {
   const result: IssueResult = { issues: [] };
   if (options.validator?.(value, options.validatorOptions) === false) {
-    result.issues.push(Issue.fromChild(path, value, 'validator'));
+    result.issues.push(Issue.forPath(path, value, 'validator'));
   }
   return result;
 };

@@ -34,7 +34,7 @@ class Generic<T extends { [key: string]: any; }> {
     (Object.keys(target) as Array<keyof T>).forEach((key) => {
       if (!(key in contract)) {
         issues.push(
-          Issue.fromChild([...path, key], target[key], 'unexpected-property'),
+          Issue.forPath([...path, key], target[key], 'unexpected-property'),
         );
       }
     });

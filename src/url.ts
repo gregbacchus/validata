@@ -37,7 +37,7 @@ const coerce: Coerce<URL, CoerceOptions> = (options) => (next) => (value, path) 
 const validate: Validate<URL, ValidationOptions> = (value, path, options) => {
   const result = basicValidation(value, path, options);
   if (options.protocol && value.protocol.replace(/:\s*$/, '') !== options.protocol.replace(/:\s*$/, '')) {
-    result.issues.push(Issue.fromChild(path, value, 'invalid-protocol', { expectedProtocol: options.protocol }));
+    result.issues.push(Issue.forPath(path, value, 'invalid-protocol', { expectedProtocol: options.protocol }));
   }
   return result;
 };

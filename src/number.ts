@@ -43,10 +43,10 @@ const coerce: Coerce<number, CoerceOptions> = (options) => (next) => (value, pat
 const validate: Validate<number, ValidationOptions> = (value, path, options) => {
   const result = basicValidation(value, path, options);
   if (options.min !== undefined && value < options.min) {
-    result.issues.push(Issue.fromChild(path, value, 'min', { min: options.min }));
+    result.issues.push(Issue.forPath(path, value, 'min', { min: options.min }));
   }
   if (options.max !== undefined && value > options.max) {
-    result.issues.push(Issue.fromChild(path, value, 'max', { max: options.max }));
+    result.issues.push(Issue.forPath(path, value, 'max', { max: options.max }));
   }
   return result;
 };

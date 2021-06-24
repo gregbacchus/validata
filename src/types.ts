@@ -23,11 +23,7 @@ export const exists = <T>(value: T | undefined): value is T => {
 export type Path = string | number | symbol;
 
 export class Issue {
-  // public static from = (value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
-  //   return new Issue([], value, reason, info);
-  // }
-
-  public static fromChild = (path: Path | Path[], value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
+  public static forPath = (path: Path | Path[], value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
     return new Issue(Array.isArray(path) ? path : [path], value, reason, info);
   }
 

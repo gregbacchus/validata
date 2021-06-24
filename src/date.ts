@@ -49,13 +49,13 @@ const validate: Validate<Date, ValidationOptions> = (value, path, options) => {
   if (options.maxFuture) {
     const max = DateTime.utc().plus(options.maxFuture);
     if (dateTime > max) {
-      result.issues.push(Issue.fromChild(path, value, 'max-future', { max }));
+      result.issues.push(Issue.forPath(path, value, 'max-future', { max }));
     }
   }
   if (options.maxPast) {
     const min = DateTime.utc().minus(options.maxPast);
     if (dateTime < min) {
-      result.issues.push(Issue.fromChild(path, value, 'max-past', { min }));
+      result.issues.push(Issue.forPath(path, value, 'max-past', { min }));
     }
   }
   return result;

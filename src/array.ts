@@ -63,10 +63,10 @@ class Generic<I, T extends I[] = I[]> {
   public validate: Validate<T, ValidationOptions<I, T>> = (value, path, options) => {
     const result = basicValidation(value, path, options);
     if (options.minLength !== undefined && value.length < options.minLength) {
-      result.issues.push(Issue.fromChild(path, value, 'min-length', { length: value.length, min: options.minLength }));
+      result.issues.push(Issue.forPath(path, value, 'min-length', { length: value.length, min: options.minLength }));
     }
     if (options.maxLength !== undefined && value.length > options.maxLength) {
-      result.issues.push(Issue.fromChild(path, value, 'max-length', { length: value.length, max: options.maxLength }));
+      result.issues.push(Issue.forPath(path, value, 'max-length', { length: value.length, max: options.maxLength }));
     }
     return result;
   }
