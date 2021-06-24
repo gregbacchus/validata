@@ -1,4 +1,4 @@
-import { isIssue, Issue, ValueProcessor } from './types';
+import { isIssue, Issue, Path, ValueProcessor } from './types';
 
 export class ValidationError extends Error {
   constructor(public readonly issues: Issue[]) {
@@ -10,10 +10,10 @@ export class ValidationError extends Error {
   }
 }
 
-export const check = <T>(check: ValueProcessor<T>, value: () => unknown, nest?: string | number): T => {
-  const result = check.process(value());
+export const check = <T>(check: ValueProcessor<T>, value: () => unknown, path: Path | Path[] = []): T => {
+  const result = check.process(value(), Array.isArray(path) ? path : [path]);
   if (isIssue(result)) {
-    throw new ValidationError(nest ? result.issues.map((issue) => issue.nest(nest)) : result.issues);
+    throw new ValidationError(result.issues);
   }
   return result.value;
 };

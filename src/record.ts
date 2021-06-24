@@ -1,5 +1,5 @@
 import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate, WithDefault } from './common';
-import { isIssue, Issue, Result, ValueProcessor } from './types';
+import { isIssue, Issue, Path, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<V> {
   check?: ValueProcessor<V>;
@@ -20,18 +20,16 @@ class Generic<V> {
     return this.check(value) ? value : undefined;
   };
 
-  public process = (check: ValueProcessor<V>, target: Record<string, V>): Result<Record<string, V>> => {
+  public process = (check: ValueProcessor<V>, target: Record<string, V>, path: Path[]): Result<Record<string, V>> => {
     const issues: Issue[] = [];
 
     const output = {} as Record<string, V>;
     const keys = Object.keys(target);
     keys.forEach((key) => {
       const value: V = target[key];
-      const childResult = check.process(value);
+      const childResult = check.process(value, [...path, key]);
       if (isIssue(childResult)) {
-        childResult.issues.forEach((issue) => {
-          issues.push(issue.nest(key));
-        });
+        issues.push(...childResult.issues);
         return;
       }
       if (childResult) {
@@ -48,7 +46,7 @@ class Generic<V> {
 
     let coerced = value;
     if (options.check) {
-      const result = this.process(options.check, coerced);
+      const result = this.process(options.check, coerced, path);
       if (isIssue(result)) {
         return result;
       }

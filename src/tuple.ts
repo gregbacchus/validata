@@ -1,5 +1,5 @@
 import { basicValidation, Check, Coerce, CommonValidationOptions, createIsCheck, createMaybeCheck, Validate } from './common';
-import { isIssue, Issue, Result, ValueProcessor } from './types';
+import { isIssue, Issue, Path, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<T extends unknown[]> {
   items: { [K in keyof T]: ValueProcessor<T[K]> };
@@ -12,7 +12,7 @@ class Generic<T extends unknown[]> {
     return Array.isArray(value); // TODO check generic
   }
 
-  public process = (check: { [K in keyof T]: ValueProcessor<T[K]> }, target: T): Result<T> => {
+  public process = (check: { [K in keyof T]: ValueProcessor<T[K]> }, target: T, path: Path[]): Result<T> => {
     const issues: Issue[] = [];
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const output: T = [] as any;
@@ -22,11 +22,9 @@ class Generic<T extends unknown[]> {
         return;
       }
       const value = i < target.length ? target[i] : undefined;
-      const childResult = c.process(value);
+      const childResult = c.process(value, [...path, i]);
       if (isIssue(childResult)) {
-        childResult.issues.forEach((issue) => {
-          issues.push(issue.nest(i));
-        });
+        issues.push(...childResult.issues);
         return;
       }
       if (childResult) {
@@ -48,7 +46,7 @@ class Generic<T extends unknown[]> {
     if (!options) return next(value, path);
 
     let coerced = value;
-    const result = this.process(options.items, coerced);
+    const result = this.process(options.items, coerced, path);
     if (isIssue(result)) {
       return result;
     }

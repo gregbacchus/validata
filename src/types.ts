@@ -33,37 +33,6 @@ export class Issue {
     public readonly reason: string,
     public readonly info?: Record<string, unknown>,
   ) { }
-
-  /**
-   * ARROW FUNCTION
-   */
-  public nest = (parent: Path): Issue => {
-    return new Issue(
-      [parent, ...this.path],
-      this.value,
-      this.reason,
-      this.info,
-    );
-  }
-
-  /**
-   * ARROW FUNCTION
-   */
-  public nestSwap = (parent: Path): Issue => {
-    return new Issue(
-      [parent, ...this.path.slice(1)],
-      this.value,
-      this.reason,
-      this.info,
-    );
-  }
-
-  public toJSON = (): Record<string, unknown> => ({
-    path: this.path,
-    value: this.value,
-    reason: this.reason,
-    info: this.info,
-  })
 }
 
 export interface IssueResult {
