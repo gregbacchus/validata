@@ -24,20 +24,20 @@ const convert: Convert<URL> = (value) => {
   return undefined;
 };
 
-const coerce: Coerce<URL, CoerceOptions> = (options) => (next) => (value) => {
-  if (!options) return next(value);
+const coerce: Coerce<URL, CoerceOptions> = (options) => (next) => (value, path) => {
+  if (!options) return next(value, path);
 
   const coerced = new URL(value.toString());
   if (options.setProtocol) {
     coerced.protocol = options.setProtocol;
   }
-  return next(coerced);
+  return next(coerced, path);
 };
 
-const validate: Validate<URL, ValidationOptions> = (value, options) => {
-  const result = basicValidation(value, options);
+const validate: Validate<URL, ValidationOptions> = (value, path, options) => {
+  const result = basicValidation(value, path, options);
   if (options.protocol && value.protocol.replace(/:\s*$/, '') !== options.protocol.replace(/:\s*$/, '')) {
-    result.issues.push(Issue.from(value, 'invalid-protocol', { expectedProtocol: options.protocol }));
+    result.issues.push(Issue.fromChild(path, value, 'invalid-protocol', { expectedProtocol: options.protocol }));
   }
   return result;
 };

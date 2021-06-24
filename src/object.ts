@@ -1,5 +1,5 @@
 import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate, WithDefault } from './common';
-import { Contract, isIssue, Issue, Result, ValueProcessor } from './types';
+import { Contract, isIssue, Issue, Path, Result, ValueProcessor } from './types';
 
 interface AdditionalOptions {
   stripExtraProperties?: boolean;
@@ -28,13 +28,13 @@ class Generic<T extends { [key: string]: any; }> {
     return undefined;
   };
 
-  public process = (contract: Contract<T>, target: T): Result<T> => {
+  public process = (contract: Contract<T>, target: T, path: Path[]): Result<T> => {
     const issues: Issue[] = [];
 
     (Object.keys(target) as Array<keyof T>).forEach((key) => {
       if (!(key in contract)) {
         issues.push(
-          Issue.fromChild(key, target[key], 'unexpected-property'),
+          Issue.fromChild([...path, key], target[key], 'unexpected-property'),
         );
       }
     });
@@ -44,11 +44,9 @@ class Generic<T extends { [key: string]: any; }> {
     keys.forEach((key) => {
       const check = contract[key];
       const value = target[key];
-      const childResult = check.process(value);
+      const childResult = check.process(value, [...path, key]);
       if (isIssue(childResult)) {
-        childResult.issues.forEach((issue) => {
-          issues.push(issue.nest(key));
-        });
+        issues.push(...childResult.issues);
         return;
       }
       if (childResult.value === undefined && !(key in target)) return;
@@ -62,11 +60,11 @@ class Generic<T extends { [key: string]: any; }> {
     return issues.length ? { issues } : { value: output };
   }
 
-  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
-    if (!options) return next(value);
+  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value, path) => {
+    if (!options) return next(value, path);
 
     let coerced = { ...value };
-    if (!options.contract) return next(coerced);
+    if (!options.contract) return next(coerced, path);
 
     if (options.stripExtraProperties) {
       const allowedProperties = new Set(Object.keys(options.contract));
@@ -75,16 +73,16 @@ class Generic<T extends { [key: string]: any; }> {
         delete coerced[key];
       });
     }
-    const result = this.process(options.contract, coerced);
+    const result = this.process(options.contract, coerced, path);
     if (isIssue(result)) return result;
 
     if (result) {
       coerced = result.value;
     }
-    return next(coerced);
+    return next(coerced, path);
   }
 
-  public validate: Validate<T, ValidationOptions<T>> = (value, options) => basicValidation(value, options);
+  public validate: Validate<T, ValidationOptions<T>> = (value, path, options) => basicValidation(value, path, options);
 }
 
 export type ObjectOptions<T> = ValidationOptions<T> & AdditionalOptions;

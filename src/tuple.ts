@@ -44,8 +44,8 @@ class Generic<T extends unknown[]> {
     return issues.length ? { issues } : { value: output };
   }
 
-  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
-    if (!options) return next(value);
+  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value, path) => {
+    if (!options) return next(value, path);
 
     let coerced = value;
     const result = this.process(options.items, coerced);
@@ -55,10 +55,10 @@ class Generic<T extends unknown[]> {
     if (result) {
       coerced = result.value;
     }
-    return next(coerced);
+    return next(coerced, path);
   }
 
-  public validate: Validate<T, ValidationOptions<T>> = (value, options) => basicValidation(value, options);
+  public validate: Validate<T, ValidationOptions<T>> = (value, path, options) => basicValidation(value, path, options);
 }
 
 export type Options<T extends unknown[]> = ValidationOptions<T>;

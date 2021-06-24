@@ -23,9 +23,9 @@ export const exists = <T>(value: T | undefined): value is T => {
 export type Path = string | number | symbol;
 
 export class Issue {
-  public static from = (value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
-    return new Issue([], value, reason, info);
-  }
+  // public static from = (value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
+  //   return new Issue([], value, reason, info);
+  // }
 
   public static fromChild = (path: Path | Path[], value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
     return new Issue(Array.isArray(path) ? path : [path], value, reason, info);
@@ -61,6 +61,13 @@ export class Issue {
       this.info,
     );
   }
+
+  public toJSON = (): Record<string, unknown> => ({
+    path: this.path,
+    value: this.value,
+    reason: this.reason,
+    info: this.info,
+  })
 }
 
 export interface IssueResult {
@@ -68,10 +75,10 @@ export interface IssueResult {
 }
 
 export interface ValueProcessor<T> {
-  process(value: unknown): Result<T>;
+  process(value: unknown, path?: Path[]): Result<T>;
 }
 
-export type Next<T, R> = (value: T) => Result<R>;
+export type Next<T, R> = (value: T, path: Path[]) => Result<R>;
 
 export interface NotPrimitive { [key: string]: any; }
 

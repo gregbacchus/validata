@@ -43,8 +43,8 @@ class Generic<V> {
     return issues.length ? { issues } : { value: output };
   }
 
-  public coerce: Coerce<Record<string, V>, CoerceOptions<V>> = (options) => (next) => (value) => {
-    if (!options) return next(value);
+  public coerce: Coerce<Record<string, V>, CoerceOptions<V>> = (options) => (next) => (value, path) => {
+    if (!options) return next(value, path);
 
     let coerced = value;
     if (options.check) {
@@ -56,28 +56,28 @@ class Generic<V> {
         coerced = result.value;
       }
     }
-    return next(coerced);
+    return next(coerced, path);
   }
 
-  public validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, options) => {
-    const result = basicValidation(value, options);
+  public validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, path, options) => {
+    const result = basicValidation(value, path, options);
     const keyCount = Object.keys(value).length;
     const keyRegex = options.keyRegex;
     if (keyRegex !== undefined) {
       result.issues.push(
         ...Object.keys(value).reduce((acc, key) => {
           if (!keyRegex.test(key)) {
-            acc.push(Issue.from(key, 'key-regex', { key, regex: keyRegex.toString() }));
+            acc.push(Issue.fromChild(path, value, 'key-regex', { key, regex: keyRegex.toString() }));
           }
           return acc;
         }, [] as Issue[])
       );
     }
     if (options.minKeys !== undefined && keyCount < options.minKeys) {
-      result.issues.push(Issue.from(value, 'min-keys', { keyCount, min: options.minKeys }));
+      result.issues.push(Issue.fromChild(path, value, 'min-keys', { keyCount, min: options.minKeys }));
     }
     if (options.maxKeys !== undefined && keyCount > options.maxKeys) {
-      result.issues.push(Issue.from(value, 'max-keys', { keyCount, max: options.maxKeys }));
+      result.issues.push(Issue.fromChild(path, value, 'max-keys', { keyCount, max: options.maxKeys }));
     }
     return result;
   }

@@ -27,8 +27,8 @@ const convert: Convert<number> = (value) => {
   return undefined;
 };
 
-const coerce: Coerce<number, CoerceOptions> = (options) => (next) => (value) => {
-  if (!options) return next(value);
+const coerce: Coerce<number, CoerceOptions> = (options) => (next) => (value, path) => {
+  if (!options) return next(value, path);
 
   let coerced = value;
   if (options.coerceMin !== undefined && coerced < options.coerceMin) {
@@ -37,16 +37,16 @@ const coerce: Coerce<number, CoerceOptions> = (options) => (next) => (value) => 
   if (options.coerceMax !== undefined && coerced > options.coerceMax) {
     coerced = options.coerceMax;
   }
-  return next(coerced);
+  return next(coerced, path);
 };
 
-const validate: Validate<number, ValidationOptions> = (value, options) => {
-  const result = basicValidation(value, options);
+const validate: Validate<number, ValidationOptions> = (value, path, options) => {
+  const result = basicValidation(value, path, options);
   if (options.min !== undefined && value < options.min) {
-    result.issues.push(Issue.from(value, 'min', { min: options.min }));
+    result.issues.push(Issue.fromChild(path, value, 'min', { min: options.min }));
   }
   if (options.max !== undefined && value > options.max) {
-    result.issues.push(Issue.from(value, 'max', { max: options.max }));
+    result.issues.push(Issue.fromChild(path, value, 'max', { max: options.max }));
   }
   return result;
 };

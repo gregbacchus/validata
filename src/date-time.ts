@@ -36,22 +36,22 @@ const convert: Convert<DateTime> = (value) => {
   return undefined;
 };
 
-const coerce: Coerce<DateTime, CoerceOptions> = () => (next) => (value) => {
-  return next(value);
+const coerce: Coerce<DateTime, CoerceOptions> = () => (next) => (value, path) => {
+  return next(value, path);
 };
 
-const validate: Validate<DateTime, ValidationOptions> = (value, options) => {
-  const result = basicValidation(value, options);
+const validate: Validate<DateTime, ValidationOptions> = (value, path, options) => {
+  const result = basicValidation(value, path, options);
   if (options.maxFuture) {
     const max = DateTime.utc().plus(options.maxFuture);
     if (value > max) {
-      result.issues.push(Issue.from(value, 'max-future', { max }));
+      result.issues.push(Issue.fromChild(path, value, 'max-future', { max }));
     }
   }
   if (options.maxPast) {
     const min = DateTime.utc().minus(options.maxPast);
     if (value < min) {
-      result.issues.push(Issue.from(value, 'max-past', { min }));
+      result.issues.push(Issue.fromChild(path, value, 'max-past', { min }));
     }
   }
   return result;
