@@ -9,17 +9,23 @@ interface CoerceOptions<T> extends AdditionalOptions {
   contract?: Contract<T>;
 }
 
+interface ConvertOptions {
+  reviver?: Reviver;
+}
+
 interface ValidationOptions<T> extends CommonValidationOptions<T> { }
+
+type Reviver = (key: string, value: any) => any;
 
 class Generic<T extends { [key: string]: any; }> {
   public check: Check<T> = (value: unknown): value is T => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
   }
 
-  public convert: Convert<T> = (value) => {
+  public convert = (options?: ConvertOptions): Convert<T> => (value) => {
     if (typeof value === 'string' && value[0] === '{' && value[value.length - 1] === '}') {
       try {
-        return JSON.parse(value) as T;
+        return JSON.parse(value, options?.reviver) as T;
       } catch {
         return undefined;
       }
@@ -99,16 +105,16 @@ export const maybeObject = <T extends { [key: string]: any; }>(contract?: Contra
 
 export const asObject = <T extends { [key: string]: any; }>(
   contract?: Contract<T>,
-  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T>
+  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T> & ConvertOptions,
 ): ValueProcessor<T> => {
   const generic = new Generic<T>();
-  return createAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
+  return createAsCheck('object', generic.check, generic.convert(options), generic.coerce, generic.validate)({ ...options, contract });
 };
 
 export const maybeAsObject = <T extends { [key: string]: any; }>(
   contract?: Contract<T>,
-  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T> & MaybeOptions
+  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T> & MaybeOptions & ConvertOptions,
 ): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
-  return createMaybeAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
+  return createMaybeAsCheck('object', generic.check, generic.convert(options), generic.coerce, generic.validate)({ ...options, contract });
 };
