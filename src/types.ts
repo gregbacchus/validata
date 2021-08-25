@@ -27,6 +27,11 @@ export class Issue {
     return new Issue(Array.isArray(path) ? path : [path], value, reason, info);
   }
 
+  public static nest = (parentPath: Path | Path[], issue: Issue): Issue => {
+    const path = Array.isArray(parentPath) ? parentPath : [parentPath];
+    return new Issue([...path, ...issue.path], issue.value, issue.reason, issue.info);
+  }
+
   private constructor(
     public readonly path: Path[],
     public readonly value: unknown,
