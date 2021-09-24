@@ -60,6 +60,22 @@ describe('StringFormat', () => {
       expectSuccess(fut, '52491B51-E733-43A2-BCDE-1CCE35EE82A6');
     });
   });
+
+  describe('email', () => {
+    const fut = isString({ format: StringFormat.email() });
+
+    it('have issues with invalid email addresses', () => {
+      expectFormatIssue(fut, '', 'email');
+      expectFormatIssue(fut, 'test', 'email');
+      expectFormatIssue(fut, 'foo@', 'email');
+      expectFormatIssue(fut, '@home', 'email');
+    });
+
+    it('accept email addresses', () => {
+      expectSuccess(fut, 'me@work.com');
+      expectSuccess(fut, 'me@my.home.com');
+    });
+  });
 });
 
 describe('maybe StringFormat', () => {

@@ -1,3 +1,5 @@
+import validator from 'validator';
+
 export type StringFormatCheck = (value: string) => true | FormatIssue;
 
 export interface FormatIssue {
@@ -28,6 +30,15 @@ const DEFAULT_PASSWORD_REQUIREMENTS = {
   specialChars: 1,
 };
 
+const checkEmail = (): StringFormatCheck => (value) => {
+  if (!validator.isEmail(value)) {
+    return {
+      expectedFormat: 'email',
+    };
+  }
+  return true;
+};
+
 const checkPassword = (requirements?: PasswordRequirements): StringFormatCheck => (value) => {
   const reqWithDefaults = { ...DEFAULT_PASSWORD_REQUIREMENTS, ...requirements };
 
@@ -53,7 +64,8 @@ const checkPassword = (requirements?: PasswordRequirements): StringFormatCheck =
 };
 
 export namespace StringFormat {
+  export const email = checkEmail;
+  export const password = checkPassword;
   export const ULID = (): StringFormatCheck => regexCheck(REGEX_ULID, 'ulid');
   export const UUID = (): StringFormatCheck => regexCheck(REGEX_UUID, 'uuid');
-  export const password = checkPassword;
 }
