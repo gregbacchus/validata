@@ -121,12 +121,14 @@ describe('maybeString', () => {
 
   it('will check custom validator', () => {
     const fut = maybeString({ validator: (value) => value === 'test' });
+    expectValue(fut, null, undefined);
     expectSuccess(fut, 'test');
     expectIssue(fut, 'other', 'validator');
   });
 
   it('will check custom validator', () => {
     const fut = maybeString({ validator: validator.isEmail });
+    expectValue(fut, null, undefined);
     expectSuccess(fut, 'me@home.com');
     expectIssue(fut, 'other', 'validator');
   });
