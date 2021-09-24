@@ -1,4 +1,4 @@
-import { isString } from './string';
+import { isString, maybeString } from './string';
 import { StringFormat } from './string-format';
 import { expectSuccess } from './test-helpers';
 import { isIssue, ValueProcessor } from './types';
@@ -58,6 +58,22 @@ describe('StringFormat', () => {
     it('accept UUIDs', () => {
       expectSuccess(fut, 'b8493e8b-fdf8-4420-ab63-0701a6850da6');
       expectSuccess(fut, '52491B51-E733-43A2-BCDE-1CCE35EE82A6');
+    });
+  });
+});
+
+describe('maybe StringFormat', () => {
+  describe('ULID', () => {
+    const fut = maybeString({ format: StringFormat.ULID() });
+
+    it('undefined', () => {
+      expectSuccess(fut, undefined);
+      expectSuccess(fut, null);
+    });
+
+    it('value', () => {
+      expectSuccess(fut, '01EFNX7ZQ36RXJV136T0SP4Y77');
+      expectSuccess(fut, '01EFNX7SQ8A5YPF2YJDVJTY1H5');
     });
   });
 });
