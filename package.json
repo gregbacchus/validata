@@ -21,7 +21,7 @@
     "request validator"
   ],
   "main": "./dist/index.js",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git@github.com:gregbacchus/validata.git"
