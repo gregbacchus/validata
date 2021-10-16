@@ -30,8 +30,16 @@ const DEFAULT_PASSWORD_REQUIREMENTS = {
   specialChars: 1,
 };
 
-const checkEmail = (): StringFormatCheck => (value) => {
-  if (!validator.isEmail(value)) {
+interface CheckEmailOptions {
+  allowDisplayName?: boolean;
+}
+
+const checkEmail = (options?: CheckEmailOptions): StringFormatCheck => (value) => {
+  if (
+    !validator.isEmail(value, {
+      'allow_display_name': options?.allowDisplayName,
+    })
+  ) {
     return {
       expectedFormat: 'email',
     };
