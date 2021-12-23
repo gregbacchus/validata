@@ -1,5 +1,7 @@
+import { isObject } from '..';
+import { asArray } from './array';
 import { asEnum, isEnum, maybeAsEnum, maybeEnum } from './enum';
-import { IssueResult } from './types';
+import { isIssue, IssueResult } from './types';
 
 enum MyEnum {
   WATER,
@@ -82,7 +84,7 @@ describe('asEnum', () => {
 
   it('will recognize the key of an enum as a valid input', () => {
     const test = asEnum(MyEnum).process('WATER');
-    expect(test).toEqual({value: MyEnum.WATER});
+    expect(test).toEqual({ value: MyEnum.WATER });
   });
 });
 
@@ -104,7 +106,7 @@ describe('maybeAsEnum', () => {
 
   it('will recognize the key of an enum as a valid input', () => {
     const test = maybeAsEnum(MyEnum).process('WATER');
-    expect(test).toEqual({value: MyEnum.WATER});
+    expect(test).toEqual({ value: MyEnum.WATER });
   });
 
   it('will accept null or undefined value', () => {
@@ -116,3 +118,36 @@ describe('maybeAsEnum', () => {
   });
 });
 
+describe('enums with isObject', () => {
+  enum Sauce {
+    MARINARA,
+    BBQ,
+    ALFREDO,
+  }
+  enum Topping {
+    CHEESE,
+    PEPPERONI,
+    HAM,
+    BACON,
+    OLIVES,
+    ONIONS,
+  }
+  interface Pizza {
+    sauce: Sauce,
+    toppings: Topping[];
+  }
+
+  const pizzaCheck = isObject<Pizza>({
+    sauce: asEnum(Sauce),
+    toppings: asArray(asEnum(Topping)),
+  });
+
+  it('will do something', () => {
+    const test = pizzaCheck.process({ sauce: 'MARINARA', toppings: ['CHEESE', 'PEPPERONI'] });
+    if (isIssue(test)) {
+      expect(false);
+      return;
+    }
+    expect(test.value).toEqual({ sauce: Sauce.MARINARA, toppings: [Topping.CHEESE, Topping.PEPPERONI] });
+  });
+});
