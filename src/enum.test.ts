@@ -1,6 +1,6 @@
-import { isObject } from '..';
 import { asArray } from './array';
 import { asEnum, isEnum, maybeAsEnum, maybeEnum } from './enum';
+import { isObject } from './object';
 import { isIssue, IssueResult } from './types';
 
 enum MyEnum {
