@@ -13,7 +13,7 @@ class Generic<T> {
   constructor(type: EnumType) {
     for (const key in type) {
       if (key) {
-        if (!/^\d+$/gi.test(key)) {
+        if (!this.isNumber(key)) {
           this.keyToValue[key] = type[key] as unknown as T;
           this.valueToKey[type[key]] = key;
         }
@@ -50,6 +50,10 @@ class Generic<T> {
     }
     return result;
   };
+
+  private isNumber = (key: string): boolean => {
+    return /^\d+$/gi.test(key);
+  }
 }
 
 export const isEnum = <T>(type: EnumType): ValueProcessor<T> => {

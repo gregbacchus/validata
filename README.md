@@ -16,7 +16,7 @@ npm i validata
 ## Basic usage
 
 ```typescript
-import { asString, isObject, isString, maybeString } from "validata";
+import { asString, isObject, isString, maybeString } from 'validata';
 
 interface Sample {
   maybeString: string | undefined;
@@ -70,21 +70,26 @@ Checks:
   - maybeArray
   - asArray
   - maybeAsArray
-- Date
-  - isDate
-  - maybeDate
-  - asDate
-  - maybeAsDate
-- Number
-  - isNumber
-  - maybeNumber
-  - asNumber
-  - maybeAsNumber
 - Boolean
   - isBoolean
   - maybeBoolean
   - asBoolean
   - maybeAsBoolean
+- Date
+  - isDate
+  - maybeDate
+  - asDate
+  - maybeAsDate
+- Enum
+  - isEnum
+  - maybeEnum
+  - asEnum
+  - maybeAsEnum
+- Number
+  - isNumber
+  - maybeNumber
+  - asNumber
+  - maybeAsNumber
 - Object
   - isObject
   - maybeObject
@@ -108,11 +113,6 @@ Checks:
   - maybeUrl
   - asUrl
   - maybeAsUrl
-- Enum
-  - isEnum
-  - maybeEnum
-  - asEnum
-  - maybeAsEnum
 - isNullable
 - asNullable
 
@@ -203,6 +203,24 @@ Example:
 isArray<number>(isNumber({ max: 20, min: 10 }), { coerceMaxLength: 7 });
 ```
 
+### `isBoolean`, `maybeBoolean`, `asBoolean`, `maybeAsBoolean`
+
+Usage:
+
+```typescript
+isBoolean(options);
+maybeBoolean(options);
+asBoolean(options);
+maybeAsBoolean(options);
+```
+
+Options:
+
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
+
 ### `isDate`, `maybeDate`, `asDate`, `maybeAsDate`
 
 Usage:
@@ -224,6 +242,43 @@ Options:
 - `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
+### `isEnum`, `maybeEnum`, `asEnum`, `maybeAsEnum`
+
+Usage:
+
+```typescript
+isEnum(Enum);
+maybeNumber(Enum);
+asNumber(Enum);
+maybeAsNumber(Enum);
+```
+
+Example:
+
+```typescript
+// String based Enum
+enum EnumOne {
+  A = 'A',
+  B = 'B',
+  C = 'C',
+}
+isEnum(EnumOne); // Allows "A", "B", "C"
+
+// Number based Enum
+enum EnumTwo {
+  A,
+  B,
+  C,
+}
+isEnum(EnumTwo); // Allows 0, 1, 2
+
+// Converting to an Enum using it's key or value
+asEnum(EnumTwo); // Allows 1, 2, 3, "A", "B", "C"
+asEnum(EnumTwo).process('A'));       // { value: 0 }
+asEnum(EnumTwo).process(0));         // { value: 0 }
+asEnum(EnumTwo).process(EnumOne.A)); // { value: 0 }
+```
+
 ### `isNumber`, `maybeNumber`, `asNumber`, `maybeAsNumber`
 
 Usage:
@@ -243,24 +298,6 @@ Options:
 - `coerceMax?: number` - if the value is more than this, it will be set to this value
 - `max?: number` - if the value is than this, it's an error `max`
 - `min?: number` - if the value is than this, it's an error `min`
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-- `validatorOptions?: any` - options to pass to the _validator_
-
-### `isBoolean`, `maybeBoolean`, `asBoolean`, `maybeAsBoolean`
-
-Usage:
-
-```typescript
-isBoolean(options);
-maybeBoolean(options);
-asBoolean(options);
-maybeAsBoolean(options);
-```
-
-Options:
-
-- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-- `convertOptions` - options to pass to the _converter_
 - `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
@@ -465,43 +502,6 @@ Example:
 const check = asUrl({
   protocol: "https",
 });
-```
-
-### `isEnum`, `maybeEnum`, `asEnum`, `maybeAsEnum`
-
-Usage:
-
-```typescript
-isEnum(Enum);
-maybeNumber(Enum);
-asNumber(Enum);
-maybeAsNumber(Enum);
-```
-
-Example:
-
-```typescript
-// String based Enum
-enum EnumOne {
-  A = "A",
-  B = "B",
-  C = "C",
-}
-isEnum(EnumOne); // Allows "A", "B", "C"
-
-// Number based Enum
-enum EnumTwo {
-  A,
-  B,
-  C,
-}
-isEnum(EnumTwo); // Allows 0, 1, 2
-
-// Converting to an Enum using it's key or value
-asEnum(EnumTwo); // Allows 1, 2, 3, "A", "B", "C"
-asEnum(EnumTwo).process("A"));       // { value: 0 }
-asEnum(EnumTwo).process(0));         // { value: 0 }
-asEnum(EnumTwo).process(EnumOne.A)); // { value: 0 }
 ```
 
 ### `isNullable`
