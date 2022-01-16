@@ -151,3 +151,63 @@ describe('enums with isObject', () => {
     expect(test.value).toEqual({ sauce: Sauce.MARINARA, toppings: [Topping.CHEESE, Topping.PEPPERONI] });
   });
 });
+
+describe('', () => {
+  enum Topping {
+    CHEESE,
+    PEPPERONI,
+    HAM,
+    BACON,
+    OLIVES,
+    ONIONS,
+  }
+
+  it('can optionally show valid keys', () => {
+    let test = isEnum(Topping).process('TESTING');
+    expect((test as IssueResult).issues.length).toBe(1);
+    expect((test as IssueResult).issues[0].info).toEqual({});
+
+    test = isEnum(Topping, { showValidKeys: true }).process('TESTING');
+    expect((test as IssueResult).issues.length).toBe(1);
+    expect((test as IssueResult).issues[0].info).toEqual({ validKeys: [0, 1, 2, 3, 4, 5] });
+  });
+
+  it('can optionally show valid values', () => {
+    let test = isEnum(Topping).process('TESTING');
+    expect((test as IssueResult).issues.length).toBe(1);
+    expect((test as IssueResult).issues[0].info).toEqual({});
+
+    test = isEnum(Topping, { showValidValues: true }).process('TESTING');
+    expect((test as IssueResult).issues.length).toBe(1);
+    expect((test as IssueResult).issues[0].info).toEqual({
+      validValues: [
+        'CHEESE',
+        'PEPPERONI',
+        'HAM',
+        'BACON',
+        'OLIVES',
+        'ONIONS',
+      ],
+    });
+  });
+
+  it('can optionally show valid keys and values together', () => {
+    let test = isEnum(Topping).process('TESTING');
+    expect((test as IssueResult).issues.length).toBe(1);
+    expect((test as IssueResult).issues[0].info).toEqual({});
+
+    test = isEnum(Topping, { showValidKeys: true, showValidValues: true }).process('TESTING');
+    expect((test as IssueResult).issues.length).toBe(1);
+    expect((test as IssueResult).issues[0].info).toEqual({
+      validKeys: [0, 1, 2, 3, 4, 5],
+      validValues: [
+        'CHEESE',
+        'PEPPERONI',
+        'HAM',
+        'BACON',
+        'OLIVES',
+        'ONIONS',
+      ],
+    });
+  });
+});
