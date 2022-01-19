@@ -1,5 +1,5 @@
 import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate, WithDefault } from './common';
-import { isIssue, Issue, Result, ValueProcessor } from './types';
+import { isIssue, Issue, Path, Result, ValueProcessor } from './types';
 
 interface CoerceOptions<V> {
   check?: ValueProcessor<V>;
@@ -20,18 +20,16 @@ class Generic<V> {
     return this.check(value) ? value : undefined;
   };
 
-  public process = (check: ValueProcessor<V>, target: Record<string, V>): Result<Record<string, V>> => {
+  public process = (check: ValueProcessor<V>, target: Record<string, V>, path: Path[]): Result<Record<string, V>> => {
     const issues: Issue[] = [];
 
     const output = {} as Record<string, V>;
     const keys = Object.keys(target);
     keys.forEach((key) => {
       const value: V = target[key];
-      const childResult = check.process(value);
+      const childResult = check.process(value, [...path, key]);
       if (isIssue(childResult)) {
-        childResult.issues.forEach((issue) => {
-          issues.push(issue.nest(key));
-        });
+        issues.push(...childResult.issues);
         return;
       }
       if (childResult) {
@@ -43,12 +41,12 @@ class Generic<V> {
     return issues.length ? { issues } : { value: output };
   }
 
-  public coerce: Coerce<Record<string, V>, CoerceOptions<V>> = (options) => (next) => (value) => {
-    if (!options) return next(value);
+  public coerce: Coerce<Record<string, V>, CoerceOptions<V>> = (options) => (next) => (value, path) => {
+    if (!options) return next(value, path);
 
     let coerced = value;
     if (options.check) {
-      const result = this.process(options.check, coerced);
+      const result = this.process(options.check, coerced, path);
       if (isIssue(result)) {
         return result;
       }
@@ -56,28 +54,28 @@ class Generic<V> {
         coerced = result.value;
       }
     }
-    return next(coerced);
+    return next(coerced, path);
   }
 
-  public validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, options) => {
-    const result = basicValidation(value, options);
+  public validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, path, options) => {
+    const result = basicValidation(value, path, options);
     const keyCount = Object.keys(value).length;
     const keyRegex = options.keyRegex;
     if (keyRegex !== undefined) {
       result.issues.push(
         ...Object.keys(value).reduce((acc, key) => {
           if (!keyRegex.test(key)) {
-            acc.push(Issue.from(key, 'key-regex', { key, regex: keyRegex.toString() }));
+            acc.push(Issue.forPath(path, value, 'key-regex', { key, regex: keyRegex.toString() }));
           }
           return acc;
         }, [] as Issue[])
       );
     }
     if (options.minKeys !== undefined && keyCount < options.minKeys) {
-      result.issues.push(Issue.from(value, 'min-keys', { keyCount, min: options.minKeys }));
+      result.issues.push(Issue.forPath(path, value, 'min-keys', { keyCount, min: options.minKeys }));
     }
     if (options.maxKeys !== undefined && keyCount > options.maxKeys) {
-      result.issues.push(Issue.from(value, 'max-keys', { keyCount, max: options.maxKeys }));
+      result.issues.push(Issue.forPath(path, value, 'max-keys', { keyCount, max: options.maxKeys }));
     }
     return result;
   }

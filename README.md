@@ -348,6 +348,7 @@ StringFormat:
 
 * `StringFormat.ULID()` - https://github.com/ulid/spec
 * `StringFormat.UUID()` - https://www.ietf.org/rfc/rfc4122.txt
+* `StringFormat.password(requirements: PasswordRequirements)` - Password format with minimum requirements
 
 Example:
 
@@ -361,6 +362,18 @@ const check = isString({
 ```typescript
 const check = isString({
   format: StringFormat.ULID()
+});
+```
+
+```typescript
+const check = isString({
+  format: StringFormat.password({
+    minLength: 10, // default=8
+    numberChars: 2, // default=1
+    lowerCaseChars: 2, // default=1
+    upperCaseChars: 2, // default=1
+    specialChars: 0, // default=1
+  })
 });
 ```
 

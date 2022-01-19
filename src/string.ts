@@ -42,8 +42,8 @@ const convert: Convert<string> = (value) => {
   return String(value);
 };
 
-const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => {
-  if (!options) return next(value);
+const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value, path) => {
+  if (!options) return next(value, path);
 
   let coerced = value;
   if (options.limitLength !== undefined && coerced.length > options.limitLength) {
@@ -73,24 +73,24 @@ const coerce: Coerce<string, CoerceOptions> = (options) => (next) => (value) => 
   if (options.padEnd && coerced.length < options.padEnd.length) {
     coerced = coerced.padEnd(options.padEnd.length, options.padEnd.padWith);
   }
-  return next(coerced);
+  return next(coerced, path);
 };
 
-const validate: Validate<string, ValidationOptions> = (value, options) => {
-  const result = basicValidation(value, options);
+const validate: Validate<string, ValidationOptions> = (value, path, options) => {
+  const result = basicValidation(value, path, options);
   if (options.minLength !== undefined && value.length < options.minLength) {
-    result.issues.push(Issue.from(value, 'min-length', { length: value.length, min: options.minLength }));
+    result.issues.push(Issue.forPath(path, value, 'min-length', { length: value.length, min: options.minLength }));
   }
   if (options.maxLength !== undefined && value.length > options.maxLength) {
-    result.issues.push(Issue.from(value, 'max-length', { length: value.length, max: options.maxLength }));
+    result.issues.push(Issue.forPath(path, value, 'max-length', { length: value.length, max: options.maxLength }));
   }
   if (options.regex !== undefined && !options.regex.test(value)) {
-    result.issues.push(Issue.from(value, 'regex', { regex: options.regex.toString() }));
+    result.issues.push(Issue.forPath(path, value, 'regex', { regex: options.regex.toString() }));
   }
   if (options.format !== undefined) {
     const formatResult = options.format(value);
     if (formatResult !== true) {
-      result.issues.push(Issue.from(value, 'incorrect-format', formatResult));
+      result.issues.push(Issue.forPath(path, value, 'incorrect-format', formatResult));
     }
   }
   return result;

@@ -1,0 +1,6 @@
+{
+  "name": "validata/dev",
+  "private": true,
+  "main": "../dist/index-dev.js",
+  "types": "../src/index-dev.ts"
+}

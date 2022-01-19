@@ -16,11 +16,11 @@ const convert: Convert<boolean> = (value) => {
   return undefined;
 };
 
-const coerce: Coerce<boolean, CoerceOptions> = () => (next) => (value) => {
-  return next(value);
+const coerce: Coerce<boolean, CoerceOptions> = () => (next) => (value, path) => {
+  return next(value, path);
 };
 
-const validate: Validate<boolean, ValidationOptions> = (value, options) => basicValidation(value, options);
+const validate: Validate<boolean, ValidationOptions> = (value, path, options) => basicValidation(value, path, options);
 
 export const isBoolean = createIsCheck('boolean', check, coerce, validate);
 export const maybeBoolean = createMaybeCheck('boolean', check, coerce, validate);

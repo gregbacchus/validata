@@ -23,12 +23,13 @@ export const exists = <T>(value: T | undefined): value is T => {
 export type Path = string | number | symbol;
 
 export class Issue {
-  public static from = (value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
-    return new Issue([], value, reason, info);
+  public static forPath = (path: Path | Path[], value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
+    return new Issue(Array.isArray(path) ? path : [path], value, reason, info);
   }
 
-  public static fromChild = (path: Path | Path[], value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
-    return new Issue(Array.isArray(path) ? path : [path], value, reason, info);
+  public static nest = (parentPath: Path | Path[], issue: Issue): Issue => {
+    const path = Array.isArray(parentPath) ? parentPath : [parentPath];
+    return new Issue([...path, ...issue.path], issue.value, issue.reason, issue.info);
   }
 
   private constructor(
@@ -37,18 +38,6 @@ export class Issue {
     public readonly reason: string,
     public readonly info?: Record<string, unknown>,
   ) { }
-
-  /**
-   * ARROW FUNCTION
-   */
-  public nest = (parent: Path): Issue => {
-    return new Issue(
-      [parent, ...this.path],
-      this.value,
-      this.reason,
-      this.info,
-    );
-  }
 }
 
 export interface IssueResult {
@@ -56,10 +45,10 @@ export interface IssueResult {
 }
 
 export interface ValueProcessor<T> {
-  process(value: unknown): Result<T>;
+  process(value: unknown, path?: Path[]): Result<T>;
 }
 
-export type Next<T, R> = (value: T) => Result<R>;
+export type Next<T, R> = (value: T, path: Path[]) => Result<R>;
 
 export interface NotPrimitive { [key: string]: any; }
 

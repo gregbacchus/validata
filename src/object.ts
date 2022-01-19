@@ -1,5 +1,5 @@
 import { basicValidation, Check, Coerce, CommonConvertOptions, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, MaybeOptions, Validate, WithDefault } from './common';
-import { Contract, isIssue, Issue, Result, ValueProcessor } from './types';
+import { Contract, isIssue, Issue, Path, Result, ValueProcessor } from './types';
 
 interface AdditionalOptions {
   stripExtraProperties?: boolean;
@@ -9,17 +9,23 @@ interface CoerceOptions<T> extends AdditionalOptions {
   contract?: Contract<T>;
 }
 
+interface ConvertOptions {
+  reviver?: Reviver;
+}
+
 interface ValidationOptions<T> extends CommonValidationOptions<T> { }
+
+type Reviver = (key: string, value: any) => any;
 
 class Generic<T extends { [key: string]: any; }> {
   public check: Check<T> = (value: unknown): value is T => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
   }
 
-  public convert: Convert<T> = (value) => {
+  public convert = (options?: ConvertOptions): Convert<T> => (value) => {
     if (typeof value === 'string' && value[0] === '{' && value[value.length - 1] === '}') {
       try {
-        return JSON.parse(value) as T;
+        return JSON.parse(value, options?.reviver) as T;
       } catch {
         return undefined;
       }
@@ -28,13 +34,13 @@ class Generic<T extends { [key: string]: any; }> {
     return undefined;
   };
 
-  public process = (contract: Contract<T>, target: T): Result<T> => {
+  public process = (contract: Contract<T>, target: T, path: Path[]): Result<T> => {
     const issues: Issue[] = [];
 
     (Object.keys(target) as Array<keyof T>).forEach((key) => {
       if (!(key in contract)) {
         issues.push(
-          Issue.fromChild(key, target[key], 'unexpected-property'),
+          Issue.forPath([...path, key], target[key], 'unexpected-property'),
         );
       }
     });
@@ -44,11 +50,9 @@ class Generic<T extends { [key: string]: any; }> {
     keys.forEach((key) => {
       const check = contract[key];
       const value = target[key];
-      const childResult = check.process(value);
+      const childResult = check.process(value, [...path, key]);
       if (isIssue(childResult)) {
-        childResult.issues.forEach((issue) => {
-          issues.push(issue.nest(key));
-        });
+        issues.push(...childResult.issues);
         return;
       }
       if (childResult.value === undefined && !(key in target)) return;
@@ -62,11 +66,11 @@ class Generic<T extends { [key: string]: any; }> {
     return issues.length ? { issues } : { value: output };
   }
 
-  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value) => {
-    if (!options) return next(value);
+  public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value, path) => {
+    if (!options) return next(value, path);
 
     let coerced = { ...value };
-    if (!options.contract) return next(coerced);
+    if (!options.contract) return next(coerced, path);
 
     if (options.stripExtraProperties) {
       const allowedProperties = new Set(Object.keys(options.contract));
@@ -75,16 +79,16 @@ class Generic<T extends { [key: string]: any; }> {
         delete coerced[key];
       });
     }
-    const result = this.process(options.contract, coerced);
+    const result = this.process(options.contract, coerced, path);
     if (isIssue(result)) return result;
 
     if (result) {
       coerced = result.value;
     }
-    return next(coerced);
+    return next(coerced, path);
   }
 
-  public validate: Validate<T, ValidationOptions<T>> = (value, options) => basicValidation(value, options);
+  public validate: Validate<T, ValidationOptions<T>> = (value, path, options) => basicValidation(value, path, options);
 }
 
 export type ObjectOptions<T> = ValidationOptions<T> & AdditionalOptions;
@@ -101,16 +105,16 @@ export const maybeObject = <T extends { [key: string]: any; }>(contract?: Contra
 
 export const asObject = <T extends { [key: string]: any; }>(
   contract?: Contract<T>,
-  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T>
+  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T> & ConvertOptions,
 ): ValueProcessor<T> => {
   const generic = new Generic<T>();
-  return createAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
+  return createAsCheck('object', generic.check, generic.convert(options), generic.coerce, generic.validate)({ ...options, contract });
 };
 
 export const maybeAsObject = <T extends { [key: string]: any; }>(
   contract?: Contract<T>,
-  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T> & MaybeOptions
+  options?: ObjectOptions<T> & WithDefault<T> & CommonConvertOptions<T> & MaybeOptions & ConvertOptions,
 ): ValueProcessor<T | undefined> => {
   const generic = new Generic<T>();
-  return createMaybeAsCheck('object', generic.check, generic.convert, generic.coerce, generic.validate)({ ...options, contract });
+  return createMaybeAsCheck('object', generic.check, generic.convert(options), generic.coerce, generic.validate)({ ...options, contract });
 };

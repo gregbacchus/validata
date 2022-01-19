@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "inlineSources": true,
@@ -20,8 +20,7 @@
     "strict": true,
     "target": "ES2017",
     "types": [
-      "jest",
-      "node"
+      "jest"
     ]
   },
   "include": [
