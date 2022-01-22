@@ -48,7 +48,7 @@ FAIL: Outputs:
 console.log(
   JSON.stringify(
     sample.process({
-      myString: "123",
+      myString: '123',
       numericString: 123,
     })
   )
@@ -360,7 +360,7 @@ Example:
 
 ```typescript
 const check = isRecord(isString());
-check.process({ foo: "bar" });
+check.process({ foo: 'bar' });
 ```
 
 ### `isString`, `maybeString`, `asString`, `maybeAsString`
@@ -405,7 +405,7 @@ Example:
 ```typescript
 const check = isString({
   limitLength: 6,
-  padStart: { length: 6, padWith: "-" },
+  padStart: { length: 6, padWith: '-' },
 });
 ```
 
@@ -429,7 +429,7 @@ const check = isString({
 
 ```typescript
 // change case
-import { pascalCase } from "change-case";
+import { pascalCase } from 'change-case';
 
 const check = isString({
   transform: pascalCase,
@@ -445,7 +445,7 @@ const check = isString({
 ```
 
 ```typescript
-import validator from "validator";
+import validator from 'validator';
 
 const check = isString({
   validator: validator.isEmail,
@@ -500,7 +500,7 @@ Example:
 
 ```typescript
 const check = asUrl({
-  protocol: "https",
+  protocol: 'https',
 });
 ```
 
@@ -527,7 +527,7 @@ Example:
 ```typescript
 const check = asNullable(isString({ min: 3 }));
 const check = asNullable(isString({ min: 3 }), { default: null });
-const check = asNullable(isString({ min: 3 }), { default: "text" });
+const check = asNullable(isString({ min: 3 }), { default: 'text' });
 ```
 
 ## Types
