@@ -15,12 +15,11 @@ class Generic<T> {
 
   constructor(type: EnumType) {
     for (const key in type) {
-      if (key) {
-        if (!this.isNumber(key)) {
-          this.keyToValue[key] = type[key] as unknown as T;
-          this.valueToKey[type[key]] = key;
-        }
+      if (!key || this.isNumber(key)) {
+        continue;
       }
+      this.keyToValue[key] = type[key] as unknown as T;
+      this.valueToKey[type[key]] = key;
     }
   }
 
