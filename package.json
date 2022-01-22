@@ -55,6 +55,6 @@
   "dependencies": {
     "@types/luxon": "^1.27.0",
     "luxon": "^1.27.0",
-    "validator": "^13.7.0"
+    "validator": "^13.6.0"
   }
 }
