@@ -30,21 +30,29 @@ const sample = isObject<Sample>({
   numericString: asString(), // will allow string or attempt to convert to string
 });
 
-console.log(JSON.stringify(sample.process({
-  maybeString: 123,
-  myString: 123,
-  numericString: 123,
-})));
+console.log(
+  JSON.stringify(
+    sample.process({
+      maybeString: 123,
+      myString: 123,
+      numericString: 123,
+    })
+  )
+);
 
 /*
 FAIL: Outputs:
 {"issues":[{"path":["maybeString"],"value":123,"reason":"incorrect-type","info":{"expectedType":"string"}},{"path":["myString"],"value":123,"reason":"incorrect-type","info":{"expectedType":"string"}}]}
 */
 
-console.log(JSON.stringify(sample.process({
-  myString: '123',
-  numericString: 123,
-})));
+console.log(
+  JSON.stringify(
+    sample.process({
+      myString: '123',
+      numericString: 123,
+    })
+  )
+);
 
 /*
 SUCCESS: Outputs:
@@ -56,56 +64,61 @@ SUCCESS: Outputs:
 
 Checks:
 
-* isAny
-* Array
-  * isArray
-  * maybeArray
-  * asArray
-  * maybeAsArray
-* Date
-  * isDate
-  * maybeDate
-  * asDate
-  * maybeAsDate
-* Number
-  * isNumber
-  * maybeNumber
-  * asNumber
-  * maybeAsNumber
-* Boolean
-  * isBoolean
-  * maybeBoolean
-  * asBoolean
-  * maybeAsBoolean
-* Object
-  * isObject
-  * maybeObject
-  * asObject
-  * maybeAsObject
-* Record
-  * isRecord
-  * maybeRecord
-  * asRecord
-  * maybeAsRecord
-* String
-  * isString
-  * maybeString
-  * asString
-  * maybeAsString
-* Tuple
-  * isTuple
-  * maybeTuple
-* Url
-  * isUrl
-  * maybeUrl
-  * asUrl
-  * maybeAsUrl
-* isNullable
-* asNullable
+- isAny
+- Array
+  - isArray
+  - maybeArray
+  - asArray
+  - maybeAsArray
+- Boolean
+  - isBoolean
+  - maybeBoolean
+  - asBoolean
+  - maybeAsBoolean
+- Date
+  - isDate
+  - maybeDate
+  - asDate
+  - maybeAsDate
+- Enum
+  - isEnum
+  - maybeEnum
+  - asEnum
+  - maybeAsEnum
+- Number
+  - isNumber
+  - maybeNumber
+  - asNumber
+  - maybeAsNumber
+- Object
+  - isObject
+  - maybeObject
+  - asObject
+  - maybeAsObject
+- Record
+  - isRecord
+  - maybeRecord
+  - asRecord
+  - maybeAsRecord
+- String
+  - isString
+  - maybeString
+  - asString
+  - maybeAsString
+- Tuple
+  - isTuple
+  - maybeTuple
+- Url
+  - isUrl
+  - maybeUrl
+  - asUrl
+  - maybeAsUrl
+- isNullable
+- asNullable
 
 Types
 
-* TypeOf
+- TypeOf
 
 Work is done by a typed `ValueProcessor`, as returned by`isObject<T>()` or `asNumber()`.
 
@@ -134,32 +147,32 @@ interface IssueResult {
 
 ### `is...` e.g. `isNumber`
 
-* if the value is of the type it will be accepted
-* `null` or `undefined` cause an issue
-* otherwise it will cause an issue
+- if the value is of the type it will be accepted
+- `null` or `undefined` cause an issue
+- otherwise it will cause an issue
 
 ### `maybe...` e.g. `maybeNumber`
 
-* if the value is of the type it will be accepted
-* `null` or `undefined` it will sanitized to undefined
-* otherwise it will cause an issue
+- if the value is of the type it will be accepted
+- `null` or `undefined` it will sanitized to undefined
+- otherwise it will cause an issue
 
 ### `as...` e.g. `asNumber`
 
-* if the value is of the type it will be accepted
-* `null` or `undefined` converted to default, if provided, or cause an issue
-* if the value can be converted to the type, it will be converted and used
-* if the value is cannot be converted the default will be used if provided
-* otherwise it will cause an issue
+- if the value is of the type it will be accepted
+- `null` or `undefined` converted to default, if provided, or cause an issue
+- if the value can be converted to the type, it will be converted and used
+- if the value is cannot be converted the default will be used if provided
+- otherwise it will cause an issue
 
 ### `maybeAs...` e.g. `maybeAsNumber`
 
-* if the value is of the type it will be accepted
-* `null` or `undefined` converted to default, if provided, or sanitized to undefined
-* if the value can be converted to the type it will be converted and used
-* if the value is cannot be converted the default will be used if provided
-* otherwise it will cause an issue
-// * otherwise it will be sanitized to undefined
+- if the value is of the type it will be accepted
+- `null` or `undefined` converted to default, if provided, or sanitized to undefined
+- if the value can be converted to the type it will be converted and used
+- if the value is cannot be converted the default will be used if provided
+- otherwise it will cause an issue
+  // \* otherwise it will be sanitized to undefined
 
 ## Checks
 
@@ -176,62 +189,19 @@ maybeAsArray(itemProcessor, options);
 
 Options:
 
-* `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-* `convertOptions` - options to pass to the _converter_
-* `coerceMaxLength? number` - if there are more items than this, some will be removed
-* `maxLength?: number` - if there are more items than this, it's an error `max-length`
-* `minLength?: number` - if there are less items than this, it's an error `min-length`
-* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `coerceMaxLength? number` - if there are more items than this, some will be removed
+- `maxLength?: number` - if there are more items than this, it's an error `max-length`
+- `minLength?: number` - if there are less items than this, it's an error `min-length`
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
 
 ```typescript
-isArray<number>(isNumber({ max: 20, min: 10}), { coerceMaxLength: 7 });
+isArray<number>(isNumber({ max: 20, min: 10 }), { coerceMaxLength: 7 });
 ```
-
-### `isDate`, `maybeDate`, `asDate`, `maybeAsDate`
-
-Usage:
-
-```typescript
-isDate(options);
-maybeDate(options);
-asDate(options);
-maybeAsDate(options);
-```
-
-Options:
-
-* `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-* `convertOptions` - options to pass to the _converter_
-* `format` - custom date format used in conversion from `string` to `Date` see [Luxon formatting](https://moment.github.io/luxon/docs/manual/formatting)
-* `maxFuture?: Duration` - if the value is after this duration into the future, it's an error `max-future`
-* `maxPast?: Duration` - if the value is before this duration into the past, it's an error `max-past`
-* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
-
-### `isNumber`, `maybeNumber`, `asNumber`, `maybeAsNumber`
-
-Usage:
-
-```typescript
-isNumber(options);
-maybeNumber(options);
-asNumber(options);
-maybeAsNumber(options);
-```
-
-Options:
-
-* `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-* `convertOptions` - options to pass to the _converter_
-* `coerceMin?: number` - if the value is less than this, it will be set to this value
-* `coerceMax?: number` - if the value is more than this, it will be set to this value
-* `max?: number` - if the value is than this, it's an error `max`
-* `min?: number` - if the value is than this, it's an error `min`
-* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
 
 ### `isBoolean`, `maybeBoolean`, `asBoolean`, `maybeAsBoolean`
 
@@ -246,10 +216,90 @@ maybeAsBoolean(options);
 
 Options:
 
-* `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-* `convertOptions` - options to pass to the _converter_
-* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
+
+### `isDate`, `maybeDate`, `asDate`, `maybeAsDate`
+
+Usage:
+
+```typescript
+isDate(options);
+maybeDate(options);
+asDate(options);
+maybeAsDate(options);
+```
+
+Options:
+
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `format` - custom date format used in conversion from `string` to `Date` see [Luxon formatting](https://moment.github.io/luxon/docs/manual/formatting)
+- `maxFuture?: Duration` - if the value is after this duration into the future, it's an error `max-future`
+- `maxPast?: Duration` - if the value is before this duration into the past, it's an error `max-past`
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
+
+### `isEnum`, `maybeEnum`, `asEnum`, `maybeAsEnum`
+
+Usage:
+
+```typescript
+isEnum(Enum);
+maybeNumber(Enum);
+asNumber(Enum);
+maybeAsNumber(Enum);
+```
+
+Example:
+
+```typescript
+// String based Enum
+enum EnumOne {
+  A = 'A',
+  B = 'B',
+  C = 'C',
+}
+isEnum(EnumOne); // Allows "A", "B", "C"
+
+// Number based Enum
+enum EnumTwo {
+  A,
+  B,
+  C,
+}
+isEnum(EnumTwo); // Allows 0, 1, 2
+
+// Converting to an Enum using it's key or value
+asEnum(EnumTwo); // Allows 1, 2, 3, "A", "B", "C"
+asEnum(EnumTwo).process('A'));       // { value: 0 }
+asEnum(EnumTwo).process(0));         // { value: 0 }
+asEnum(EnumTwo).process(EnumOne.A)); // { value: 0 }
+```
+
+### `isNumber`, `maybeNumber`, `asNumber`, `maybeAsNumber`
+
+Usage:
+
+```typescript
+isNumber(options);
+maybeNumber(options);
+asNumber(options);
+maybeAsNumber(options);
+```
+
+Options:
+
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `coerceMin?: number` - if the value is less than this, it will be set to this value
+- `coerceMax?: number` - if the value is more than this, it will be set to this value
+- `max?: number` - if the value is than this, it's an error `max`
+- `min?: number` - if the value is than this, it's an error `min`
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
 
 ### `isObject`, `maybeObject`, `asObject`, `maybeAsObject`
 
@@ -265,10 +315,10 @@ maybeAsObject(contract, options); // will parse string JSON as object
 
 Options:
 
-* `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-* `convertOptions` - options to pass to the _converter_
-* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
 
@@ -300,17 +350,17 @@ maybeAsRecord<V>(check, options);
 
 Options:
 
-* `keyRegex?: RegExp` - regular expression to check each key name, or it's an error `key-regex`
-* `maxKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
-* `minKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
-* `validator?: (value: Record<string, V>, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
+- `keyRegex?: RegExp` - regular expression to check each key name, or it's an error `key-regex`
+- `maxKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
+- `minKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
+- `validator?: (value: Record<string, V>, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
 
 ```typescript
 const check = isRecord(isString());
-check.process({ foo: 'bar' })
+check.process({ foo: 'bar' });
 ```
 
 ### `isString`, `maybeString`, `asString`, `maybeAsString`
@@ -326,29 +376,29 @@ maybeAsString(options);
 
 Options:
 
-* `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-* `convertOptions` - options to pass to the _converter_
-* `limitLength?: number` - if the length of the string is more than this, it will be truncated to this length
-* `padStart?: StringPadding` - pad the start of the string up to given value
-* `padEnd?: StringPadding` - pad the end of the string up to given value
-* `trim?: 'start' | 'end' | 'both' | 'none'` - removes the leading and/or trailing white space and line terminator characters from the string
-* `regex?: RegExp` - regular expression that must be matched, or it's an error `regex`
-* `maxLength?: number` - if the length of the string is more than this, it's an error `max-length`
-* `minLength?: number` - if the length of the string is less than this, it's an error `min-length`
-* `format:? StringFormatCheck` - extension point for string format checking, if check fails it's an issue `format` with `info.expectedFormat` set
-* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `limitLength?: number` - if the length of the string is more than this, it will be truncated to this length
+- `padStart?: StringPadding` - pad the start of the string up to given value
+- `padEnd?: StringPadding` - pad the end of the string up to given value
+- `trim?: 'start' | 'end' | 'both' | 'none'` - removes the leading and/or trailing white space and line terminator characters from the string
+- `regex?: RegExp` - regular expression that must be matched, or it's an error `regex`
+- `maxLength?: number` - if the length of the string is more than this, it's an error `max-length`
+- `minLength?: number` - if the length of the string is less than this, it's an error `min-length`
+- `format:? StringFormatCheck` - extension point for string format checking, if check fails it's an issue `format` with `info.expectedFormat` set
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
 
 StringPadding:
 
-* `length: number` - will pad up until this length
-* `padWith: string` - the value to pad with
+- `length: number` - will pad up until this length
+- `padWith: string` - the value to pad with
 
 StringFormat:
 
-* `StringFormat.ULID()` - https://github.com/ulid/spec
-* `StringFormat.UUID()` - https://www.ietf.org/rfc/rfc4122.txt
-* `StringFormat.password(requirements: PasswordRequirements)` - Password format with minimum requirements
+- `StringFormat.ULID()` - https://github.com/ulid/spec
+- `StringFormat.UUID()` - https://www.ietf.org/rfc/rfc4122.txt
+- `StringFormat.password(requirements: PasswordRequirements)` - Password format with minimum requirements
 
 Example:
 
@@ -361,7 +411,7 @@ const check = isString({
 
 ```typescript
 const check = isString({
-  format: StringFormat.ULID()
+  format: StringFormat.ULID(),
 });
 ```
 
@@ -373,7 +423,7 @@ const check = isString({
     lowerCaseChars: 2, // default=1
     upperCaseChars: 2, // default=1
     specialChars: 0, // default=1
-  })
+  }),
 });
 ```
 
@@ -382,7 +432,7 @@ const check = isString({
 import { pascalCase } from 'change-case';
 
 const check = isString({
-  transform: pascalCase
+  transform: pascalCase,
 });
 ```
 
@@ -390,7 +440,7 @@ const check = isString({
 const check = isString({
   maxLength: 10,
   minLength: 8,
-  regex: /^[A-Z]+$/
+  regex: /^[A-Z]+$/,
 });
 ```
 
@@ -399,7 +449,7 @@ import validator from 'validator';
 
 const check = isString({
   validator: validator.isEmail,
-  validatorOptions: { allow_display_name: true }
+  validatorOptions: { allow_display_name: true },
 });
 ```
 
@@ -414,17 +464,14 @@ maybeTuple(options);
 
 Options:
 
-* `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
+- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
 
 ```typescript
 type MyTuple = [number, string];
-const check = isTuple([
-  isNumber({ max: 9, min: 3 }),
-  isString({ regex: /^\w+$/ }),
-]);
+const check = isTuple([isNumber({ max: 9, min: 3 }), isString({ regex: /^\w+$/ })]);
 ```
 
 ### `isUrl`, `maybeUrl`, `asUrl`, `maybeAsUrl`
@@ -442,12 +489,12 @@ maybeAsUrl(options);
 
 Options:
 
-* `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
-* `convertOptions` - options to pass to the _converter_
-* `setProtocol?: string` - will coerce the protocol to the given value, if present
-* `protocol?: string` - given URL must have this protocol, or it's an error `invalid-protocol`
-* `validator?: (value: URL, options?: any) => boolean` - custom validation function; if false is returned it's an error
-* `validatorOptions?: any` - options to pass to the _validator_
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `setProtocol?: string` - will coerce the protocol to the given value, if present
+- `protocol?: string` - given URL must have this protocol, or it's an error `invalid-protocol`
+- `validator?: (value: URL, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
 
@@ -473,7 +520,7 @@ Any other check can be wrapped into `asNullable` to accept `null`.
 
 Options:
 
-* `default` - can be `null` or return type of the wrapped check
+- `default` - can be `null` or return type of the wrapped check
 
 Example:
 

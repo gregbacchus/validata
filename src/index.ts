@@ -5,6 +5,7 @@ export * from './check';
 export { asNullable, isNullable } from './common';
 export * from './date';
 export * from './date-time';
+export * from './enum';
 export * from './number';
 export * from './object';
 export * from './record';
