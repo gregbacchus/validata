@@ -1,6 +1,6 @@
 {
   "name": "validata",
-  "version": "4.0.14",
+  "version": "4.0.17",
   "description": "Type safe data validation and sanitization",
   "keywords": [
     "typescript",
@@ -50,11 +50,11 @@
     "json-date-parser": "^1.0.1",
     "ts-jest": "^27.0.3",
     "tslint": "^6.1.3",
-    "typescript": "^4.3.4",
-    "validator": "^13.6.0"
+    "typescript": "^4.3.4"
   },
   "dependencies": {
     "@types/luxon": "^1.27.0",
-    "luxon": "^1.27.0"
+    "luxon": "^1.27.0",
+    "validator": "^13.7.0"
   }
 }
