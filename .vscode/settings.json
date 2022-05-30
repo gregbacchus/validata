@@ -28,9 +28,6 @@
   "typescript.preferences.quoteStyle": "single",
   "typescript.tsdk": "node_modules/typescript/lib",
   "workbench.colorCustomizations": {
-    "editorGroup.border": "#fbe60a",
-    "panel.border": "#fbe60a",
-    "sideBar.border": "#fbe60a",
     "tab.activeBorder": "#fbe60a",
     "titleBar.activeBackground": "#cfbd03",
     "titleBar.activeForeground": "#15202b",
@@ -45,7 +42,10 @@
     "activityBar.foreground": "#15202b",
     "activityBar.inactiveForeground": "#15202b99",
     "activityBarBadge.background": "#039d8f",
-    "activityBarBadge.foreground": "#e7e7e7"
+    "activityBarBadge.foreground": "#e7e7e7",
+    "sash.hoverBorder": "#fbe60a",
+    "statusBarItem.remoteBackground": "#cfbd03",
+    "statusBarItem.remoteForeground": "#15202b"
   },
   "peacock.color": "#cfbd03",
   "peacock.affectAccentBorders": true,
