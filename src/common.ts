@@ -1,7 +1,7 @@
 import { isIssue, Issue, IssueResult, Next, Path, Result, ValueProcessor } from './types';
 
 export interface WithDefault<T> {
-  default?: T;
+  default?: T | (() => T);
 }
 
 export interface MaybeOptions {
@@ -20,7 +20,8 @@ export type Coerce<T, O> = (options?: O) => (next: Next<T, T>) => (value: T, pat
 export type Validate<T, O> = (value: T, path: Path[], options: O) => IssueResult;
 
 export const withDefault = <T>(options?: WithDefault<T>): UndefinedHandler<T> => (): Result<T> | undefined => {
-  return options?.default !== undefined ? { value: options.default } : undefined;
+  if (options?.default === undefined) return undefined;
+  return { value: options?.default instanceof Function ? options.default() : options.default };
 };
 
 export const definitely = <T>(undefinedHandler?: UndefinedHandler<T>): Definitely<T> => (next) => (value, path = []) => {
@@ -100,7 +101,11 @@ export const asNullable = <T>(processor: ValueProcessor<T>, options?: WithDefaul
 
     const result = processor.process(value);
     if (!isIssue(result) && result.value === undefined) {
-      const defaultValue = options?.default === undefined ? null : options.default;
+      const defaultValue = options?.default === undefined
+        ? null
+        : options?.default instanceof Function
+          ? options.default()
+          : options.default;
       return { value: defaultValue };
     }
     return result as Result<Exclude<T, undefined>>;

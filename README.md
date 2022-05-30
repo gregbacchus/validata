@@ -520,7 +520,7 @@ Any other check can be wrapped into `asNullable` to accept `null`.
 
 Options:
 
-- `default` - can be `null` or return type of the wrapped check
+- `default` - can be `null` or return type or a function with return type of the wrapped check
 
 Example:
 
@@ -528,6 +528,7 @@ Example:
 const check = asNullable(isString({ min: 3 }));
 const check = asNullable(isString({ min: 3 }), { default: null });
 const check = asNullable(isString({ min: 3 }), { default: 'text' });
+const check = asNullable(isString({ min: 3 }), { default: () => 'text' });
 ```
 
 ## Types

@@ -64,7 +64,11 @@ describe('createNullableCheck', () => {
     [maybeUrl, undefined],
     [asUrl, url.toString()],
     [maybeAsUrl, undefined],
-  ])('createNullableCheck %#', (check: (...args: any[]) => ValueProcessor<unknown>, value: unknown, contract: unknown = undefined) => {
+  ])('createIsNullableCheck %#', (
+    check: (...args: any[]) => ValueProcessor<unknown>,
+    value: unknown,
+    contract: unknown = undefined
+  ) => {
     const fut = check(contract);
     const futNull = isNullable(check(contract));
     expectValue(futNull, null, null);
@@ -106,6 +110,7 @@ describe('createNullableCheck', () => {
     [maybeNumber, 5, null, 5],
     [maybeAsNumber],
     [maybeAsNumber, undefined, 5],
+    [maybeAsNumber, undefined, () => 5, 5],
     [maybeAsNumber, '5', null, 5],
 
     [maybeObject],
@@ -136,7 +141,7 @@ describe('createNullableCheck', () => {
     [maybeAsUrl],
     [maybeAsUrl, undefined, url],
     [maybeAsUrl, url.toString(), null, url],
-  ])('createNullableCheck %#', (
+  ])('createAsNullableCheck %#', (
     check: (...args: any[]) => ValueProcessor<unknown>,
     value: unknown = undefined,
     defaultValue: unknown = null,

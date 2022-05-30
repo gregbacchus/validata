@@ -131,6 +131,19 @@ describe('asNumber', () => {
     expectValue(fut, NaN, 17.54);
   });
 
+  it('incorrect type that cannot be converted will have not const default used', () => {
+    let flag = true;
+    const fut = asNumber({
+      default: () => {
+        const result = flag ? 17.54 : 18.65;
+        flag = !flag;
+        return result;
+      },
+    });
+    expectValue(fut, undefined, 17.54);
+    expectValue(fut, undefined, 18.65);
+  });
+
   it('will handle number', () => {
     const fut = asNumber();
     expectSuccess(fut, 123);
