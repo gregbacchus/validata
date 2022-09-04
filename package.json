@@ -1,6 +1,6 @@
 {
   "name": "validata",
-  "version": "4.0.18",
+  "version": "4.1.0",
   "description": "Type safe data validation and sanitization",
   "keywords": [
     "typescript",
@@ -37,23 +37,23 @@
     "test-coverage": "./node_modules/.bin/jest --verbose --coverage --runInBand"
   },
   "dependencies": {
-    "@types/luxon": "^2.3.1",
-    "luxon": "^2.3.1",
+    "@types/luxon": "^2.4.0",
+    "luxon": "^2.5.0",
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "@types/validator": "^13.7.2",
-    "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.0",
+    "@types/jest": "^26.0.24",
+    "@types/validator": "^13.7.6",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "change-case": "^4.1.2",
-    "eslint": "^7.29.0",
+    "eslint": "^7.32.0",
     "eslint-plugin-filenames": "^1.3.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "jest": "^27.5.1",
     "json-date-parser": "^1.0.1",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "^27.1.5",
     "tslint": "^6.1.3",
     "typescript": "^4.8.2"
   }
