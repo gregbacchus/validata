@@ -20,22 +20,27 @@
     "object validator",
     "request validator"
   ],
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git@github.com:gregbacchus/validata.git"
   },
-  "scripts": {
-    "lint": "./node_modules/.bin/eslint src/ --ext .ts,.tsx",
-    "test": "./node_modules/.bin/jest --verbose --runInBand",
-    "test-coverage": "./node_modules/.bin/jest --verbose --coverage --runInBand",
-    "build": "./node_modules/.bin/tsc --outDir dist --sourceMap",
-    "prepublishOnly": "npm run build && npm version patch",
-    "postpublish": "git push"
-  },
-  "author": "",
   "license": "MIT",
+  "author": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "./node_modules/.bin/tsc --outDir dist --sourceMap",
+    "lint": "./node_modules/.bin/eslint src/ --ext .ts,.tsx",
+    "prepublishOnly": "npm run build && npm version patch",
+    "postpublish": "git push",
+    "test": "./node_modules/.bin/jest --verbose --runInBand",
+    "test-coverage": "./node_modules/.bin/jest --verbose --coverage --runInBand"
+  },
+  "dependencies": {
+    "@types/luxon": "^1.27.0",
+    "luxon": "^1.27.0",
+    "validator": "^13.7.0"
+  },
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/validator": "^13.1.4",
@@ -51,10 +56,5 @@
     "ts-jest": "^27.0.3",
     "tslint": "^6.1.3",
     "typescript": "^4.3.4"
-  },
-  "dependencies": {
-    "@types/luxon": "^1.27.0",
-    "luxon": "^1.27.0",
-    "validator": "^13.7.0"
   }
 }
