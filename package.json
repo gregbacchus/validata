@@ -37,8 +37,8 @@
     "test-coverage": "./node_modules/.bin/jest --verbose --coverage --runInBand"
   },
   "dependencies": {
-    "@types/luxon": "^2.4.0",
-    "luxon": "^2.5.0",
+    "@types/luxon": "^3.0.1",
+    "luxon": "^3.0.3",
     "validator": "^13.7.0"
   },
   "devDependencies": {
