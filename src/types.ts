@@ -65,4 +65,4 @@ export type RequiredProperties<T extends NotPrimitive> = Omit<T, OptionalKeys<T>
 export type AllProperties<T extends NotPrimitive> = RequiredProperties<T> & Partial<OptionalProperties<T>>;
 
 export type TypeOf<T extends ValueProcessor<V> | Contract<V>, V = unknown> =
-  T extends ValueProcessor<infer Type> ? AllProperties<Type> : { [K in keyof T]: T[K] extends ValueProcessor<infer Type> ? AllProperties<Type> : never };
+  T extends ValueProcessor<infer Type extends NotPrimitive> ? AllProperties<Type> : { [K in keyof T]: T[K] extends ValueProcessor<infer Type extends NotPrimitive> ? AllProperties<Type> : never };
