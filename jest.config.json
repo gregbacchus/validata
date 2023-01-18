@@ -14,7 +14,9 @@
   ],
   "testEnvironment": "node",
   "testRegex": "/(test|src)/.*\\.(test)\\.(tsx?)$",
-  "testURL": "http://localhost",
+  "testEnvironmentOptions": {
+    "url": "http://localhost"
+  },
   "transform": {
     "^.+\\.tsx?$": "ts-jest"
   }

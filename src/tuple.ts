@@ -10,7 +10,7 @@ interface ValidationOptions<T extends unknown[]> extends CommonValidationOptions
 class Generic<T extends unknown[]> {
   public check: Check<T> = (value: unknown): value is T => {
     return Array.isArray(value); // TODO check generic
-  }
+  };
 
   public process = (check: { [K in keyof T]: ValueProcessor<T[K]> }, target: T, path: Path[]): Result<T> => {
     const issues: Issue[] = [];
@@ -40,7 +40,7 @@ class Generic<T extends unknown[]> {
       }
     }
     return issues.length ? { issues } : { value: output };
-  }
+  };
 
   public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value, path) => {
     if (!options) return next(value, path);
@@ -54,7 +54,7 @@ class Generic<T extends unknown[]> {
       coerced = result.value;
     }
     return next(coerced, path);
-  }
+  };
 
   public validate: Validate<T, ValidationOptions<T>> = (value, path, options) => basicValidation(value, path, options);
 }

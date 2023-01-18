@@ -9,7 +9,7 @@ interface ValidationOptions<T> extends CommonValidationOptions<T> {
   showValidValues?: boolean;
 }
 
-class Generic<T> {
+class Generic<T extends string | number> {
   private keyToValue: { [key: string]: T } = {};
   private valueToKey: { [key: string]: string } = {};
 
@@ -59,25 +59,25 @@ class Generic<T> {
 
   private isNumber = (key: string): boolean => {
     return /^\d+$/gi.test(key);
-  }
+  };
 }
 
-export const isEnum = <T>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T> => {
+export const isEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T> => {
   const g = new Generic<T>(type);
   return createIsCheck('enum', g.check(), g.coerce, g.validate)({ ...options });
 };
 
-export const maybeEnum = <T>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T | undefined> => {
+export const maybeEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T | undefined> => {
   const g = new Generic<T>(type);
   return createMaybeCheck('enum', g.check(), g.coerce, g.validate)({ ...options });
 };
 
-export const asEnum = <T>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T> => {
+export const asEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T> => {
   const g = new Generic<T>(type);
   return createAsCheck('enum', g.check(true), g.convert, g.coerce, g.validate)({ ...options });
 };
 
-export const maybeAsEnum = <T>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T | undefined> => {
+export const maybeAsEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T | undefined> => {
   const g = new Generic<T>(type);
   return createMaybeAsCheck('enum', g.check(true), g.convert, g.coerce, g.validate)({ ...options, strictParsing: true });
 };

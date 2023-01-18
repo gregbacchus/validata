@@ -17,7 +17,7 @@ interface ValidationOptions<I, T extends I[] = I[]> extends CommonValidationOpti
 class Generic<I, T extends I[] = I[]> {
   public check: Check<T> = (value: unknown): value is T => {
     return Array.isArray(value); // TODO check generic
-  }
+  };
 
   public convert: Convert<T> = (value): T => {
     return this.check(value) ? value : [value] as T;
@@ -39,7 +39,7 @@ class Generic<I, T extends I[] = I[]> {
       }
     });
     return issues.length ? { issues } : { value: output as T };
-  }
+  };
 
   public coerce: Coerce<T, CoerceOptions<I>> = (options) => (next) => (value, path) => {
     if (!options) return next(value, path);
@@ -58,7 +58,7 @@ class Generic<I, T extends I[] = I[]> {
       }
     }
     return next(coerced, path);
-  }
+  };
 
   public validate: Validate<T, ValidationOptions<I, T>> = (value, path, options) => {
     const result = basicValidation(value, path, options);
@@ -69,7 +69,7 @@ class Generic<I, T extends I[] = I[]> {
       result.issues.push(Issue.forPath(path, value, 'max-length', { length: value.length, max: options.maxLength }));
     }
     return result;
-  }
+  };
 }
 
 export type ArrayOptions<I, T extends I[] = I[]> = ItemProcessor & ValidationOptions<I, T>;

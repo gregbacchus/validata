@@ -20,7 +20,7 @@ type Reviver = (key: string, value: any) => any;
 class Generic<T extends { [key: string]: any; }> {
   public check: Check<T> = (value: unknown): value is T => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
-  }
+  };
 
   public convert = (options?: ConvertOptions): Convert<T> => (value) => {
     if (typeof value === 'string' && value[0] === '{' && value[value.length - 1] === '}') {
@@ -64,7 +64,7 @@ class Generic<T extends { [key: string]: any; }> {
       }
     });
     return issues.length ? { issues } : { value: output };
-  }
+  };
 
   public coerce: Coerce<T, CoerceOptions<T>> = (options) => (next) => (value, path) => {
     if (!options) return next(value, path);
@@ -86,7 +86,7 @@ class Generic<T extends { [key: string]: any; }> {
       coerced = result.value;
     }
     return next(coerced, path);
-  }
+  };
 
   public validate: Validate<T, ValidationOptions<T>> = (value, path, options) => basicValidation(value, path, options);
 }
