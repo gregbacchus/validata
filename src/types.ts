@@ -25,12 +25,12 @@ export type Path = string | number | symbol;
 export class Issue {
   public static forPath = (path: Path | Path[], value: unknown, reason: string, info?: Record<string, unknown>): Issue => {
     return new Issue(Array.isArray(path) ? path : [path], value, reason, info);
-  }
+  };
 
   public static nest = (parentPath: Path | Path[], issue: Issue): Issue => {
     const path = Array.isArray(parentPath) ? parentPath : [parentPath];
     return new Issue([...path, ...issue.path], issue.value, issue.reason, issue.info);
-  }
+  };
 
   private constructor(
     public readonly path: Path[],

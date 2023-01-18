@@ -14,7 +14,7 @@ interface ValidationOptions<T> extends CommonValidationOptions<T> {
 class Generic<V> {
   public check: Check<Record<string, V>> = (value: unknown): value is Record<string, V> => {
     return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date);
-  }
+  };
 
   public convert: Convert<Record<string, V>> = (value): Record<string, V> | undefined => {
     return this.check(value) ? value : undefined;
@@ -39,7 +39,7 @@ class Generic<V> {
       }
     });
     return issues.length ? { issues } : { value: output };
-  }
+  };
 
   public coerce: Coerce<Record<string, V>, CoerceOptions<V>> = (options) => (next) => (value, path) => {
     if (!options) return next(value, path);
@@ -55,7 +55,7 @@ class Generic<V> {
       }
     }
     return next(coerced, path);
-  }
+  };
 
   public validate: Validate<Record<string, V>, ValidationOptions<Record<string, V>>> = (value, path, options) => {
     const result = basicValidation(value, path, options);
@@ -78,7 +78,7 @@ class Generic<V> {
       result.issues.push(Issue.forPath(path, value, 'max-keys', { keyCount, max: options.maxKeys }));
     }
     return result;
-  }
+  };
 }
 
 export type RecordOptions<T> = ValidationOptions<T>;
