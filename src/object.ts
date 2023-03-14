@@ -3,6 +3,7 @@ import { Contract, isIssue, Issue, Path, Result, ValueProcessor } from './types'
 
 interface AdditionalOptions {
   stripExtraProperties?: boolean;
+  ignoreExtraProperties?: boolean;
 }
 
 interface CoerceOptions<T> extends AdditionalOptions {
@@ -72,10 +73,12 @@ class Generic<T extends { [key: string]: any; }> {
     let coerced = { ...value };
     if (!options.contract) return next(coerced, path);
 
-    if (options.stripExtraProperties) {
+    const ignoredProperties = {} as T;
+    if (options.stripExtraProperties || options.ignoreExtraProperties) {
       const allowedProperties = new Set(Object.keys(options.contract));
       (Object.keys(coerced) as (keyof T)[]).forEach((key) => {
         if (allowedProperties.has(key as string)) return;
+        ignoredProperties[key] = coerced[key];
         delete coerced[key];
       });
     }
@@ -84,6 +87,14 @@ class Generic<T extends { [key: string]: any; }> {
 
     if (result) {
       coerced = result.value;
+
+      console.log(ignoredProperties, coerced);
+      if (options.ignoreExtraProperties) {
+        (Object.keys(ignoredProperties) as (keyof T)[]).forEach((key) => {
+          coerced[key] = ignoredProperties[key];
+        });
+      }
+      console.log(ignoredProperties, coerced);
     }
     return next(coerced, path);
   };
