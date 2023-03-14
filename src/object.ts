@@ -88,13 +88,11 @@ class Generic<T extends { [key: string]: any; }> {
     if (result) {
       coerced = result.value;
 
-      console.log(ignoredProperties, coerced);
       if (options.ignoreExtraProperties) {
         (Object.keys(ignoredProperties) as (keyof T)[]).forEach((key) => {
           coerced[key] = ignoredProperties[key];
         });
       }
-      console.log(ignoredProperties, coerced);
     }
     return next(coerced, path);
   };
