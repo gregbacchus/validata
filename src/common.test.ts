@@ -150,4 +150,13 @@ describe('createNullableCheck', () => {
     const futNull = asNullable(check(contract), { default: defaultValue });
     expect(futNull.process(value)).toEqual({ value: expectedValue });
   });
+
+  it('result is intact during an issue detection', () => {
+    const fut = isObject({ key: isBoolean() });
+    const futNull = isObject({ key: asNullable(isBoolean()) });
+    const result = fut.process({ key: [] });
+    const resultNull = futNull.process({ key: [] });
+
+    expect(result).toEqual(resultNull);
+  });
 });

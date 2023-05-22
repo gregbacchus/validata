@@ -88,18 +88,18 @@ export interface CommonConvertOptions<T> {
 }
 
 export const isNullable = <T>(processor: ValueProcessor<T>): ValueProcessor<T | null> => ({
-  process: (value: unknown): Result<T | null> => {
+  process: (value: unknown, path?: Path[]): Result<T | null> => {
     if (value === null) return { value: null };
 
-    return processor.process(value);
+    return processor.process(value, path);
   },
 });
 
 export const asNullable = <T>(processor: ValueProcessor<T>, options?: WithDefault<Exclude<T, undefined> | null>): ValueProcessor<Exclude<T, undefined> | null> => ({
-  process: (value: unknown): Result<Exclude<T, undefined> | null> => {
+  process: (value: unknown, path?: Path[]): Result<Exclude<T, undefined> | null> => {
     if (value === null) return { value: null };
 
-    const result = processor.process(value);
+    const result = processor.process(value, path);
     if (!isIssue(result) && result.value === undefined) {
       const defaultValue = options?.default === undefined
         ? null
