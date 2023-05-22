@@ -121,6 +121,14 @@ describe('isObject', () => {
     }, { stripExtraProperties: true });
     expectValue(fut, { a: 47, b: 'asd', c: 345, d: 'hello' }, { a: 47, b: 'asd' });
   });
+
+  it('will ignore unexpected properties', () => {
+    const fut = isObject<MyObject>({
+      a: isNumber({ min: 25 }),
+      b: isString(),
+    }, { ignoreExtraProperties: true });
+    expectValue(fut, { a: 47, b: 'asd', c: 345, d: 'hello' }, { a: 47, b: 'asd', c: 345, d: 'hello' } as MyObject);
+  });
 });
 
 describe('maybeObject', () => {

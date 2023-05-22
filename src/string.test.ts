@@ -74,6 +74,26 @@ describe('isString', () => {
     expectValue(fut, 'foo bar', 'f**.bar');
     expectValue(fut, 'FooBar', 'f**.bar');
   });
+
+  it('work with trim and min/max length', () => {
+    const fut = isString({ trim: 'both', minLength: 2, maxLength: 6 });
+    expectValue(fut, 'asdf', 'asdf');
+    expectValue(fut, ' asdf ', 'asdf');
+    expectIssue(fut, ' a ', 'min-length');
+    expectValue(fut, ' asdfgh ', 'asdfgh');
+    expectIssue(fut, 'asdfghj', 'max-length');
+    expectIssue(fut, ' asdfghj ', 'max-length');
+  });
+
+  it('rego', () => {
+    const fut = isString({ trim: 'both', minLength: 1, maxLength: 6, regex: /^[0-9a-zA-Z]+$/, transform: (value) => value.toUpperCase() });
+    expectValue(fut, 'aSd123', 'ASD123');
+    expectValue(fut, ' aS12 ', 'AS12');
+    expectIssue(fut, '  ', 'min-length');
+    expectIssue(fut, 'AdDf123', 'max-length');
+    expectIssue(fut, ' AdDf123 ', 'max-length');
+    expectIssue(fut, ' 34#$12 ', 'regex');
+  });
 });
 
 describe('maybeString', () => {
