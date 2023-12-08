@@ -2,7 +2,7 @@ import { isAny } from './any';
 import { asNumber, isNumber } from './number';
 import { isObject } from './object';
 import { asRecord, isRecord, maybeAsRecord, maybeRecord } from './record';
-import { asString } from './string';
+import { asString, isString } from './string';
 import { expectIssue, expectSuccess, expectValue } from './test-helpers';
 
 interface MyObject {
@@ -25,6 +25,7 @@ describe('isRecord', () => {
     const fut = isRecord(isNumber());
     expectSuccess(fut, {});
     expectSuccess(fut, { a: 47 });
+    expectValue(fut, { a: 47 }, { a: 47 });
     expectIssue(fut, { a: 'foo' }, 'incorrect-type', ['a']);
   });
 
@@ -103,6 +104,11 @@ describe('asRecord', () => {
     expectValue(fut, null, { a: 47 });
     expectValue(fut, undefined, { a: 47 });
   });
+
+  it('will accept string values in record', () => {
+    const fut = asRecord(isString());
+    expectValue(fut, '{ \"fruit\": \"apple\" }', { fruit: 'apple' });
+  });
 });
 
 describe('maybeAsRecord', () => {
@@ -120,6 +126,8 @@ describe('maybeAsRecord', () => {
 
   it('will convert non-object to undefined', () => {
     const fut = maybeAsRecord();
+    expectValue(fut, '', undefined);
+    expectValue(fut, false, undefined);
     expectValue(fut, 0, undefined);
     expectValue(fut, new Date(), undefined);
     expectValue(fut, [], undefined);

@@ -17,7 +17,15 @@ class Generic<V> {
   };
 
   public convert: Convert<Record<string, V>> = (value): Record<string, V> | undefined => {
-    return this.check(value) ? value : undefined;
+    if (this.check(value)) return value;
+    try {
+      const result = JSON.parse(value as string) as Record<string, V>;
+      if (typeof result !== 'object') return undefined;
+
+      return result;
+    } catch (error) {
+      return undefined;
+    }
   };
 
   public process = (check: ValueProcessor<V>, target: Record<string, V>, path: Path[]): Result<Record<string, V>> => {
