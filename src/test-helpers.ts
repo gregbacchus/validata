@@ -67,7 +67,6 @@ export const expectValue = <T>(fut: ValueProcessor<T>, value: unknown, coerced: 
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
-    console.log('JSON.stringify(result)', JSON.stringify(result));
     throw new Error(`Unexpected issue: ${JSON.stringify(result)}`);
   }
   if (result) {
