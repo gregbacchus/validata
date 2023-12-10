@@ -42,7 +42,7 @@ export const runTests = <T>(fut: ValueProcessor<T>, ...tests: Array<TestDefiniti
 export const expectIssue = <T>(fut: ValueProcessor<T>, value: unknown, reason: string, path: Path[] = []): void => {
   const result = fut.process(value);
   if (!isIssue(result)) {
-    fail('no issue');
+    throw new Error('no issue');
   }
   expect(result.issues).toEqual(
     expect.arrayContaining([
@@ -58,7 +58,7 @@ export const expectSuccess = <T>(fut: ValueProcessor<T>, value: unknown): ValueR
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
-    fail(`Unexpected issue: ${JSON.stringify(result)}`);
+    throw new Error(`Unexpected issue: ${JSON.stringify(result)}`);
   }
   return result;
 };
@@ -67,7 +67,7 @@ export const expectValue = <T>(fut: ValueProcessor<T>, value: unknown, coerced: 
   const result = fut.process(value);
   expect(result).toBeDefined();
   if (isIssue(result)) {
-    fail(`Unexpected issue: ${JSON.stringify(result)}`);
+    throw new Error(`Unexpected issue: ${JSON.stringify(result)}`);
   }
   if (result) {
     expect(result.value).toEqual(coerced);
