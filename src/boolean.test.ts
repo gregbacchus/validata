@@ -1,5 +1,6 @@
 import { asBoolean, isBoolean, maybeAsBoolean, maybeBoolean } from './boolean';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
+import { Issue } from './types';
 
 describe('isBoolean', () => {
   it('incorrect type will cause an issue', () => {
@@ -32,6 +33,12 @@ describe('isBoolean', () => {
     const fut = isBoolean({ validator: (value) => !value });
     expectSuccess(fut, false);
     expectIssue(fut, true, 'validator');
+  });
+
+  it('will check custom validator with custom issue returned', () => {
+    const fut = isBoolean({ validator: (value) => value ? [Issue.forPath([], value, 'custom')] : true });
+    expectSuccess(fut, false);
+    expectIssue(fut, true, 'custom');
   });
 });
 

@@ -16,14 +16,14 @@ const sampleContract = {
 };
 const sample = isObject(sampleContract);
 
-// both are same as
 export type SampleContract = TypeOf<typeof sample>;
-export type Sample = TypeOf<typeof sample>;
-// interface Sample {
-//   myString: string;
-//   maybeString: string | undefined;
-//   numericString: string;
-// }
+interface Sample {
+  maybeString?: string | undefined;
+  myString: string;
+  numericString: string;
+}
+type SameType<T, U> = T[] extends U[] ? U[] extends T[] ? true : false : false
+export type ThisIsTrue = SameType<SampleContract, Sample>;
 
 console.log(JSON.stringify(sample.process({
   maybeString: 123,

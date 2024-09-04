@@ -4,7 +4,7 @@ import { asNumber, isNumber } from './number';
 import { asObject, isObject, maybeAsObject, maybeObject } from './object';
 import { asString, isString, maybeString } from './string';
 import { expectIssue, expectSuccess, expectValue, runTests } from './test-helpers';
-import { isIssue } from './types';
+import { isIssue, Issue } from './types';
 
 interface MyObject {
   a: number;
@@ -128,6 +128,14 @@ describe('isObject', () => {
       b: isString(),
     }, { ignoreExtraProperties: true });
     expectValue(fut, { a: 47, b: 'asd', c: 345, d: 'hello' }, { a: 47, b: 'asd', c: 345, d: 'hello' } as MyObject);
+  });
+
+  it('will check with custom validator returning custom issues', () => {
+    const fut = isObject<MyObject>({
+      a: isNumber({ min: 25 }),
+      b: isString({ validator: (value, _options, path) => value === 'triggerCustom' ? [Issue.forPath(path ?? [], value, 'custom')] : true }),
+    });
+    expectIssue(fut, { a: 47, b: 'triggerCustom' }, 'custom', ['b']);
   });
 });
 

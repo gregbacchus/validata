@@ -78,7 +78,7 @@ const getResultOrValidationIssues = <T, O extends CommonValidationOptions<T>>(va
 };
 
 export interface CommonValidationOptions<T> {
-  validator?: (value: T, options?: any) => boolean;
+  validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[];
   validatorOptions?: any;
 }
 
@@ -185,9 +185,8 @@ export const createMaybeAsCheck = <T, TConvertOptions extends CommonConvertOptio
 };
 
 export const basicValidation = <T>(value: T, path: Path[], options: CommonValidationOptions<T>): IssueResult => {
-  const result: IssueResult = { issues: [] };
-  if (options.validator?.(value, options.validatorOptions) === false) {
-    result.issues.push(Issue.forPath(path, value, 'validator'));
-  }
-  return result;
+  const customValidatorResult = options.validator?.(value, options.validatorOptions, path);
+  if (customValidatorResult === undefined || customValidatorResult === true) return { issues: [] };
+  if (customValidatorResult === false) return { issues: [Issue.forPath(path, value, 'validator')] };
+  return { issues: customValidatorResult };
 };

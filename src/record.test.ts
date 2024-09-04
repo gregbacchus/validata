@@ -107,7 +107,7 @@ describe('asRecord', () => {
 
   it('will accept string values in record', () => {
     const fut = asRecord(isString());
-    expectValue(fut, '{ \"fruit\": \"apple\" }', { fruit: 'apple' });
+    expectValue(fut, '{ "fruit": "apple" }', { fruit: 'apple' });
   });
 });
 

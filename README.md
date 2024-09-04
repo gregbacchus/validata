@@ -194,7 +194,7 @@ Options:
 - `coerceMaxLength? number` - if there are more items than this, some will be removed
 - `maxLength?: number` - if there are more items than this, it's an error `max-length`
 - `minLength?: number` - if there are less items than this, it's an error `min-length`
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
@@ -218,7 +218,7 @@ Options:
 
 - `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
 - `convertOptions` - options to pass to the _converter_
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 ### `isDate`, `maybeDate`, `asDate`, `maybeAsDate`
@@ -239,7 +239,7 @@ Options:
 - `format` - custom date format used in conversion from `string` to `Date` see [Luxon formatting](https://moment.github.io/luxon/docs/manual/formatting)
 - `maxFuture?: Duration` - if the value is after this duration into the future, it's an error `max-future`
 - `maxPast?: Duration` - if the value is before this duration into the past, it's an error `max-past`
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 ### `isEnum`, `maybeEnum`, `asEnum`, `maybeAsEnum`
@@ -298,7 +298,7 @@ Options:
 - `coerceMax?: number` - if the value is more than this, it will be set to this value
 - `max?: number` - if the value is than this, it's an error `max`
 - `min?: number` - if the value is than this, it's an error `min`
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 ### `isObject`, `maybeObject`, `asObject`, `maybeAsObject`
@@ -317,7 +317,7 @@ Options:
 
 - `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
 - `convertOptions` - options to pass to the _converter_
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
@@ -353,7 +353,7 @@ Options:
 - `keyRegex?: RegExp` - regular expression to check each key name, or it's an error `key-regex`
 - `maxKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
 - `minKeys?: number` - if the number of keys in the object is more than this, it's an error `max-keys`
-- `validator?: (value: Record<string, V>, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: Record<string, V>, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
@@ -386,7 +386,7 @@ Options:
 - `maxLength?: number` - if the length of the string is more than this, it's an error `max-length`
 - `minLength?: number` - if the length of the string is less than this, it's an error `min-length`
 - `format:? StringFormatCheck` - extension point for string format checking, if check fails it's an issue `format` with `info.expectedFormat` set
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 StringPadding:
@@ -464,7 +464,7 @@ maybeTuple(options);
 
 Options:
 
-- `validator?: (value: T, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
@@ -493,7 +493,7 @@ Options:
 - `convertOptions` - options to pass to the _converter_
 - `setProtocol?: string` - will coerce the protocol to the given value, if present
 - `protocol?: string` - given URL must have this protocol, or it's an error `invalid-protocol`
-- `validator?: (value: URL, options?: any) => boolean` - custom validation function; if false is returned it's an error
+- `validator?: (value: URL, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
 - `validatorOptions?: any` - options to pass to the _validator_
 
 Example:
