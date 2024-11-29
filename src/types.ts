@@ -48,6 +48,10 @@ export interface ValueProcessor<T> {
   process(value: unknown, path?: Path[]): Result<T>;
 }
 
+export interface AsyncValueProcessor<T> {
+  process(value: unknown, path?: Path[]): Promise<Result<T>>;
+}
+
 export type Next<T, R> = (value: T, path: Path[]) => Result<R>;
 
 export interface NotPrimitive { [key: string]: any; }
