@@ -60,6 +60,16 @@ SUCCESS: Outputs:
 */
 ```
 
+## Upgrading to v6
+
+V6 of `validata` has been marked as a breaking change as it moves the packages `luxon`, `@types/luxon` and `validata` from dependencies to peerDependencies. This better supports different package versions.
+
+If you are using any of the validators that use these packages, you will need to install them directly into your project:
+
+```bash
+pnpm add luxon @types/luxon validata
+```
+
 ## API
 
 Checks:
@@ -227,6 +237,8 @@ Options:
 - `validatorOptions?: any` - options to pass to the _validator_
 
 ### `isDate`, `maybeDate`, `asDate`, `maybeAsDate`
+
+> NOTE: Requires peer dependencies `luxon` and `@types/luxon`.
 
 Usage:
 
