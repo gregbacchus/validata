@@ -127,6 +127,7 @@ describe('maybeAsDateTime', () => {
   it('incorrect type will be converted to undefined', () => {
     const fut = maybeAsDateTime();
     expectValue(fut, 'test', undefined);
+    expectValue(fut, '2013-99-12T08:34:32.120Z', undefined);
     expectValue(fut, [], undefined);
     expectValue(fut, ['test'], undefined);
     expectValue(fut, {}, undefined);
@@ -136,6 +137,7 @@ describe('maybeAsDateTime', () => {
   it('incorrect type will result in issue when parsing is strict', () => {
     const fut = maybeAsDateTime({ strictParsing: true });
     expectIssue(fut, 'test', 'no-conversion');
+    expectIssue(fut, '2013-99-12T08:34:32.120Z', 'no-conversion');
     expectIssue(fut, [], 'no-conversion');
     expectIssue(fut, ['test'], 'no-conversion');
     expectIssue(fut, {}, 'no-conversion');

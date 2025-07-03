@@ -5,16 +5,16 @@ import { Issue } from './types';
 interface CoerceOptions {
 }
 
-interface ValidationOptions extends CommonValidationOptions<DateTime> {
+interface ValidationOptions extends CommonValidationOptions<DateTime<true>> {
   maxFuture?: Duration;
   maxPast?: Duration;
 }
 
-const check: Check<DateTime> = (value): value is DateTime => {
-  return value instanceof DateTime;
+const check: Check<DateTime<true>> = (value): value is DateTime<true> => {
+  return (value instanceof DateTime) && value.isValid;
 };
 
-const convert: Convert<DateTime> = (value) => {
+const convert: Convert<DateTime<true>> = (value) => {
   if (value instanceof Date) {
     const utc = DateTime.fromJSDate(value, { zone: 'utc' });
     if (!utc.isValid) return undefined;
@@ -36,11 +36,11 @@ const convert: Convert<DateTime> = (value) => {
   return undefined;
 };
 
-const coerce: Coerce<DateTime, CoerceOptions> = () => (next) => (value, path) => {
+const coerce: Coerce<DateTime<true>, CoerceOptions> = () => (next) => (value, path) => {
   return next(value, path);
 };
 
-const validate: Validate<DateTime, ValidationOptions> = (value, path, options) => {
+const validate: Validate<DateTime<true>, ValidationOptions> = (value, path, options) => {
   const result = basicValidation(value, path, options);
   if (options.maxFuture) {
     const max = DateTime.utc().plus(options.maxFuture);
