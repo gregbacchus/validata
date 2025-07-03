@@ -80,6 +80,11 @@ Checks:
   - maybeDate
   - asDate
   - maybeAsDate
+- DateTime
+  - isDateTime
+  - maybeDateTime
+  - asDateTime
+  - maybeAsDateTime
 - Enum
   - isEnum
   - maybeEnum
@@ -230,6 +235,31 @@ isDate(options);
 maybeDate(options);
 asDate(options);
 maybeAsDate(options);
+```
+
+Options:
+
+- `converter?: (value: unknown, options?: any) => T | undefined` - custom converter function, if not defined or `undefined` is returned then built in conversions will be run
+- `convertOptions` - options to pass to the _converter_
+- `format` - custom date format used in conversion from `string` to `Date` see [Luxon formatting](https://moment.github.io/luxon/docs/manual/formatting)
+- `maxFuture?: Duration` - if the value is after this duration into the future, it's an error `max-future`
+- `maxPast?: Duration` - if the value is before this duration into the past, it's an error `max-past`
+- `validator?: (value: T, options?: any, path?: Path[]) => boolean | Issue[]` - custom validation function; if false or Issue[] is returned it's an error
+- `validatorOptions?: any` - options to pass to the _validator_
+
+### `isDateTime`, `maybeDateTime`, `asDateTime`, `maybeAsDateTime`
+
+Similar to above but for luxon DateTime.
+
+> NOTE: Requires peer dependencies `luxon` and `@types/luxon`.
+
+Usage:
+
+```typescript
+isDateTime(options);
+maybeDateTime(options);
+asDateTime(options);
+maybeAsDateTime(options);
 ```
 
 Options:
@@ -399,6 +429,7 @@ StringFormat:
 - `StringFormat.ULID()` - https://github.com/ulid/spec
 - `StringFormat.UUID()` - https://www.ietf.org/rfc/rfc4122.txt
 - `StringFormat.password(requirements: PasswordRequirements)` - Password format with minimum requirements
+- `StringFormat.email(options: { allowDisplayName: boolean })` - requires peer dependency `validator`
 
 Example:
 
@@ -424,6 +455,12 @@ const check = isString({
     upperCaseChars: 2, // default=1
     specialChars: 0, // default=1
   }),
+});
+```
+
+```typescript
+const check = isString({
+  format: StringFormat.email({ allowDisplayName: false }),
 });
 ```
 
