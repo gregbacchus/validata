@@ -2,7 +2,7 @@ export * from './any';
 export * from './array';
 export * from './boolean';
 export * from './check';
-export { asNullable, isNullable } from './common';
+export { asNullable, CommonValidationOptions, isNullable } from './common';
 export * from './date';
 export * from './date-time';
 export * from './enum';
