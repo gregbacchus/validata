@@ -4,15 +4,21 @@ on:
   push:
     branches: [master]
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: write
+  pull-requests: write
+  packages: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24.x
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run test-coverage -s
@@ -21,5 +27,3 @@ jobs:
           git config --global user.name 'CI Bot'
           git config --global user.email '1761608+gregbacchus@users.noreply.github.com'
       - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
