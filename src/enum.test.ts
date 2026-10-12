@@ -86,12 +86,25 @@ describe('asEnum', () => {
     const test = asEnum(MyEnum).process('WATER');
     expect(test).toEqual({ value: MyEnum.WATER });
   });
+
+  it('will use the default for null, undefined, and values that cannot be converted', () => {
+    const fut = asEnum(MyEnum, { default: MyEnum.WATER });
+    expect(fut.process(null)).toEqual({ value: MyEnum.WATER });
+    expect(fut.process(undefined)).toEqual({ value: MyEnum.WATER });
+    expect(fut.process('UNKNOWN')).toEqual({ value: MyEnum.WATER });
+  });
 });
 
 describe('maybeAsEnum', () => {
   it('will accept correct value from enum', () => {
     const test = maybeAsEnum(MyEnum).process(MyEnum.WATER);
     expect(test).toEqual({ value: MyEnum.WATER });
+  });
+
+  it('will use the default value', () => {
+    const fut = maybeAsEnum(MyEnum, { default: MyEnum.WATER });
+    expect(fut.process(undefined)).toEqual({ value: MyEnum.WATER });
+    expect(fut.process('UNKNOWN')).toEqual({ value: MyEnum.WATER });
   });
 
   it('incorrect string value provided for a number enum', () => {

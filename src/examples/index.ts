@@ -1,5 +1,6 @@
 import { isArray } from '../array';
 import { asBoolean, isBoolean } from '../boolean';
+import { asEnum, maybeAsEnum } from '../enum';
 import { asNumber, isNumber } from '../number';
 import { isObject } from '../object';
 import { isRecord } from '../record';
@@ -85,3 +86,16 @@ const sample7 = asNullable(isString(), { default: null });
 console.log(sample7.process(null));
 console.log(sample7.process('asd'));
 console.log(sample7.process(undefined));
+
+enum SampleStatus {
+  READY,
+  PENDING,
+}
+
+const sample8 = asEnum(SampleStatus, { default: SampleStatus.READY });
+
+console.log(sample8.process(undefined));
+
+const sample9 = maybeAsEnum(SampleStatus, { default: SampleStatus.PENDING });
+
+console.log(sample9.process('UNKNOWN'));

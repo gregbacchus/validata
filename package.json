@@ -29,12 +29,12 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "./node_modules/.bin/tsc --outDir dist --sourceMap",
-    "lint": "./node_modules/.bin/eslint src/ --ext .ts,.tsx",
+    "build": "tsc --outDir dist --sourceMap",
+    "lint": "eslint src/ --ext .ts,.tsx",
     "prepublishOnly": "npm run build && npm version patch",
     "postpublish": "git push",
-    "test": "./node_modules/.bin/jest --verbose --runInBand",
-    "test-coverage": "./node_modules/.bin/jest --verbose --coverage --runInBand"
+    "test": "jest --verbose --runInBand",
+    "test-coverage": "jest --verbose --coverage --runInBand"
   },
   "dependencies": {},
   "devDependencies": {

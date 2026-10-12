@@ -290,10 +290,12 @@ Usage:
 
 ```typescript
 isEnum(Enum);
-maybeNumber(Enum);
-asNumber(Enum);
-maybeAsNumber(Enum);
+maybeEnum(Enum);
+asEnum(Enum);
+maybeAsEnum(Enum);
 ```
+
+`asEnum` and `maybeAsEnum` accept a `default` option. The default is used when the input is `null` or `undefined`, or when it cannot be converted to an enum value. `isEnum` and `maybeEnum` do not accept defaults; without a default, an absent input to `maybeAsEnum` is sanitized to `undefined`.
 
 Example:
 
@@ -315,10 +317,17 @@ enum EnumTwo {
 isEnum(EnumTwo); // Allows 0, 1, 2
 
 // Converting to an Enum using it's key or value
-asEnum(EnumTwo); // Allows 1, 2, 3, "A", "B", "C"
-asEnum(EnumTwo).process('A'));       // { value: 0 }
-asEnum(EnumTwo).process(0));         // { value: 0 }
-asEnum(EnumTwo).process(EnumOne.A)); // { value: 0 }
+asEnum(EnumTwo); // Allows 0, 1, 2, "A", "B", "C"
+asEnum(EnumTwo).process('A');       // { value: 0 }
+asEnum(EnumTwo).process(0);         // { value: 0 }
+asEnum(EnumTwo).process(EnumOne.A); // { value: 0 }
+
+// Use a default when the input is absent
+asEnum(EnumTwo, { default: EnumTwo.A }).process(undefined); // { value: 0 }
+maybeAsEnum(EnumTwo, { default: EnumTwo.A }).process(undefined); // { value: 0 }
+
+// Use a default when conversion fails
+maybeAsEnum(EnumTwo, { default: EnumTwo.A }).process('UNKNOWN'); // { value: 0 }
 ```
 
 ### `isNumber`, `maybeNumber`, `asNumber`, `maybeAsNumber`

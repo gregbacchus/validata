@@ -1,4 +1,4 @@
-import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate } from './common';
+import { basicValidation, Check, Coerce, CommonValidationOptions, Convert, createAsCheck, createIsCheck, createMaybeAsCheck, createMaybeCheck, Validate, WithDefault } from './common';
 import { Issue, ValueProcessor } from './types';
 
 type EnumValue = string | number;
@@ -72,12 +72,12 @@ export const maybeEnum = <T extends string | number>(type: EnumType, options: Va
   return createMaybeCheck('enum', g.check(), g.coerce, g.validate)({ ...options });
 };
 
-export const asEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T> => {
+export const asEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> & WithDefault<T> = {}): ValueProcessor<T> => {
   const g = new Generic<T>(type);
   return createAsCheck('enum', g.check(true), g.convert, g.coerce, g.validate)({ ...options });
 };
 
-export const maybeAsEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> = {}): ValueProcessor<T | undefined> => {
+export const maybeAsEnum = <T extends string | number>(type: EnumType, options: ValidationOptions<T> & WithDefault<T> = {}): ValueProcessor<T | undefined> => {
   const g = new Generic<T>(type);
   return createMaybeAsCheck('enum', g.check(true), g.convert, g.coerce, g.validate)({ ...options, strictParsing: true });
 };
